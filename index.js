@@ -85,87 +85,102 @@ app.use(session({
 //     }
 // }
 
-app.get('/', (req,res) => {
-    res.render("index");
-});
+app.get('/', async(req,res) => {
+	if (req.session.authenticated) {
+		var email = req.session.email;
+		const result = await userCollection.find({ email: email }).project({ username: 1, email: 1, password: 1, _id: 1 }).toArray();
+		res.render("index", { user: result[0].username});
+
+	} else {
+		res.render("index", { user: null});
+	}});
 
 app.get('/createUser', (req,res) => {
-    res.send("Create user");
+    res.render("createUser");
 });
 
 
 app.get('/login', (req,res) => {
-    res.send("login");
+	res.render("login");
 });
 
 app.post('/createUser', async (req,res) => {
-	res.send("create user post");
-//     var username = req.body.username;
-//     var password = req.body.password;
+    var username = req.body.username;
+	var email = req.body.email;
+	var password = req.body.password;
 
-// 	const schema = Joi.object(
-// 		{
-// 			username: Joi.string().alphanum().max(20).required(),
-// 			password: Joi.string().max(20).required()
-// 		});
-	
-// 	const validationResult = schema.validate({username, password});
-// 	if (validationResult.error != null) {
-// 	   console.log(validationResult.error);
-// 	   res.redirect("/createUser");
-// 	   return;
-//    }
+	const schema = Joi.object(
+		{
+			username: Joi.string().alphanum().max(20).required(),
+			email: Joi.string().max(50).required(),
+			password: Joi.string().max(20).required()
+		});
 
-//     var hashedPassword = await bcrypt.hash(password, saltRounds);
-	
-// 	await userCollection.insertOne({username: username, password: hashedPassword, user_type: "user"});
-// 	console.log("Inserted user");
+	const validationResult = schema.validate({ username, email, password });
+	if (validationResult.error != null) {
+		var msg = validationResult.error.message;
+		res.redirect("/signUpSubmit?message=" + msg);
+		return;
+	}
 
-//     var html = "successfully created user";
-//     res.render("submitUser", {html: html});
+
+	var hashedPassword = await bcrypt.hash(password, saltRounds);
+
+	await userCollection.insertOne({ username: username, email: email, password: hashedPassword});
+	req.session.authenticated = true;
+	req.session.email = email;
+	req.session.cookie.maxAge = expireTime;
+	res.redirect('/');
+});
+
+app.get('/signUpSubmit', (req, res) => {
+	var msg = req.query.message;
+	res.render("submitUser", { msg: msg ,previousPage: "createUser"});
 });
 
 app.post('/login', async (req,res) => {
-	res.send("this is post login");
-    // var username = req.body.username;
-    // var password = req.body.password;
+    var email = req.body.email;
+	var password = req.body.password;
 
-	// const schema = Joi.string().max(20).required();
-	// const validationResult = schema.validate(username);
-	// if (validationResult.error != null) {
-	//    console.log(validationResult.error);
-	//    res.redirect("/login");
-	//    return;
-	// }
+	const schema = Joi.object(
+		{
+			email: Joi.string().max(50).required(),
+			password: Joi.string().max(20).required()
+		});
+	const validationResult = schema.validate({ email, password });
+	if (validationResult.error != null) {
+		res.redirect("/loginSubmit?message=invalid email or password");
+		return;
+	}
 
-	// const result = await userCollection.find({username: username}).project({username: 1, password: 1, user_type: 1, _id: 1}).toArray();
+	const result = await userCollection.find({ email: email }).project({ username: 1, email: 1, password: 1, _id: 1 }).toArray();
 
-	// console.log(result);
-	// if (result.length != 1) {
-	// 	console.log("user not found");
-	// 	res.redirect("/login");
-	// 	return;
-	// }
-	// if (await bcrypt.compare(password, result[0].password)) {
-	// 	console.log("correct password");
-	// 	req.session.authenticated = true;
-	// 	req.session.username = username;
-    //     req.session.user_type = result[0].user_type;
-	// 	req.session.cookie.maxAge = expireTime;
-
-	// 	res.redirect('/loggedIn');
-	// 	return;
-	// }
-	// else {
-	// 	console.log("incorrect password");
-	// 	res.redirect("/login");
-	// 	return;
-	// }
+	if (result.length != 1) {
+		res.redirect("/loginSubmit?message=user not found");
+		return;
+	}
+	if (await bcrypt.compare(password, result[0].password)) {
+		req.session.authenticated = true;
+		req.session.email = email;
+		req.session.cookie.maxAge = expireTime;
+		res.redirect('/');
+		return;
+	}
+	else {
+		res.redirect("/loginSubmit?message=incorrect password");
+		return;
+	}
 });
+
+app.get('/loginSubmit', (req, res) => {
+	var msg = req.query.message;
+	res.render("submitUser", { msg: msg,previousPage: "login" });
+});
+
 
 app.get('/logout', (req,res) => {
 	req.session.destroy();
-    res.send("log out");
+    res.redirect("/");
 });
 
 app.use(express.static(__dirname + "/public"));
