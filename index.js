@@ -90,7 +90,7 @@ app.get('/', (req,res) => {
 });
 
 app.get('/createUser', (req,res) => {
-    res.send("Create user");
+    res.render("createUser");
 });
 
 
@@ -166,6 +166,41 @@ app.post('/login', async (req,res) => {
 app.get('/logout', (req,res) => {
 	req.session.destroy();
     res.send("log out");
+});
+
+app.get('/info', (req,res) => {
+
+    res.render("info");
+});
+
+app.get('/about_us', (req,res) => {
+
+    res.render("about_us");
+});
+
+app.get('/destination', (req,res) => {
+
+    res.render("destination");
+});
+
+app.get('/home', (req,res) => {
+
+    res.render("home");
+});
+
+app.get('/profile', (req,res) => {
+
+    res.render("profile");
+});
+
+app.get('/loggingin', (req,res) => {
+
+    res.render("loggingin");
+});
+
+app.get('/review', (req,res) => {
+
+    res.render("review");
 });
 
 app.use(express.static(__dirname + "/public"));
