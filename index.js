@@ -1,6 +1,5 @@
-
+//all the "requires"
 require("./utils.js");
-
 require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
@@ -11,20 +10,32 @@ var mongoose = require('mongoose')
 var imgSchema = require('./model.js');
 var fs = require('fs');
 var path = require('path');
+var multer = require('multer');
+const Joi = require("joi");
+
+/* secret information section */
+const mongodb_host = process.env.MONGODB_HOST;
+const mongodb_user = process.env.MONGODB_USER;
+const mongodb_password = process.env.MONGODB_PASSWORD;
+const mongodb_database = process.env.MONGODB_DATABASE;
+const mongodb_session_secret = process.env.MONGODB_SESSION_SECRET;
+const node_session_secret = process.env.NODE_SESSION_SECRET;
+/* END secret section */
+
+//all the const variables
+const app = express();
 const saltRounds = 12;
 const port = process.env.PORT || 3000;
-
-const app = express();
-
-const Joi = require("joi");
-mongoose.connect(process.env.MONGO_URL)
-.then(console.log("DB Connected"))
+const expireTime = 6 * 4 * 7 * 24 * 60 * 60 * 1000; //expires after 6 months  (hours * minutes * seconds * millis)
  
+//all the app.use
+app.use(express.static(__dirname + "/public"));
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
- 
-var multer = require('multer');
- 
+app.use(express.urlencoded({extended: false}));
+
+app.set('view engine', 'ejs');
+
 var storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, 'uploads')
@@ -33,35 +44,19 @@ var storage = multer.diskStorage({
         cb(null, file.fieldname + '-' + Date.now())
     }
 });
- 
 var upload = multer({ storage: storage });
 
-const expireTime = 6 * 4 * 7 * 24 * 60 * 60 * 1000; //expires after 6 months  (hours * minutes * seconds * millis)
-
-/* secret information section */
-const mongodb_host = process.env.MONGODB_HOST;
-const mongodb_user = process.env.MONGODB_USER;
-const mongodb_password = process.env.MONGODB_PASSWORD;
-const mongodb_database = process.env.MONGODB_DATABASE;
-const mongodb_session_secret = process.env.MONGODB_SESSION_SECRET;
-
-const node_session_secret = process.env.NODE_SESSION_SECRET;
-/* END secret section */
-
+//database related variables and functions on start up
 var {database} = include('databaseConnection');
-
 const userCollection = database.db(mongodb_database).collection('users');
-
-app.set('view engine', 'ejs');
-
-app.use(express.urlencoded({extended: false}));
-
 var mongoStore = MongoStore.create({
 	mongoUrl: `mongodb+srv://${mongodb_user}:${mongodb_password}@${mongodb_host}/sessions`,
 	crypto: {
 		secret: mongodb_session_secret
 	}
 })
+
+mongoose.connect(process.env.MONGO_URL).then(console.log("DB Connected"));
 
 app.use(session({ 
     secret: node_session_secret,
@@ -286,8 +281,6 @@ app.post('/changePersonalinfo', async(req,res) => {
 app.get('/review', (req,res) => {
     res.render("review");
 });
-
-app.use(express.static(__dirname + "/public"));
 
 app.get("*", (req,res) => {
 	res.status(404).render("404");
