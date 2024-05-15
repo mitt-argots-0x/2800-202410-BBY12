@@ -1,5 +1,31 @@
 <%- include("templates/header") %>
+<button id="setting"  onclick='window.location.href="/setting"'>Setting</button>
+  <% items.forEach(function(image) { %>
+    <div>
+      <div>
+        <img
+          src="data:image/<%=image.img.contentType%>;base64,
+                  <%=image.img.data.toString('base64')%>"
+        />
+      </div>
+    </div>
+    <% }) %>
+    <form action="/setProfile" method="POST" enctype="multipart/form-data">
+        <div>
+          <input type="file" id="image" name="image" value="" required />
+        </div>
+        <div>
+          <button type="submit">Save</button>
+        </div>
+      </form>
+<h2><%= user %></h2>
+<button id="plannedLocationsBtn">Planned</button>
+<button id="savedLocationsBtn">Saved</button>
+<div id="plannedLocations_goes_here">
+    <h3>planned Locations here</h3>
+</div>
+<div id="savedLocations_goes_here">
+    <h3>Saved Locations here</h3>
+</div>
 
-    <h2>Welcome to your profile user!</h2>
-
-<%- include("templates/footer") %>
+<%- include("templates/footer",{jsFile: ['js/profile.js']}) %>
