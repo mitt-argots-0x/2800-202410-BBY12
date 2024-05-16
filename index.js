@@ -149,10 +149,10 @@ async function getUserName(req) {
 //This block of code to do sign up, login, log out, and home page is from COMP2537 assignment 2 and modified to fit the project
 app.get('/', async(req,res) => {
 	if (req.session.authenticated) {
-		res.render("index", { user: await getUserName(req)});
+		res.render("index" /*, { user: await getUserName(req)}*/);
 
 	} else {
-		res.render("index", { user: null});
+		res.render("index" /*, { user: null} */);
 	}});
 
 app.get('/createUser', (req,res) => {
