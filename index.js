@@ -13,6 +13,7 @@ require('dotenv').config();
 const express = require('express');
 const router = include('routes/router');
 var database = include('databaseConnection');
+const { google } = require('googleapis');
 const port = process.env.PORT || 3000;
 const app = express();
 app.set('view engine', 'ejs');
@@ -42,6 +43,49 @@ var mongoStore = MongoStore.create({
 		secret: mongodb_session_secret
 	}
 })
+
+//forgot password
+const oauth2Client = new google.auth.OAuth2(
+	process.env.CLIENT_ID,
+	process.env.CLIENT_SECRET,
+	"http://localhost:3000/auth/google/callback"  // This should match the one in your Google Console
+);
+
+// Generate a url that asks permissions for Gmail scopes
+const SCOPES = [
+	'https://www.googleapis.com/auth/gmail.send'
+];
+
+app.get('/auth/google', (req, res) => {
+	const url = oauth2Client.generateAuthUrl({
+		access_type: 'offline',
+		scope: SCOPES
+	});
+	res.redirect(url);
+});
+
+app.get('/auth/google/callback', async (req, res) => {
+	const { code } = req.query;
+	const { tokens } = await oauth2Client.getToken(code);
+	oauth2Client.setCredentials(tokens);
+
+	// Save the tokens to your database for long-term use here
+	console.log("Access Token:", tokens.access_token);
+	console.log("Refresh Token:", tokens.refresh_token);
+
+	res.send('Authentication successful! You can now close this window.');
+});
+
+const nodemailer = require('nodemailer');
+
+let transporter = nodemailer.createTransport({
+	service: 'gmail',
+	auth: {
+		user: process.env.EMAIL, // Your Gmail address
+		pass: process.env.APP_PASSWORD // Your Google App Password
+	}
+});
+
 
 //all the app.use
 app.use(express.urlencoded({extended: false}));
@@ -242,6 +286,120 @@ app.post('/changePersonalinfo', async(req,res) => {
 
 app.get('/review', (req,res) => {
     res.render("review");
+});
+
+// Route to display the reset password request form
+app.get('/resetPassword', (req, res) => {
+	res.render('resetPassword');
+});
+
+// Route to display the reset link sent confirmation
+app.get('/resetLinkSent', (req, res) => {
+	res.render('resetLinkSent');
+});
+
+// Route to display the new password form
+app.get('/newPassword', (req, res) => {
+	res.render('newPassword');
+});
+
+const crypto = require('crypto');
+const moment = require('moment');
+
+app.post('/sendResetLink', async (req, res) => {
+	const email = req.body.email;
+	const user = await userCollection.findOne({ email: email });
+
+	if (!user) {
+		console.log('No user found with that email.');
+		res.redirect('/resetLinkSent');  // Optionally inform the user that the email has been sent for security reasons
+		return;
+	}
+
+	// Generate a secure token
+	const resetToken = crypto.randomBytes(20).toString('hex');
+	// Set expiration time to 1 hour
+
+
+	// Store the reset token and its expiration time in the user's record
+	await userCollection.updateOne({ _id: user._id }, {
+		$set: {
+			resetPasswordToken: resetToken,
+			resetPasswordExpires: new Date(Date.now() + expireTime) // set to current time + 1 hour
+		}
+	});
+
+
+	const resetLink = `http://${req.headers.host}/reset-password/${resetToken}`;
+
+	// setup email data with unicode symbols
+	let mailOptions = {
+		from: `"sunspot" <${process.env.EMAIL}>`, // sender address
+		to: email, // list of receivers
+		subject: 'Password Reset', // Subject line
+		text: 'You requested a password reset. Please use the following link to reset your password: ' + resetLink, // plain text body
+		html: `<b>Click on the link to reset your password:</b> <a href="${resetLink}">Reset Password</a>` // html body
+	};
+
+	// send mail with defined transport object
+	try {
+		let info = await transporter.sendMail(mailOptions);
+		console.log('Message sent: %s', info.messageId);
+		res.redirect('/resetLinkSent');
+	} catch (error) {
+		console.error('Error sending email:', error);
+		res.status(500).send('Failed to send reset link');
+	}
+});
+
+
+app.get('/reset-password/:token', async (req, res) => {
+	const token = req.params.token;
+	const user = await userCollection.findOne({
+		resetPasswordToken: token,
+		resetPasswordExpires: { $gt: new Date() } // Checks if the token is not expired
+	});
+
+	if (!user) {
+		console.error('Password reset token is invalid or has expired.');
+		res.status(400).send('Password reset token is invalid or has expired.');
+		return;
+	}
+
+	// Render the reset password form with the token
+	res.render('newPassword', { token: token });
+});
+
+
+app.post('/reset-password/:token', async (req, res) => {
+	const { token } = req.params;
+	const { newPassword } = req.body; // make sure the 'name' attribute in the form matches "newPassword"
+
+	const user = await userCollection.findOne({
+		resetPasswordToken: token,
+		resetPasswordExpires: { $gt: new Date() } // ensure the token is still valid
+	});
+
+	if (!user) {
+		console.error('Password reset token is invalid or has expired.');
+		return res.status(400).send('Password reset token is invalid or has expired.');
+	}
+
+	// Hash the new password
+	const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+
+	// Update the user's password and remove the reset token and expiration date
+	await userCollection.updateOne({ _id: user._id }, {
+		$set: {
+			password: hashedPassword
+		},
+		$unset: {
+			resetPasswordToken: "",
+			resetPasswordExpires: ""
+		}
+	});
+
+	res.send('Your password has been updated successfully.');
 });
 
 app.get("*", (req,res) => {
