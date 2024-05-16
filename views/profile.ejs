@@ -1,16 +1,11 @@
 <%- include("templates/header") %>
 <button id="setting"  onclick='window.location.href="/setting"'>Setting</button>
-  <% items.forEach(function(image) { %>
-    <div>
-      <div>
-        <img
-          src="data:image/<%=image.img.contentType%>;base64,
-                  <%=image.img.data.toString('base64')%>"
-        />
-      </div>
-    </div>
-    <% }) %>
-    <form action="/setProfile" method="POST" enctype="multipart/form-data">
+  <img <% if (typeof(imgSrc) != 'undefined'){ %>src="<%= imgSrc %>" <% } %> alt="profile image" style="width: 200px;"/>
+  <a href="/showPets?id='6643c9ae0e7a452652f684eb'">
+    <span class="icon is-small">
+        <i class="fas fa-paw"></i>
+    </span></a>
+    <form action="/picUpload?email=<%= email %>" method="post" enctype="multipart/form-data">
         <div>
           <input type="file" id="image" name="image" value="" required />
         </div>

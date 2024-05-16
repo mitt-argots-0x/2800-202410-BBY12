@@ -1,60 +1,41 @@
-
-require("./utils.js");
+// //Define the include function for absolute file name
+global.base_dir = __dirname;
+global.abs_path = function(path) {
+	return base_dir + path;
+}
+global.include = function(file) {
+	return require(abs_path('/' + file));
+}
 
 require('dotenv').config();
+
 const express = require('express');
+const router = include('routes/router');
+var database = include('databaseConnection');
+const port = process.env.PORT || 3000;
+const app = express();
+app.set('view engine', 'ejs');
+app.use(express.urlencoded({extended: false}));
+app.use(express.static(__dirname + "/public"));
+app.use('/',router);
+
+require("./utils.js");
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const bcrypt = require('bcrypt');
-var bodyParser = require('body-parser');
-var mongoose = require('mongoose')
-var imgSchema = require('./model.js');
-var fs = require('fs');
-var path = require('path');
-const saltRounds = 12;
-const port = process.env.PORT || 3000;
-
-const app = express();
-
 const Joi = require("joi");
-mongoose.connect(process.env.MONGO_URL)
-.then(console.log("DB Connected"))
- 
-app.use(bodyParser.urlencoded({ extended: false }))
-app.use(bodyParser.json())
- 
-var multer = require('multer');
- 
-var storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads')
-    },
-    filename: (req, file, cb) => {
-        cb(null, file.fieldname + '-' + Date.now())
-    }
-});
- 
-var upload = multer({ storage: storage });
-
+const saltRounds = 12;
 const expireTime = 6 * 4 * 7 * 24 * 60 * 60 * 1000; //expires after 6 months  (hours * minutes * seconds * millis)
 
 /* secret information section */
-const mongodb_host = process.env.MONGODB_HOST;
-const mongodb_user = process.env.MONGODB_USER;
-const mongodb_password = process.env.MONGODB_PASSWORD;
-const mongodb_database = process.env.MONGODB_DATABASE;
+const mongodb_host = process.env.REMOTE_MONGODB_HOST;
+const mongodb_user = process.env.REMOTE_MONGODB_USER;
+const mongodb_password = process.env.REMOTE_MONGODB_PASSWORD;
+const mongodb_database = process.env.REMOTE_MONGODB_DATABASE;
 const mongodb_session_secret = process.env.MONGODB_SESSION_SECRET;
-
 const node_session_secret = process.env.NODE_SESSION_SECRET;
 /* END secret section */
-
-var {database} = include('databaseConnection');
-
 const userCollection = database.db(mongodb_database).collection('users');
-
-app.set('view engine', 'ejs');
-
-app.use(express.urlencoded({extended: false}));
 
 var mongoStore = MongoStore.create({
 	mongoUrl: `mongodb+srv://${mongodb_user}:${mongodb_password}@${mongodb_host}/sessions`,
@@ -107,7 +88,7 @@ app.use(session({
 // }
 
 
-//This fuction returns the username of the user that is currently logged in
+//This fuction returns the user obj that is currently logged in
 async function getUserName(req) {
 	if (req.session.authenticated) {
 		var email = req.session.email;
@@ -220,43 +201,17 @@ app.get('/home', (req,res) => {
     res.render("home");
 });
 
-// This section allows the user to set their profile picture and is from geeksforgeeks website(https://www.geeksforgeeks.org/upload-and-retrieve-image-on-mongodb-using-mongoose/)
+// This section allows the user to set their profile picture and is from one of the Tech Gems code on learning hub
 app.get('/profile', async(req,res) => {
-	imgSchema.find({})
-    .then(async(data, err)=>{
-        if(err){
-            console.log(err);
-        }
-        res.render('profile',{items: data, user: await getUserName(req)})
-    })
-});
-
-app.post('/setProfile', upload.single('image'), (req, res, next) => {
- 
-    var obj = {
-        name: req.body.name,
-        desc: req.body.desc,
-        img: {
-            data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
-            contentType: 'image/png'
-        }
-    }
-    imgSchema.create(obj)
-    .then ((err, item) => {
-        if (err) {
-            console.log(err);
-        }
-        else {
-            // item.save();
-            res.redirect('/img');
-        }
-    });
+	var imgSrc = await userCollection.find({ email: req.session.email }).project({ image_id: 1, _id: 0 }).toArray();
+    res.render('profile',{ user: await getUserName(req), email: req.session.email ,imgSrc:imgSrc[0].image_id});
 });
 
 app.get('/setting', (req,res) => {
 	res.render("setting");
 });
 
+//This block of code is to change the user's password and username
 app.post('/changePersonalinfo', async(req,res) => {
 	var username = req.body.username;
 	var password = req.body.newpassword;
@@ -281,7 +236,6 @@ app.post('/changePersonalinfo', async(req,res) => {
 		res.redirect("/incorrectInput?message=incorrect password"+"&previousPage=setting");
 	}
 });
-
 
 app.get('/review', (req,res) => {
     res.render("review");
