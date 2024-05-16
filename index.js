@@ -10,21 +10,19 @@ global.include = function(file) {
 //all the "requires"
 require("./utils.js");
 require('dotenv').config();
-
 const express = require('express');
 const router = include('routes/router');
 var database = include('databaseConnection');
 const port = process.env.PORT || 3000;
 const app = express();
 app.set('view engine', 'ejs');
-app.use('/',router);
-
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const bcrypt = require('bcrypt');
 const Joi = require("joi");
+
 const saltRounds = 12;
-const expireTime = 6 * 4 * 7 * 24 * 60 * 60 * 1000; //expires after 6 months  (hours * minutes * seconds * millis)
+const expireTime = 6 * 4 * 7 * 24 * 60 * 60 * 1000; //expires after 6 months  (months * weeks * days * hours * minutes * seconds * millis)
 
 /* secret information section */
 const mongodb_host = process.env.REMOTE_MONGODB_HOST;
@@ -34,33 +32,8 @@ const mongodb_database = process.env.REMOTE_MONGODB_DATABASE;
 const mongodb_session_secret = process.env.MONGODB_SESSION_SECRET;
 const node_session_secret = process.env.NODE_SESSION_SECRET;
 /* END secret section */
-var bodyParser = require('body-parser');
-var mongoose = require('mongoose')
-var imgSchema = require('./model.js');
-var fs = require('fs');
-var path = require('path');
-var multer = require('multer');
-
-
- 
-//all the app.use
-app.use(express.static(__dirname + "/public"));
-app.use(bodyParser.urlencoded({ extended: false }))
-app.use(bodyParser.json())
-app.use(express.urlencoded({extended: false}));
-
-var storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads')
-    },
-    filename: (req, file, cb) => {
-        cb(null, file.fieldname + '-' + Date.now())
-    }
-});
-var upload = multer({ storage: storage });
 
 //database related variables and functions on start up
-var {database} = include('databaseConnection');
 const userCollection = database.db(mongodb_database).collection('users');
 
 var mongoStore = MongoStore.create({
@@ -70,8 +43,10 @@ var mongoStore = MongoStore.create({
 	}
 })
 
-mongoose.connect(process.env.MONGO_URL).then(console.log("DB Connected"));
-
+//all the app.use
+app.use(express.urlencoded({extended: false}));
+app.use(express.static(__dirname + "/public"));
+app.use('/',router);
 app.use(session({ 
     secret: node_session_secret,
 	store: mongoStore, //default is memory store 
