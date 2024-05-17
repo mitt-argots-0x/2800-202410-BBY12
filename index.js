@@ -1,12 +1,3 @@
-// //Define the include function for absolute file name
-global.base_dir = __dirname;
-global.abs_path = function(path) {
-	return base_dir + path;
-}
-global.include = function(file) {
-	return require(abs_path('/' + file));
-}
-
 //all the "requires"
 require("./utils.js");
 require('dotenv').config();
@@ -128,47 +119,7 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema);
 
-
-
-
-
-// function isValidSession(req) {
-//     if (req.session.authenticated) {
-//         return true;
-//     }
-//     return false;
-// }
-
-// function sessionValidation(req,res,next) {
-//     if (isValidSession(req)) {
-//         next();
-//     }
-//     else {
-//         res.redirect('/login');
-//     }
-// }
-
-
-// function isAdmin(req) {
-//     if (req.session.user_type == 'admin') {
-//         return true;
-//     }
-//     return false;
-// }
-
-// function adminAuthorization(req, res, next) {
-//     if (!isAdmin(req)) {
-//         res.status(403);
-//         res.render("errorMessage", {error: "Not Authorized"});
-//         return;
-//     }
-//     else {
-//         next();
-//     }
-// }
-
-
-//This fuction returns the username of the user that is currently logged in
+//This fuction returns the user obj that is currently logged in
 async function getUserName(req) {
 	if (req.session.authenticated) {
 		var email = req.session.email;
@@ -179,6 +130,12 @@ async function getUserName(req) {
 	}
 }
 
+app.use(function sessionInfo(req, res, next) {
+	res.locals.name = req.session.name;
+	res.locals.authenticated = req.session.authenticated;
+	next();
+});
+
 //This block of code to do sign up, login, log out, and home page is from COMP2537 assignment 2 and modified to fit the project
 app.get('/', async(req,res) => {
 	if (req.session.authenticated) {
@@ -186,13 +143,25 @@ app.get('/', async(req,res) => {
 
 	} else {
 		res.render("index", { user: null});
-	}});
+	}
+});
+
+function sessionValidation(req, res, next) {
+	if(req.session.authenticated) {
+		next();
+	} else {
+		res.redirect("/login");
+	}
+}
 
 app.get('/createUser', (req,res) => {
     res.render("createUser");
 });
 
 app.get('/login', (req,res) => {
+	if(req.session.authenticated) {
+		return res.redirect("/");
+	}
 	res.render("login");
 });
 
@@ -301,28 +270,28 @@ app.get('/loggingin', (req,res) => {
     res.render("loggingin");
 });
 
-app.get('/logout', (req,res) => {
+app.get('/logout', sessionValidation, (req,res) => {
 	req.session.destroy();
     res.redirect("/");
 });
 
-app.get('/info', (req,res) => {
+app.get('/info', sessionValidation, (req,res) => {
     res.render("info");
 });
 
-app.get('/about_us', (req,res) => {
+app.get('/about_us', sessionValidation, (req,res) => {
     res.render("about_us");
 });
 
-app.get('/destination', (req,res) => {
+app.get('/destination', sessionValidation, (req,res) => {
     res.render("destination");
 });
 
-app.get('/home', (req,res) => {
+app.get('/home', sessionValidation, (req,res) => {
     res.render("home");
 });
 
-app.get('/post_review', async (req,res) => {
+app.get('/post_review', sessionValidation, async (req,res) => {
 
 	try {
 		const username = await getUserName(req);
@@ -344,21 +313,19 @@ app.get('/post_review', async (req,res) => {
 	
 });
 
-
-// This section allows the user to set their profile picture and is from geeksforgeeks website(https://www.geeksforgeeks.org/upload-and-retrieve-image-on-mongodb-using-mongoose/)
-app.get('/profile', async(req,res) => {
-	
+// This section allows the user to set their profile picture and is from one of the Tech Gems code on learning hub
+app.get('/profile', sessionValidation, async(req,res) => {
 	var imgSrc = await userCollection.find({ email: req.session.email }).project({ image_id: 1, _id: 0 }).toArray();
     res.render('profile',{ user: await getUserName(req), email: req.session.email ,imgSrc:imgSrc[0].image_id});
 
 });
 
-
-app.get('/setting', (req,res) => {
+app.get('/setting', sessionValidation, (req,res) => {
 	res.render("setting");
 });
 
-app.post('/changePersonalinfo', async(req,res) => {
+//This block of code is to change the user's password and username
+app.post('/changePersonalinfo', sessionValidation, async(req,res) => {
 	var username = req.body.username;
 	var password = req.body.newpassword;
 	var curentPassword = req.body.curpassword;
@@ -383,8 +350,7 @@ app.post('/changePersonalinfo', async(req,res) => {
 	}
 });
 
-
-app.get('/review', (req,res) => {
+app.get('/review', sessionValidation, (req,res) => {
     res.render("review");
 });
 
