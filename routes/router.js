@@ -21,7 +21,7 @@ const multer  = require('multer')
 const storage = multer.memoryStorage()
 const upload = multer({ storage: storage })
 
-const mongodb_database = process.env.REMOTE_MONGODB_DATABASE;
+const mongodb_database = process.env.MONGODB_DATABASE;
 const userCollection = database.db(mongodb_database).collection('users');
 
 const Joi = require("joi");
