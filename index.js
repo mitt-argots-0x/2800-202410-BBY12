@@ -152,6 +152,16 @@ async function getUserName(req) {
 		return null;
 	}
 }
+function sessionValidation(req, res, next) {
+	if (isValidSession(req)) {
+		next();
+	}
+	else {
+		res.redirect('/login');
+	}
+}
+
+
 
 app.use(function sessionInfo(req, res, next) {
 	res.locals.name = req.session.name;
@@ -292,14 +302,14 @@ app.get('/about_us', sessionValidation, (req,res) => {
     res.render("about_us");
 });
 
-app.get('/destination', sessionValidation, async(req, res) => {
+app.get('/destination', async(req, res) => {
 	var locationName = req.query.location;
 	var location = await locationCollection.find({ name: locationName }).project({ name: 1, description: 1, reviews: 1, _id: 1 }).toArray();
 	res.render("destination", { location: location[0] });
 });
 
 
-app.get('/home', sessionValidation, async(req, res) => {
+app.get('/home', async(req, res) => {
 	const result = await locationCollection.find().project({ name: 1, description: 1, reviews: 1, _id: 1 }).toArray();
 	res.render("home", { locations: result });
 });
