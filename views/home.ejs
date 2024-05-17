@@ -1,5 +1,9 @@
 <%- include("templates/header") %>
 
-    <h2>Welcome to home page user!</h2>
+    <%for (var i = 0; i < 2; i++) {%>
+        <div id="<%= 'location' + i %>">
+                <%- include("templates/locations") %>
+        </div>
+    <%}%>
 
-<%- include("templates/footer") %>
+<%- include("templates/footer",{jsFile: ['js/home.js']}) %>

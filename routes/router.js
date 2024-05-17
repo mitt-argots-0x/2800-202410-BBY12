@@ -1,6 +1,6 @@
 const router = require('express').Router();
 
-const database = include('databaseConnection');
+var {database} = include('databaseConnection');
 var ObjectId = require('mongodb').ObjectId;
 
 const crypto = require('crypto');

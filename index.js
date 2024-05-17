@@ -1,17 +1,30 @@
+// //Define the include function for absolute file name
+global.base_dir = __dirname;
+global.abs_path = function(path) {
+	return base_dir + path;
+}
+global.include = function(file) {
+	return require(abs_path('/' + file));
+}
+
 //all the "requires"
 require("./utils.js");
 require('dotenv').config();
 const express = require('express');
+const router = include('routes/router');
+var {database} = include('databaseConnection');
+const { google } = require('googleapis');
+const port = process.env.PORT || 3000;
+const app = express();
+app.set('view engine', 'ejs');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
+const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-var bodyParser = require('body-parser');
-var mongoose = require('mongoose')
-var imgSchema = require('./model.js');
-var fs = require('fs');
-var path = require('path');
-var multer = require('multer');
 const Joi = require("joi");
+
+const saltRounds = 12;
+const expireTime = 6 * 4 * 7 * 24 * 60 * 60 * 1000; //expires after 6 months  (hours * minutes * seconds * millis)
 
 /* secret information section */
 const mongodb_host = process.env.MONGODB_HOST;
@@ -22,35 +35,10 @@ const mongodb_session_secret = process.env.MONGODB_SESSION_SECRET;
 const node_session_secret = process.env.NODE_SESSION_SECRET;
 /* END secret section */
 
-//all the const variables
-const app = express();
-const saltRounds = 12;
-const port = process.env.PORT || 3000;
-const expireTime = 6 * 4 * 7 * 24 * 60 * 60 * 1000; //expires after 6 months  (hours * minutes * seconds * millis)
- 
-//all the app.use
-app.use(express.static(__dirname + "/public"));
-app.use(bodyParser.urlencoded({ extended: false }))
-app.use(bodyParser.json())
-app.use(express.urlencoded({extended: false}));
-
-app.set('view engine', 'ejs');
-
-
-//Set up multer for file uploads
-var storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads')
-    },
-    filename: (req, file, cb) => {
-        cb(null, file.fieldname + '-' + Date.now())
-    }
-});
-var upload = multer({ storage: storage });
-
 //database related variables and functions on start up
-var {database} = include('databaseConnection');
+
 const userCollection = database.db(mongodb_database).collection('users');
+
 var mongoStore = MongoStore.create({
 	mongoUrl: `mongodb+srv://${mongodb_user}:${mongodb_password}@${mongodb_host}/sessions`,
 	crypto: {
@@ -58,8 +46,61 @@ var mongoStore = MongoStore.create({
 	}
 })
 
-//mongoose.connect(process.env.MONGO_URL).then(console.log("DB Connected"));
+//forgot password
+const oauth2Client = new google.auth.OAuth2(
+	process.env.CLIENT_ID,
+	process.env.CLIENT_SECRET,
+	"http://localhost:3000/auth/google/callback"  // This should match the one in your Google Console
+);
 
+// Generate a url that asks permissions for Gmail scopes
+const SCOPES = [
+	'https://www.googleapis.com/auth/gmail.send'
+];
+
+app.get('/auth/google', (req, res) => {
+	const url = oauth2Client.generateAuthUrl({
+		access_type: 'offline',
+		scope: SCOPES
+	});
+	res.redirect(url);
+});
+
+app.get('/auth/google/callback', async (req, res) => {
+	const { code } = req.query;
+	const { tokens } = await oauth2Client.getToken(code);
+	oauth2Client.setCredentials(tokens);
+
+	// Save the tokens to your database for long-term use here
+	console.log("Access Token:", tokens.access_token);
+	console.log("Refresh Token:", tokens.refresh_token);
+
+	res.send('Authentication successful! You can now close this window.');
+});
+
+const nodemailer = require('nodemailer');
+
+let transporter = nodemailer.createTransport({
+	service: 'gmail',
+	auth: {
+		user: process.env.EMAIL, // Your Gmail address
+		pass: process.env.APP_PASSWORD // Your Google App Password
+	}
+});
+ 
+//all the app.use
+app.use(express.urlencoded({extended: false}));
+app.use(express.static(__dirname + "/public"));
+app.use('/',router);
+app.use(session({ 
+    secret: node_session_secret,
+	store: mongoStore, //default is memory store 
+	saveUninitialized: false, 
+	resave: true
+}
+));
+
+//moongose connection and review/user schemas
 mongoose.connect('mongodb+srv://maferbaltaza:XKtLlhYnXfi5KXIB@cluster0.fx7hg8i.mongodb.net/users', {
 
 });
@@ -89,13 +130,7 @@ const User = mongoose.model('User', userSchema);
 
 
 
-app.use(session({ 
-    secret: node_session_secret,
-	store: mongoStore, //default is memory store 
-	saveUninitialized: false, 
-	resave: true
-}
-));
+
 
 // function isValidSession(req) {
 //     if (req.session.authenticated) {
@@ -213,14 +248,13 @@ app.post('/post_review', async (req, res) => {
 
         // Save the user
         await user.save();
-
        
 		res.status(200).send('Review saved successfully');
 
 
     } catch (error) {
         console.error(error);
-        res.status(500).send('Internal server error');
+        res.status(500).send('Failed to update review');
     }
 
 
@@ -290,9 +324,7 @@ app.get('/home', (req,res) => {
 
 app.get('/post_review', async (req,res) => {
 
-
 	try {
-
 		const username = await getUserName(req);
 
         const email = req.session.email;
@@ -313,63 +345,14 @@ app.get('/post_review', async (req,res) => {
 });
 
 
-
 // This section allows the user to set their profile picture and is from geeksforgeeks website(https://www.geeksforgeeks.org/upload-and-retrieve-image-on-mongodb-using-mongoose/)
 app.get('/profile', async(req,res) => {
-	imgSchema.find({})
-    .then(async(data, err)=>{
-        if(err){
-            console.log(err);
-        }
-        res.render('profile',{items: data, user: await getUserName(req)})
-    })
-});
-
-app.post('/setProfile', upload.single('image'), async (req, res) => {
- 
-
-    var obj = {
-        name: req.body.name,
-        desc: req.body.desc,
-        img: {
-            data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
-            contentType: 'image/png'
-        }
-    }
-    imgSchema.create(obj)
-    .then ((err, item) => {
-        if (err) {
-            console.log(err);
-        }
-        else {
-            // item.save();
-            res.redirect('/img');
-        }
-    });
-
-try {
-	const email = req.session.email;
-	const user = await User.findOne({ email });
-
-	if (!user) {
-		return res.status(404).send('User not found');
-	}
-
-	user.profilePicture = {
-		data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
-		contentType: req.file.mimetype
-	};
-
-	await user.save();
-
-	res.redirect('/profile');
-
-} catch (err) {
-	console.error(err);
-	res.status(500).send('Internal server error');
-}
+	
+	var imgSrc = await userCollection.find({ email: req.session.email }).project({ image_id: 1, _id: 0 }).toArray();
+    res.render('profile',{ user: await getUserName(req), email: req.session.email ,imgSrc:imgSrc[0].image_id});
 
 });
+
 
 app.get('/setting', (req,res) => {
 	res.render("setting");
@@ -403,6 +386,121 @@ app.post('/changePersonalinfo', async(req,res) => {
 
 app.get('/review', (req,res) => {
     res.render("review");
+});
+
+
+// Route to display the reset password request form
+app.get('/resetPassword', (req, res) => {
+	res.render('resetPassword');
+});
+
+// Route to display the reset link sent confirmation
+app.get('/resetLinkSent', (req, res) => {
+	res.render('resetLinkSent');
+});
+
+// Route to display the new password form
+app.get('/newPassword', (req, res) => {
+	res.render('newPassword');
+});
+
+const crypto = require('crypto');
+const moment = require('moment');
+
+app.post('/sendResetLink', async (req, res) => {
+	const email = req.body.email;
+	const user = await userCollection.findOne({ email: email });
+
+	if (!user) {
+		console.log('No user found with that email.');
+		res.redirect('/resetLinkSent');  // Optionally inform the user that the email has been sent for security reasons
+		return;
+	}
+
+	// Generate a secure token
+	const resetToken = crypto.randomBytes(20).toString('hex');
+	// Set expiration time to 1 hour
+
+
+	// Store the reset token and its expiration time in the user's record
+	await userCollection.updateOne({ _id: user._id }, {
+		$set: {
+			resetPasswordToken: resetToken,
+			resetPasswordExpires: new Date(Date.now() + expireTime) // set to current time + 1 hour
+		}
+	});
+
+
+	const resetLink = `http://${req.headers.host}/reset-password/${resetToken}`;
+
+	// setup email data with unicode symbols
+	let mailOptions = {
+		from: `"sunspot" <${process.env.EMAIL}>`, // sender address
+		to: email, // list of receivers
+		subject: 'Password Reset', // Subject line
+		text: 'You requested a password reset. Please use the following link to reset your password: ' + resetLink, // plain text body
+		html: `<b>Click on the link to reset your password:</b> <a href="${resetLink}">Reset Password</a>` // html body
+	};
+
+	// send mail with defined transport object
+	try {
+		let info = await transporter.sendMail(mailOptions);
+		console.log('Message sent: %s', info.messageId);
+		res.redirect('/resetLinkSent');
+	} catch (error) {
+		console.error('Error sending email:', error);
+		res.status(500).send('Failed to send reset link');
+	}
+});
+
+
+app.get('/reset-password/:token', async (req, res) => {
+	const token = req.params.token;
+	const user = await userCollection.findOne({
+		resetPasswordToken: token,
+		resetPasswordExpires: { $gt: new Date() } // Checks if the token is not expired
+	});
+
+	if (!user) {
+		console.error('Password reset token is invalid or has expired.');
+		res.status(400).send('Password reset token is invalid or has expired.');
+		return;
+	}
+
+	// Render the reset password form with the token
+	res.render('newPassword', { token: token });
+});
+
+
+app.post('/reset-password/:token', async (req, res) => {
+	const { token } = req.params;
+	const { newPassword } = req.body; // make sure the 'name' attribute in the form matches "newPassword"
+
+	const user = await userCollection.findOne({
+		resetPasswordToken: token,
+		resetPasswordExpires: { $gt: new Date() } // ensure the token is still valid
+	});
+
+	if (!user) {
+		console.error('Password reset token is invalid or has expired.');
+		return res.status(400).send('Password reset token is invalid or has expired.');
+	}
+
+	// Hash the new password
+	const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+
+	// Update the user's password and remove the reset token and expiration date
+	await userCollection.updateOne({ _id: user._id }, {
+		$set: {
+			password: hashedPassword
+		},
+		$unset: {
+			resetPasswordToken: "",
+			resetPasswordExpires: ""
+		}
+	});
+
+	res.send('Your password has been updated successfully.');
 });
 
 app.get("*", (req,res) => {

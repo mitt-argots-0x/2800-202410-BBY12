@@ -1,5 +1,11 @@
 <%- include("templates/header") %>
-
+<% for (var i = 0; i < 2; i++) { %>
+    <img src="" alt="location image" style="width: 100%; height: 300px;">
+    <% } %>
+    <p id="description_goes_here">full description here</p>
+    <button id="reviewBtn" onclick='window.location.href="./review"'>Review</button>
+    <button id="letsGoBtn">Let's go</button>
+    <button id="saveBtn">bookmark icon</button>
     <h2>Welcome to your chosen location user!</h2>
 
 <%- include("templates/footer") %>
