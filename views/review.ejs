@@ -1,24 +1,51 @@
 <%- include("templates/header") %>
-
-    <h2>Welcome to the review page user!</h2><br>
-    <% if(typeof(reviews) !='undefined' ) { %>
-        <% for (var i=0; i < reviews.length; i++) { %>
-            <h3>
-                <%= reviews[i].user %>
-            </h3>
-            <span>
-                <%= reviews[i].text %>
-            </span>
-            <span>
-                <%= reviews[i].starRating %>
-            </span>
-            <span>
-                <%= reviews[i].date %>
-            </span>
-            <p>*****************************************************</p>
-            <% } %>
+    <% var avg=0,a=0,b=0,c=0,d=0,e=0; %>
+        <% if (reviews.length !=0) { %>
+            <% for(var i=0; i < reviews.length; i++) { %>
+                <% if(reviews[i].starRating==1){ %>
+                   <% a++; %>
                 <% } %>
-                    <button><a href="/post_review?location=<%= location.name %>"
-                            style="text-decoration: none; color: red;">Share Your Experience! </a></button><br><br>
-
-                    <%- include("templates/footer") %>
+                <% if(reviews[i].starRating==2){ %>
+                    <% b++; %>
+                <% } %>
+                <% if(reviews[i].starRating==3){ %>
+                    <% c++; %>
+                <% } %>
+                <% if(reviews[i].starRating==4){ %>
+                    <% d++; %>
+                <% } %>
+                <% if(reviews[i].starRating==5){ %>
+                    <% e++; %>
+                <% } %>
+                <% } %>
+                <% avg=a*1 + b*2 + c*3 + d*4 + e*5; %>
+                <h1>
+                    <%= avg/reviews.length %>
+                </h1>
+                <% } %>
+                    <h2>Welcome to the review page user!</h2><br>
+                    <% if(typeof(reviews) !='undefined' ) { %>
+                        <% for (var i=0; i < reviews.length; i++) { %>
+                            <h3>
+                                <%= reviews[i].user %>
+                            </h3>
+                            <span>
+                                <%= reviews[i].text %>
+                            </span>
+                            <span id="<%= i %>">
+                                <%= reviews[i].starRating %>
+                            </span>
+                            <span>
+                                <%= reviews[i].date %>
+                            </span>
+                            <p>*****************************************************
+                            </p>
+                            <% } %>
+                                <% } %>
+                                    <button><a
+                                            href="/post_review?location=<%= location.name %>"
+                                            style="text-decoration: none; color: red;">Share
+                                            Your Experience!
+                                        </a></butt
+                                    <%- include("templates/footer",{jsFile:
+                                        ['js/review.js']}) %>
