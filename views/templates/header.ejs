@@ -9,33 +9,3 @@
         <link rel="icon" type="image/x-icon" href="imgs/favicon.ico">
     </head>
     <body class="font-sans">
-        <!--TOP NAV BAR FOR THE LANDING PAGES-->
-        <div class="flex content-center bg-orange-500 w-full h-16">
-            <div class="m-0 content-center w-1/6 flex">
-                <img src="imgs/favicon.ico" class="rounded-full bg-white h-4/5 p-0.5 mx-auto self-center">
-            </div>
-
-            <ul class="grid grid-cols-5 h-full content-center w-5/6">
-                <a href="/" class="py-5 hover:bg-orange-400 self-center">
-                    <li class="h-full text-center">HOME</li>
-                </a>
-                <a href="/about_us" class="py-5 hover:bg-orange-400 self-center">
-                    <li class="h-full text-center">ABOUT US</li>
-                </a>
-                <a href="/info" class="py-5 hover:bg-orange-400 self-center">
-                    <li class="h-full text-center">INFO</li>
-                </a>
-                <% if(!authenticated) { %>
-                <a href="/createUser" class="py-5 hover:bg-orange-400 self-center">
-                    <li class="h-full text-center">SIGN UP</li>
-                </a>
-                <a href="/login" class="py-5 hover:bg-orange-400 self-center">
-                    <li class="h-full text-center">LOGIN</li>
-                </a>
-                <% } else { %>
-                <a href="/logout" class="py-5 hover:bg-orange-400 self-center">
-                    <li class="h-full text-center">LOG OUT</li>
-                </a>
-                <% } %>
-            </ul>
-        </div>
