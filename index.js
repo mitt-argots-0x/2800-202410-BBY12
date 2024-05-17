@@ -101,6 +101,12 @@ async function getUserName(req) {
 	}
 }
 
+app.use(function sessionInfo(req, res, next) {
+	res.locals.name = req.session.name;
+	res.locals.authenticated = req.session.authenticated;
+	next();
+});
+
 //This block of code to do sign up, login, log out, and home page is from COMP2537 assignment 2 and modified to fit the project
 app.get('/', async(req,res) => {
 	if (req.session.authenticated) {
