@@ -200,7 +200,7 @@ app.post('/post_review', async (req, res) => {
 		const {opinion } = req.body;
 
         // Find the user by email or create a new one
-        let user = await User.findOne({ email }); //see if userCollection works
+        let user = await User.findOne({ email }); 
 
 		// Ensure the reviews array is initialized 
         if (!user) {
@@ -346,7 +346,6 @@ app.post('/setProfile', upload.single('image'), async (req, res) => {
             res.redirect('/img');
         }
     });
-
 
 try {
 	const email = req.session.email;
