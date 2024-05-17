@@ -1,8 +1,24 @@
 <%- include("templates/header") %>
 
     <h2>Welcome to the review page user!</h2><br>
+    <% if(typeof(reviews) !='undefined' ) { %>
+        <% for (var i=0; i < reviews.length; i++) { %>
+            <h3>
+                <%= reviews[i].user %>
+            </h3>
+            <span>
+                <%= reviews[i].text %>
+            </span>
+            <span>
+                <%= reviews[i].starRating %>
+            </span>
+            <span>
+                <%= reviews[i].date %>
+            </span>
+            <p>*****************************************************</p>
+            <% } %>
+                <% } %>
+                    <button><a href="/post_review?location=<%= location.name %>"
+                            style="text-decoration: none; color: red;">Share Your Experience! </a></button><br><br>
 
-    <button><a href="/post_review" style="text-decoration: none; color: red;">Share Your Experience! </a></button><br><br>
-    
-
-<%- include("templates/footer") %>
+                    <%- include("templates/footer") %>

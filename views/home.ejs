@@ -1,9 +1,11 @@
 <%- include("templates/header") %>
 
-    <%for (var i = 0; i < 2; i++) {%>
-        <div id="<%= 'location' + i %>">
-                <%- include("templates/locations") %>
+    <%for (var i=0; i < locations.length; i++) {%>
+        <div id="<%= locations[i].name %>">
+            <%- include("templates/locations", {location: locations[i]}) %>
+            <button onclick="window.location.href='/destination?location=<%= locations[i].name %>'">go</button>
         </div>
-    <%}%>
+       
+        <%}%>
 
-<%- include("templates/footer",{jsFile: ['js/home.js']}) %>
+            <%- include("templates/footer") %>
