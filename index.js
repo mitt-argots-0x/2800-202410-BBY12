@@ -56,7 +56,7 @@ var mongoStore = MongoStore.create({
 	}
 })
 
-mongoose.connect(process.env.MONGO_URL).then(console.log("DB Connected"));
+//mongoose.connect(process.env.MONGO_URL).then(console.log("DB Connected"));
 
 app.use(session({ 
     secret: node_session_secret,
