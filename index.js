@@ -36,6 +36,8 @@ app.use(express.urlencoded({extended: false}));
 
 app.set('view engine', 'ejs');
 
+
+//Set up multer for file uploads
 var storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, 'uploads')
@@ -56,7 +58,36 @@ var mongoStore = MongoStore.create({
 	}
 })
 
-mongoose.connect(process.env.MONGO_URL).then(console.log("DB Connected"));
+//mongoose.connect(process.env.MONGO_URL).then(console.log("DB Connected"));
+
+mongoose.connect('mongodb+srv://maferbaltaza:XKtLlhYnXfi5KXIB@cluster0.fx7hg8i.mongodb.net/users', {
+
+});
+
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', () => {
+    console.log('Connected to MongoDB');
+});
+
+const reviewSchema = new mongoose.Schema({
+    text: { type: String, default: "" },
+    date: { type: Date, default: Date.now }
+});
+
+const userSchema = new mongoose.Schema({
+	username: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    reviews: { type: [reviewSchema], default: [{ text: "" }] },
+	profilePicture: {
+        data: Buffer,
+        contentType: String
+    },
+});
+
+const User = mongoose.model('User', userSchema);
+
+
 
 app.use(session({ 
     secret: node_session_secret,
@@ -134,6 +165,7 @@ app.post('/createUser', async (req,res) => {
     var username = req.body.username;
 	var email = req.body.email;
 	var password = req.body.password;
+	
 	const schema = Joi.object(
 		{
 			username: Joi.string().alphanum().max(20).required(),
@@ -141,18 +173,59 @@ app.post('/createUser', async (req,res) => {
 			password: Joi.string().max(20).required()
 		});
 	const validationResult = schema.validate({ username, email, password });
+	
 	if (validationResult.error != null) {
 		var msg = validationResult.error.message;
 		res.redirect("/incorrectInput?message=" + msg + "&previousPage=createUser");
 		return;
 	}
+	
 	var hashedPassword = await bcrypt.hash(password, saltRounds);
-	await userCollection.insertOne({ username: username, email: email, password: hashedPassword});
+	
+	await userCollection.insertOne({ username: username, email: email, password: hashedPassword, reviews: [{ text: "" }] });
 	req.session.authenticated = true;
 	req.session.email = email;
 	req.session.cookie.maxAge = expireTime;
 	res.redirect('/');
 });
+
+
+
+app.post('/post_review', async (req, res) => {
+
+	try {
+
+		const email = req.session.email;
+        
+		const {opinion } = req.body;
+
+        // Find the user by email or create a new one
+        let user = await User.findOne({ email }); //see if userCollection works
+
+		// Ensure the reviews array is initialized 
+        if (!user) {
+            user = new User({ email, reviews: [{ text: "" }] });
+        }
+
+		console.log(user);
+        // Add the new review to the reviews array
+        user.reviews.push({ text: opinion });
+
+        // Save the user
+        await user.save();
+
+       
+		res.status(200).send('Review saved successfully');
+
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal server error');
+    }
+
+
+});
+
 
 app.get('/incorrectInput', (req, res) => {
 	var msg = req.query.message;
@@ -215,6 +288,32 @@ app.get('/home', (req,res) => {
     res.render("home");
 });
 
+app.get('/post_review', async (req,res) => {
+
+
+	try {
+
+		const username = await getUserName(req);
+
+        const email = req.session.email;
+        const user = await User.findOne({ email });
+		
+		console.log(username);
+
+        res.render('post_review', {
+            user: user,
+			username: username
+        });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Internal server error');
+	}
+	
+});
+
+
+
 // This section allows the user to set their profile picture and is from geeksforgeeks website(https://www.geeksforgeeks.org/upload-and-retrieve-image-on-mongodb-using-mongoose/)
 app.get('/profile', async(req,res) => {
 	imgSchema.find({})
@@ -226,8 +325,9 @@ app.get('/profile', async(req,res) => {
     })
 });
 
-app.post('/setProfile', upload.single('image'), (req, res, next) => {
+app.post('/setProfile', upload.single('image'), async (req, res) => {
  
+
     var obj = {
         name: req.body.name,
         desc: req.body.desc,
@@ -246,6 +346,30 @@ app.post('/setProfile', upload.single('image'), (req, res, next) => {
             res.redirect('/img');
         }
     });
+
+
+try {
+	const email = req.session.email;
+	const user = await User.findOne({ email });
+
+	if (!user) {
+		return res.status(404).send('User not found');
+	}
+
+	user.profilePicture = {
+		data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
+		contentType: req.file.mimetype
+	};
+
+	await user.save();
+
+	res.redirect('/profile');
+
+} catch (err) {
+	console.error(err);
+	res.status(500).send('Internal server error');
+}
+
 });
 
 app.get('/setting', (req,res) => {

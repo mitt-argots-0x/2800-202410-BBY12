@@ -1,0 +1,177 @@
+<%- include("templates/header") %>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link href='https://unpkg.com/boxicons@2.1.1/css/boxicons.min.css' rel='stylesheet'>
+
+</head>
+
+
+
+<div class="grid-container">
+
+    <style>
+        .grid-container {
+            display: grid;
+            grid-column: 100%;
+            grid-row: 25% 5% 50% 20%;
+            width: 100vw;
+            height: 100dvh; 
+            grid-template-areas:
+            'profile'
+            'text'
+            'starReview'
+            'submit';   
+        }
+    </style>
+
+
+<body>
+    
+    <div id="profile" class="grid-item1">
+
+
+        <style>
+            .grid-item1 {
+                display: grid;
+                max-height: 100%;
+                align-items: center;
+                justify-items: center;
+
+                
+     
+            }
+
+            img{
+                border-radius: 50%;
+                width: 50%;
+                height: 50%;
+            }
+
+        </style>
+
+        <h2>
+          <%- username %>
+        </h2>
+
+   
+
+        <% if (user && user.profilePicture) { %>
+            <img src="data:<%= user.profilePicture.contentType %>;base64,<%= user.profilePicture.data.toString('base64') %>" alt="Profile Picture" name="picture">
+        <% } %>
+
+    </div>
+
+    <div id="text" class="grid-item2">
+
+        <h3>Rate your experience!</h3>
+
+        <style>
+            .grid-item2 {
+                display: grid;
+                padding-left: 10%;
+     
+            }
+
+        </style>
+
+    </div>
+
+
+	<div id="starReview" class="grid-item3">
+
+        <style>
+            .grid-item3 {
+                display: grid;
+                grid-template-columns: auto;
+                grid-template-rows: 30% 70%;
+                justify-items: center;
+     
+            }
+
+            .star {
+                font-size: 40px;
+            }
+        </style>
+        
+		
+		<form action="#">
+			<div class="rating">
+				<input type="number" name="rating" hidden>
+				<i class='bx bx-star star' style="--i: 0;"></i>
+				<i class='bx bx-star star' style="--i: 1;"></i>
+				<i class='bx bx-star star' style="--i: 2;"></i>
+				<i class='bx bx-star star' style="--i: 3;"></i>
+				<i class='bx bx-star star' style="--i: 4;"></i>
+			</div>
+			
+		</form>
+	</div>
+
+    <script>
+        const allStar = document.querySelectorAll('.rating .star');
+        const ratingValue = document.querySelector('.rating input');
+
+        allStar.forEach((item, idx) => {
+            item.addEventListener('click', function () {
+                let click = 0;
+                ratingValue.value = idx + 1;
+
+                allStar.forEach(i => {
+                    i.classList.replace('bxs-star', 'bx-star');
+                    i.classList.remove('active');
+                });
+                for (let i = 0; i < allStar.length; i++) {
+                    if (i <= idx) {
+                        allStar[i].classList.replace('bx-star', 'bxs-star');
+                        allStar[i].classList.add('active');
+                    } else {
+                        allStar[i].style.setProperty('--i', click);
+                        click++;
+                    }
+                }
+            });
+        });
+    </script>
+
+    <div id="submit" class="btn-group" class="grid-item4">
+
+        <style>
+            .grid-item4 {
+                display: grid;
+        
+                
+            }
+
+            textarea{
+                display: block;
+                margin-left: auto;
+                margin-right: auto;           
+            }
+
+        </style>
+
+        <form action="/post_review" method="post">
+            
+           
+            <textarea name="opinion" placeholder="Everyone wants to hear from you..." required></textarea>
+           
+            <button type="submit">Post Review</button>
+        
+        </form>
+       
+       
+        <button><a href='/review' class="btn cancel">Go Back</a></button>
+        
+    </div>
+  
+</body>
+    
+</div>
+
+</html>
+
+<%- include("templates/footer") %>
