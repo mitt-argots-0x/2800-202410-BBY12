@@ -1,10 +1,19 @@
 <%- include("templates/header") %>
+<div class="fixed content-center w-full">
+    <form class="flex justify-center">
+        <input class="rounded-2xl focus:outline-none w-4/6 border-4 border-purple-400" type="text" placeholder="What weather are you looking for?">
+    </form>
+</div>
 
-    <%for (var i=0; i < locations.length; i++) {%>
-        <div id="<%= locations[i].name %>" onclick="window.location.href='/destination?location=<%= locations[i].name %>'">
-            <%- include("templates/locations", {location: locations[i]}) %>
+<br>
+<br>
+<div class="grid justify-center space-y-8 mb-20">
+    <%for (var i = 0; i < 2; i++) {%>
+        <div id="<%= 'location' + i %>">
+                <%- include("templates/locations") %>
         </div>
-       
-        <%}%>
+    <%}%>
+</div>
 
-            <%- include("templates/footer") %>
+<%- include("templates/homenav") %>
+<%- include("templates/footer",{jsFile: ['js/home.js']}) %>
