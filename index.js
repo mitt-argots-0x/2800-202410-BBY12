@@ -1,7 +1,19 @@
+global.base_dir = __dirname;
+global.abs_path = function(path) {
+    return base_dir + path;
+}
+global.include = function(file) {
+    return require(abs_path('/' + file));
+}
+
 //all the "requires"
 require("./utils.js");
 require('dotenv').config();
 const express = require('express');
+var database = include('databaseConnection');
+const port = process.env.PORT || 3000;
+const app = express();
+app.set('view engine', 'ejs');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const bcrypt = require('bcrypt');
@@ -22,10 +34,8 @@ const mongodb_session_secret = process.env.MONGODB_SESSION_SECRET;
 const node_session_secret = process.env.NODE_SESSION_SECRET;
 /* END secret section */
 
-//all the const variables
-const app = express();
+
 const saltRounds = 12;
-const port = process.env.PORT || 3000;
 const expireTime = 6 * 4 * 7 * 24 * 60 * 60 * 1000; //expires after 6 months  (hours * minutes * seconds * millis)
  
 //all the app.use
@@ -33,8 +43,6 @@ app.use(express.static(__dirname + "/public"));
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 app.use(express.urlencoded({extended: false}));
-
-app.set('view engine', 'ejs');
 
 var storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -65,6 +73,29 @@ app.use(session({
 	resave: true
 }
 ));
+
+//mongoose connection
+mongoose.connect('mongodb+srv://maferbaltaza:XKtLlhYnXfi5KXIB@cluster0.fx7hg8i.mongodb.net/users', {
+});
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', () => {
+    console.log('Connected to MongoDB');
+});
+const reviewSchema = new mongoose.Schema({
+    text: { type: String, default: "" },
+    date: { type: Date, default: Date.now }
+});
+const userSchema = new mongoose.Schema({
+    username: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    reviews: { type: [reviewSchema], default: [{ text: "" }] },
+    profilePicture: {
+        data: Buffer,
+        contentType: String
+    },
+});
+const User = mongoose.model('User', userSchema);
 
 // function isValidSession(req) {
 //     if (req.session.authenticated) {
@@ -147,11 +178,37 @@ app.post('/createUser', async (req,res) => {
 		return;
 	}
 	var hashedPassword = await bcrypt.hash(password, saltRounds);
-	await userCollection.insertOne({ username: username, email: email, password: hashedPassword});
+	await userCollection.insertOne({ username: username, email: email, password: hashedPassword, reviews: [{ text: "" }] });
 	req.session.authenticated = true;
 	req.session.email = email;
 	req.session.cookie.maxAge = expireTime;
 	res.redirect('/');
+});
+
+app.post('/post_review', async (req, res) => {
+    try {
+        const email = req.session.email;
+        
+        const {opinion } = req.body;
+        // Find the user by email or create a new one
+        let user = await User.findOne({ email }); //see if userCollection works
+        // Ensure the reviews array is initialized 
+        if (!user) {
+            user = new User({ email, reviews: [{ text: "" }] });
+        }
+        console.log(user);
+        // Add the new review to the reviews array
+        user.reviews.push({ text: opinion });
+        // Save the user
+        await user.save();
+       
+        res.status(200).send('Review saved successfully');
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal server error');
+    }
+
 });
 
 app.get('/incorrectInput', (req, res) => {
@@ -215,6 +272,25 @@ app.get('/home', (req,res) => {
     res.render("home");
 });
 
+app.get('/post_review', async (req,res) => {
+
+    try {
+        const username = await getUserName(req);
+        const email = req.session.email;
+        const user = await User.findOne({ email });
+        
+        console.log(username);
+        res.render('post_review', {
+            user: user,
+            username: username
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Internal server error');
+    }
+    
+});
+
 // This section allows the user to set their profile picture and is from geeksforgeeks website(https://www.geeksforgeeks.org/upload-and-retrieve-image-on-mongodb-using-mongoose/)
 app.get('/profile', async(req,res) => {
 	imgSchema.find({})
@@ -226,7 +302,7 @@ app.get('/profile', async(req,res) => {
     })
 });
 
-app.post('/setProfile', upload.single('image'), (req, res, next) => {
+app.post('/setProfile', upload.single('image'), async (req, res) => {
  
     var obj = {
         name: req.body.name,
@@ -246,6 +322,25 @@ app.post('/setProfile', upload.single('image'), (req, res, next) => {
             res.redirect('/img');
         }
     });
+
+try {
+    const email = req.session.email;
+    const user = await User.findOne({ email });
+    if (!user) {
+        return res.status(404).send('User not found');
+    }
+    user.profilePicture = {
+        data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
+        contentType: req.file.mimetype
+    };
+    await user.save();
+    res.redirect('/profile');
+} catch (err) {
+    console.error(err);
+    res.status(500).send('Internal server error');
+}
+    var imgSrc = await userCollection.find({ email: req.session.email }).project({ image_id: 1, _id: 0 }).toArray();
+    res.render('profile',{ user: await getUserName(req), email: req.session.email ,imgSrc:imgSrc[0].image_id});
 });
 
 app.get('/setting', (req,res) => {
