@@ -1,9 +1,8 @@
 <%- include("templates/header") %>
 
     <%for (var i=0; i < locations.length; i++) {%>
-        <div id="<%= locations[i].name %>">
+        <div id="<%= locations[i].name %>" onclick="window.location.href='/destination?location=<%= locations[i].name %>'">
             <%- include("templates/locations", {location: locations[i]}) %>
-            <button onclick="window.location.href='/destination?location=<%= locations[i].name %>'">go</button>
         </div>
        
         <%}%>

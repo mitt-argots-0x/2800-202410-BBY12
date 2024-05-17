@@ -153,7 +153,7 @@ async function getUserName(req) {
 	}
 }
 function sessionValidation(req, res, next) {
-	if (isValidSession(req)) {
+	if (req.session.authenticated) {
 		next();
 	}
 	else {
@@ -302,19 +302,19 @@ app.get('/about_us', sessionValidation, (req,res) => {
     res.render("about_us");
 });
 
-app.get('/destination', async(req, res) => {
+app.get('/destination',sessionValidation, async(req, res) => {
 	var locationName = req.query.location;
 	var location = await locationCollection.find({ name: locationName }).project({ name: 1, description: 1, reviews: 1, _id: 1 }).toArray();
 	res.render("destination", { location: location[0] });
 });
 
 
-app.get('/home', async(req, res) => {
+app.get('/home',sessionValidation, async(req, res) => {
 	const result = await locationCollection.find().project({ name: 1, description: 1, reviews: 1, _id: 1 }).toArray();
 	res.render("home", { locations: result });
 });
 
-app.get('/post_review', async (req, res) => {
+app.get('/post_review',sessionValidation, async (req, res) => {
 	var locationName = req.query.location;
 	try {
 		const username = await getUserName(req);
@@ -372,7 +372,7 @@ app.post('/changePersonalinfo', sessionValidation, async(req,res) => {
 });
 
 
-app.get('/review', async (req, res) => {
+app.get('/review',sessionValidation, async (req, res) => {
 	var locationName = req.query.location;
 	var location = await locationCollection.find({ name: locationName }).project({ name: 1, description: 1, reviews: 1, _id: 1 }).toArray();
 	res.render("review", { location: location[0], reviews: location[0].reviews });
