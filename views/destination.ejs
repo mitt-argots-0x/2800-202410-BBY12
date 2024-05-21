@@ -1,0 +1,13 @@
+<%- include("templates/header") %>
+<% for (var i = 0; i < 1; i++) { %>
+    <img src="" alt="location image" style="width: 100%; height: 300px;">
+    <% } %>
+    <p id="name_goes_here"><%= location.name %></p>
+    <p id="description_goes_here"><%= location.description %></p>
+    <button id="reviewBtn" onclick='window.location.href="/review?location=<%= location.name %>"'>Review</button>
+    <button id="letsGoBtn">Let's go</button>
+    <button id="saveBtn">bookmark icon</button>
+    <h2>Welcome to your chosen location user!</h2>
+
+    <%- include("templates/homenav") %>
+<%- include("templates/footer") %>

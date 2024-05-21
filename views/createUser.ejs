@@ -1,0 +1,26 @@
+<%- include("templates/header") %> 
+<%- include("templates/landingpage") %>
+    <div class="grid grid-row-2">
+    <p class="text-center text-3xl my-4"><span class="border-b-4 border-purple-600">CREATE USER</span></p>
+    <br>
+    <div class="bg-orange-100 rounded-lg w-3/5 justify-self-center py-5">
+        <form action='/createUser' method='post' class="grid grid-row-2 justify-center">
+            <div class="space-y-1">
+                <div class="border-2 border-orange-300 rounded-2xl">
+                    <input class="px-2 rounded-2xl focus:outline-none" name='username' type='text' placeholder='name'><br>
+                </div>
+                <div class="border-2 border-orange-300 rounded-2xl">
+                    <input class="px-2 rounded-2xl focus:outline-none" name='email' type='email' placeholder='email'><br>
+                </div>
+                <div class="border-2 border-orange-300 rounded-2xl">
+                    <input class="px-2 rounded-2xl focus:outline-none" name='password' type='password' placeholder='password'><br>
+                </div>
+            </div>
+            <div class="my-2 justify-center flex">
+            <button class="border-2 border-teal-300 bg-teal-200 rounded-3xl px-2 hover:border-cyan-300 hover:bg-cyan-200">Submit</button>
+            </div>
+        </form>
+    </div>
+    <br>
+    </div>
+<%- include("templates/footer") %> 
