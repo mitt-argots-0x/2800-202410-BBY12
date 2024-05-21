@@ -205,6 +205,12 @@ app.post('/createUser', async (req, res) => {
 		return;
 	}
 
+	let user = await userCollection.findOne({email: email});
+	if(user) {
+		res.locals.message = "Email already exist. Please use other email address";
+		return res.status(400).render("errorMessage");
+	}
+
 	var hashedPassword = await bcrypt.hash(password, saltRounds);
 
 	await userCollection.insertOne({ username: username, email: email, password: hashedPassword, reviews: [{ text: "" }] });
