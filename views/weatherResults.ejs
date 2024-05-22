@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Weather Results</title>
+</head>
+
+<body>
+    <h1>Weather Results</h1>
+    <% if (data.length> 0) { %>
+        <ul>
+            <% data.forEach(day=> { %>
+                <li>
+                    <strong>City:</strong>
+                    <%= day.city %><br>
+                        <strong>Date:</strong>
+                        <%= day.datetime %><br>
+                            <strong>Conditions:</strong>
+                            <%= day.conditions %><br>
+                                <strong>Temperature:</strong> Min: <%= day.tempmin %>°C, Max: <%= day.tempmax %>°C<br>
+                                        <strong>Humidity:</strong>
+                                        <%= day.humidity %>%
+                </li>
+                <% }) %>
+        </ul>
+        <% } else { %>
+            <p>No data found for the selected criteria.</p>
+            <% } %>
+                <a href="/weather">Search Again</a>
+</body>
+
+</html>
