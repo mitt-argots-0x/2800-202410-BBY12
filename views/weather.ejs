@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Weather Search</title>
+</head>
+
+<body>
+    <h1>Search Weather</h1>
+    <form action="/weather" method="post">
+        <label for="weatherType">Weather Type:</label>
+        <select name="weatherType" id="weatherType" required>
+            <option value="rain">Rain</option>
+            <option value="snow">Snow</option>
+            <option value="wind">Wind</option>
+            <option value="frost">Frost</option>
+            <option value="fog">Fog</option>
+            <option value="Partially cloudy">Partially cloudy</option>
+        </select>
+        <br>
+        <label for="startDate">Start Date:</label>
+        <input type="date" id="startDate" name="startDate" required>
+        <br>
+        <label for="endDate">End Date:</label>
+        <input type="date" id="endDate" name="endDate" required>
+        <br>
+        <button type="submit">Search</button>
+    </form>
+</body>
+
+</html>
