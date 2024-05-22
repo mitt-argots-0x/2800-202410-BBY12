@@ -1,6 +1,7 @@
 <%- include("templates/header") %>
+    <!-- sorry saba I disabled your code -->
     <nav id="nav-hamburger">
-        <button id="hamburgerBtn" onclick="toggleMenu()">
+        <button id="hamburgerBtn" onclick="">
             <i id="hamburgerMenu" class="fa-solid fa-xl fa-bars"></i>
             <a link href="/setting" class="menuItems">setting</a>
             <a link href="/logout" class="menuItems">Log out</a>
@@ -38,70 +39,6 @@
 
     <br>
     <br>
-<!-- 
-    <%for (var i=0; i < locations.length; i++) {%>
-        <div id="<%= locations[i].name %>"
-            >
-            <%- include("templates/locations", {location: locations[i]}) %>
-        </div>
 
-        <%}%>
-
-            <script>
-                menuItems = document.querySelectorAll('.menuItems');
-                menuItems.forEach((menuItem) => {
-                    menuItem.style.display = 'none';
-                });
-                navHam = document.getElementById("nav-hamburger");
-                navHam.style.margin = '6px';
-                navHam.style.marginTop = '14px';
-                hamburgerMenu = document.getElementById("hamburgerMenu");
-                hamburgerMenu.style.display = 'flex';
-                hamburgerMenu.style.alignItems = 'baseline';
-                hamburgerBtn = document.getElementById("hamburgerBtn");
-                hamburgerBtn.style.position = 'fixed';
-                function toggleMenu() {
-                    if (hamburgerMenu.classList.contains("fa-bars")) {
-                        hamburgerMenu.classList.remove("fa-bars");
-                        hamburgerMenu.classList.add("fa-burger");
-                    } else {
-                        hamburgerMenu.classList.add("fa-bars");
-                        hamburgerMenu.classList.remove("fa-burger");
-                    }
-                    var navLinks = document.querySelectorAll('.menuItems');
-                    navLinks.forEach((navLink) => {
-                        if (navLink.style.display === 'flex') {
-                            navLink.style.display = 'none';
-                        } else {
-                            navLink.style.display = 'flex';
-                        }
-                    });
-                }
-                var bookmarkBtn = document.getElementById('bookmark');
-                bookmarkBtn.style.zIndex = '1';
-                 if(<%= bookmark %>) {
-                     bookmarkBtn.classList.add('fa-solid');
-                     bookmarkBtn.classList.remove('fa-regular');
-                }else{
-                    bookmarkBtn.classList.add('fa-regular');
-                    bookmarkBtn.classList.remove('fa-solid');
-                    }
-
-
-
-                function saveLocation(location) {
-                    console.log("location");
-                        window.location.href = '/saveLocation?location=' + location;    
-                }
-            </script>
-    <% for (var i=0; i < locations.length; i++) { %>
-        <div id="<%= locations[i].name %>"
-            onclick="window.location.href='/destination?location=<%= locations[i].name %>'">
-            <%- include("templates/locations", {location: locations[i]}) %>
-        </div>
-        <% } %> -->
-        <!-- above is SABa -->
-
-        <!-- THIS is RADMAN -->
-            <%- include("templates/homenav") %>
-                <%- include("templates/footer") %>
+<%- include("templates/homenav") %>
+<%- include("templates/footer") %>

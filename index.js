@@ -316,9 +316,10 @@ app.get('/destination',sessionValidation, async(req, res) => {
 
 
 app.get('/home',sessionValidation, async(req, res) => {
-	var bookmark = req.query.bookmark;
+	// var bookmark = req.query.bookmark;
 	const result = await locationCollection.find().project({ name: 1, description: 1, reviews: 1, _id: 1 }).toArray();
-	res.render("home", { locations: result , bookmark: bookmark});
+	// res.render("home", { locations: result , bookmark: bookmark});
+	res.render("home");
 });
 
 app.get('/post_review',sessionValidation, async (req, res) => {
