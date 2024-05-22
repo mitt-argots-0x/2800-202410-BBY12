@@ -172,8 +172,8 @@ app.use(function sessionInfo(req, res, next) {
 //This block of code to do sign up, login, log out, and home page is from COMP2537 assignment 2 and modified to fit the project
 app.get('/', async (req, res) => {
 	if (req.session.authenticated) {
-		res.render("index", { user: await getUserName(req) });
-
+		const result = await locationCollection.find().project({ name: 1, description: 1, reviews: 1, _id: 1 }).toArray();
+	    res.render("home", { locations: result });
 	} else {
 		res.render("index", { user: null});
 	}});
