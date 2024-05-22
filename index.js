@@ -282,7 +282,7 @@ app.post('/login', async (req, res) => {
 		req.session.authenticated = true;
 		req.session.email = email;
 		req.session.cookie.maxAge = expireTime;
-		res.redirect('/');
+		res.redirect('/home');
 		return;
 	}
 	else {
