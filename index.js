@@ -213,7 +213,7 @@ app.post('/createUser', async (req, res) => {
 
 	var hashedPassword = await bcrypt.hash(password, saltRounds);
 
-	await userCollection.insertOne({ username: username, email: email, password: hashedPassword, reviews: [{ text: "" }] });
+	await userCollection.insertOne({ username: username, email: email, password: hashedPassword, reviews: [{ text: "" }], savedLocations: []});
 	req.session.authenticated = true;
 	req.session.email = email;
 	req.session.cookie.maxAge = expireTime;
@@ -316,8 +316,9 @@ app.get('/destination',sessionValidation, async(req, res) => {
 
 
 app.get('/home',sessionValidation, async(req, res) => {
+	var bookmark = req.query.bookmark;
 	const result = await locationCollection.find().project({ name: 1, description: 1, reviews: 1, _id: 1 }).toArray();
-	res.render("home", { locations: result });
+	res.render("home", { locations: result , bookmark: bookmark});
 });
 
 app.get('/post_review',sessionValidation, async (req, res) => {
@@ -381,7 +382,56 @@ app.post('/changePersonalinfo', sessionValidation, async(req,res) => {
 app.get('/review',sessionValidation, async (req, res) => {
 	var locationName = req.query.location;
 	var location = await locationCollection.find({ name: locationName }).project({ name: 1, description: 1, reviews: 1, _id: 1 }).toArray();
-	res.render("review", { location: location[0], reviews: location[0].reviews });
+	reviews =location[0].reviews;
+	var avg = 0;
+	var a=0,b=0,c=0,d=0,e=0;
+	if(reviews.length != 0){
+		for (var i = 0; i < reviews.length; i++) {
+			switch (reviews[i].starRating) {
+				case 1:
+					a++;
+					break;
+				case 2:
+					b++
+					break;
+				case 3:
+					c++;
+					break;
+				case 4:
+					d++;
+					break;
+				case 5:
+					e++;
+					break;
+				}
+			}
+			avg= (a*1+b*2+c*3+d*4+e*5)/reviews.length;
+		}
+		avg = Math.round(avg * 100) / 100;
+		await locationCollection.updateOne({ name: locationName }, { $set: { rating: avg } });
+	    res.render("review", { location: location[0], avgRating:avg });
+});
+
+app.get('/saveLocation', sessionValidation, async (req, res) => {
+	var bookmark;
+	var locationName = req.query.location;
+	var location = await locationCollection.find({ name: locationName }).project({ name: 1, description: 1, reviews: 1, _id: 1 }).toArray();
+	result = await userCollection.find({ email: req.session.email }).project({ savedLocations: 1, _id: 0 }).toArray();
+	var savedLocations = result[0].savedLocations;
+	if (savedLocations.length == 0) {
+		await userCollection.updateOne({ email: req.session.email }, { $push: { savedLocations: location[0] } });
+		bookmark = true;
+	}else{
+	for (var i = 0; i < savedLocations.length; i++) {
+		if (savedLocations[i].name == locationName) {
+			await userCollection.updateOne({ email: req.session.email }, { $pull: { savedLocations: location[0] } });
+			bookmark = false;
+		}else{
+			await userCollection.updateOne({ email: req.session.email }, { $push: { savedLocations: location[0] } });
+		}
+	}
+}
+res.redirect('/home?bookmark=' + bookmark);
 });
 
 

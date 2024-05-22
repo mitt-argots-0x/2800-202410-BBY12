@@ -18,7 +18,7 @@
     <br>
     <%for (var i=0; i < locations.length; i++) {%>
         <div id="<%= locations[i].name %>"
-            onclick="window.location.href='/destination?location=<%= locations[i].name %>'">
+            >
             <%- include("templates/locations", {location: locations[i]}) %>
         </div>
 
@@ -31,9 +31,12 @@
                 });
                 navHam = document.getElementById("nav-hamburger");
                 navHam.style.margin = '6px';
+                navHam.style.marginTop = '14px';
                 hamburgerMenu = document.getElementById("hamburgerMenu");
                 hamburgerMenu.style.display = 'flex';
                 hamburgerMenu.style.alignItems = 'baseline';
+                hamburgerBtn = document.getElementById("hamburgerBtn");
+                hamburgerBtn.style.position = 'fixed';
                 function toggleMenu() {
                     if (hamburgerMenu.classList.contains("fa-bars")) {
                         hamburgerMenu.classList.remove("fa-bars");
@@ -43,9 +46,7 @@
                         hamburgerMenu.classList.remove("fa-burger");
                     }
                     var navLinks = document.querySelectorAll('.menuItems');
-                    console.log(navLinks);
                     navLinks.forEach((navLink) => {
-                        console.log(navLink);
                         if (navLink.style.display === 'flex') {
                             navLink.style.display = 'none';
                         } else {
@@ -53,7 +54,22 @@
                         }
                     });
                 }
+                var bookmarkBtn = document.getElementById('bookmark');
+                bookmarkBtn.style.zIndex = '1';
+                 if(<%= bookmark %>) {
+                     bookmarkBtn.classList.add('fa-solid');
+                     bookmarkBtn.classList.remove('fa-regular');
+                }else{
+                    bookmarkBtn.classList.add('fa-regular');
+                    bookmarkBtn.classList.remove('fa-solid');
+                    }
 
+
+
+                function saveLocation(location) {
+                    console.log("location");
+                        window.location.href = '/saveLocation?location=' + location;    
+                }
             </script>
 
             <%- include("templates/homenav") %>
