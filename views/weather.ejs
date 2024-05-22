@@ -1,31 +1,38 @@
-<!DOCTYPE html>
-<html>
+<%- include("templates/header") %>
 
-<head>
-    <title>Weather Search</title>
-</head>
+    <div class="fixed content-center w-full">
+        <form class="flex justify-center" action="/weather" method="post">
+            <div class="rounded-2xl focus:outline-none w-4/6 border-4 border-purple-400 p-4 bg-white">
+                <h1 class="text-xl font-bold mb-4">Search Weather</h1>
+                <label for="weatherType" class="block mb-2">Weather Type:</label>
+                <select name="weatherType" id="weatherType" required class="block w-full mb-4 p-2 border rounded">
+                    <option value="rain">Rain</option>
+                    <option value="snow">Snow</option>
+                    <option value="wind">Wind</option>
+                    <option value="frost">Frost</option>
+                    <option value="clear">Clear</option>
+                    <option value="Partially cloudy">Partially cloudy</option>
+                </select>
+                <label for="startDate" class="block mb-2">Start Date:</label>
+                <input type="date" id="startDate" name="startDate" required
+                    class="block w-full mb-4 p-2 border rounded">
+                <label for="endDate" class="block mb-2">End Date:</label>
+                <input type="date" id="endDate" name="endDate" required class="block w-full mb-4 p-2 border rounded">
+                <button type="submit" class="block w-full bg-purple-400 text-white p-2 rounded">Search</button>
+            </div>
+        </form>
+    </div>
 
-<body>
-    <h1>Search Weather</h1>
-    <form action="/weather" method="post">
-        <label for="weatherType">Weather Type:</label>
-        <select name="weatherType" id="weatherType" required>
-            <option value="rain">Rain</option>
-            <option value="snow">Snow</option>
-            <option value="wind">Wind</option>
-            <option value="frost">Frost</option>
-            <option value="fog">Fog</option>
-            <option value="Partially cloudy">Partially cloudy</option>
-        </select>
-        <br>
-        <label for="startDate">Start Date:</label>
-        <input type="date" id="startDate" name="startDate" required>
-        <br>
-        <label for="endDate">End Date:</label>
-        <input type="date" id="endDate" name="endDate" required>
-        <br>
-        <button type="submit">Search</button>
-    </form>
-</body>
+    <br>
+    <br>
+    <% if (typeof locations !=='undefined' && locations.length> 0) { %>
+        <% for (var i=0; i < locations.length; i++) { %>
+            <div id="<%= locations[i].name %>"
+                onclick="window.location.href='/destination?location=<%= locations[i].name %>'">
+                <%- include("templates/locations", {location: locations[i]}) %>
+            </div>
+            <% } %>
+                <% } %>
 
-</html>
+                    <%- include("templates/homenav") %>
+                        <%- include("templates/footer") %>
