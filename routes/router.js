@@ -45,7 +45,7 @@ module.exports = router;
 const fetch = require('node-fetch'); // Ensure you have node-fetch installed
 const weatherApiKey = process.env.WEATHER_API_KEY; // Make sure you add your API key to the .env file
 
-const cities = ["seoul", "vancouver", "toronto"];
+const cities = ["seoul", "vancouver", "toronto", "montreal"];
 
 router.get('/weather', (req, res) => {
   res.render('weather');
