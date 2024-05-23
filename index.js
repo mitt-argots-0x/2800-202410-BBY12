@@ -314,26 +314,7 @@ app.get('/about_us', sessionValidation, (req, res) => {
 app.get('/destination', sessionValidation, async (req, res) => {
 	var locationName = req.query.location;
 	var location = await locationCollection.find({ name: locationName }).project({ name: 1, description: 1, reviews: 1, _id: 1 }).toArray();
-	var bookmark = false;
-	const savedLocationsArr = await userCollection.find({ email: email }).project({ savedLocations: 1, _id: 0 }).toArray();
-	const savedLocations = savedLocationsArr[0].savedLocations;
-	var savedLocationsNames = [];
-	savedLocations.forEach(async location => {
-		savedLocationsNames.push(location.name);
-	});
-	if (savedLocationsNames.includes(locationName)) {
-		bookmark = true;
-	}
-	res.render("destination", { location: location[0],bookmark: bookmark});
-});
-
-
-app.get('/home', sessionValidation, async (req, res) => {
-	res.render("home",{email:req.session.email});
-
-	const { city, date, conditions, tempmin, tempmax, humidity, imageUrl } = req.query;
-
-	res.render("destination", { location: location[0], city, date, conditions, tempmin, tempmax, humidity, imageUrl });
+	res.render("destination", { location: location[0] });
 });
 
 

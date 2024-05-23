@@ -25,19 +25,13 @@
                 
                 
                 <% data.forEach(day=> { %>
-                    <% var bookmark = false; %>
-                    <% for(var i = 0; i < savedLocations.length; i++) { %>
-                        <% if (day.city === savedLocations[i]) { %>
-                            <% bookmark = true; %>
-                            <% break; %>
-                        <% } %>
-                    <% } %>
-                    <a href="/destination?city=<%= day.city %>&date=<%= day.datetime %>&conditions=<%= day.conditions %>&tempmin=<%= day.tempmin %>&tempmax=<%= day.tempmax %>&humidity=<%= day.humidity %>&imageUrl=<%= day.imageUrl %>" class="card bg-white shadow-md rounded-lg p-4 block"></a>
-                    
-                        <button id="saveBtn" onclick="saveLocation('<%= day.city %>')" class=" w-1/6"><% if (bookmark) { %><i class="fa-solid fa-bookmark"></i><% }else { %><i class="fa-regular fa-bookmark"></i><% } %></button>
-                        <h2 onclick="window.location.href='/destination?location=<%= day.city %>&&bookmark=<% bookmark %>'" class="text-xl font-semibold"><strong>City:</strong><%= day.city %></h2>
-                        <p><strong>Date:</strong><%= day.datetime %></p>
-                       
+                    <div class="card bg-white shadow-md rounded-lg p-4">
+                        <h2 class="text-xl font-semibold"><strong>City:</strong>
+                            <%= day.city %>
+                        </h2>
+                        <p><strong>Date:</strong>
+                            <%= day.datetime %>
+                        </p>
                         <p>
                             <strong>Conditions:</strong>
                             

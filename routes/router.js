@@ -119,6 +119,7 @@ router.post('/weather', async (req, res) => {
   const savedLocationsArr = await userCollection.find({ email: email }).project({ savedLocations: 1, _id: 0 }).toArray();
   const savedLocations = savedLocationsArr[0].savedLocations;
 	var savedLocationsNames = [];
+  
   savedLocations.forEach(async location => {
     savedLocationsNames.push(location.name);
   });
