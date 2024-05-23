@@ -9,7 +9,6 @@
             </p>
             <button id="reviewBtn"
                 onclick='window.location.href="/review?location=<%= location.name %>"'>Review</button>
-            <button id="letsGoBtn">Let's go</button>
             <button onclick="saveLocationl('<%= location.name %>')"><% if (bookmark) { %><i class="fa-solid fa-bookmark"></i><% }else { %><i class="fa-regular fa-bookmark"></i><% } %></button>
 
             <script>
