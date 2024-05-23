@@ -144,16 +144,6 @@ const locationSchema = new mongoose.Schema({
 const User = mongoose.model('User', userSchema);
 const Location = mongoose.model('Location', locationSchema);
 
-//This fuction returns the user obj that is currently logged in
-async function getUserName(req) {
-	if (req.session.authenticated) {
-		var email = req.session.email;
-		const result = await userCollection.find({ email: email }).project({ username: 1, _id: 1 }).toArray();
-		return result[0].username;
-	} else {
-		return null;
-	}
-}
 function sessionValidation(req, res, next) {
 	if (req.session.authenticated) {
 		next();
@@ -230,7 +220,7 @@ app.post('/post_review', async (req, res) => {
 		let name = req.query.location;
 		var description = "blah blah blah";
 		const email = req.session.email;
-		var user = await getUserName(req);
+		var user = req.session.username;
 		const { opinion } = req.body;
 		const { starRating } = req.body;
 		// Find the user by email or create a new one
@@ -284,6 +274,7 @@ app.post('/login', async (req, res) => {
 	if (await bcrypt.compare(password, result[0].password)) {
 		req.session.authenticated = true;
 		req.session.email = email;
+		req.session.username = result.username;
 		req.session.cookie.maxAge = expireTime;
 		res.redirect('/home');
 		return;
@@ -335,7 +326,7 @@ app.get('/home', sessionValidation, async (req, res) => {
 app.get('/post_review', sessionValidation, async (req, res) => {
 	var locationName = req.query.location;
 	try {
-		const username = await getUserName(req);
+		const username = req.session.username;
 		const email = req.session.email;
 		const user = await User.findOne({ email });
 
@@ -358,7 +349,7 @@ app.get('/profile', sessionValidation, async (req, res) => {
 	allLocations = await locationCollection.find().project({_id:0}).toArray();
 	result = await userCollection.find({ email: req.session.email }).project({ savedLocations: 1, _id: 0 }).toArray();
 	var savedLocations = result[0].savedLocations;
-	res.render('profile', { user: await getUserName(req), email: req.session.email, imgSrc: imgSrc[0].image_id , data:savedLocations});
+	res.render('profile', { user: req.session.username, email: req.session.email, imgSrc: imgSrc[0].image_id , data:savedLocations});
 
 });
 
