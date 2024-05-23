@@ -311,7 +311,10 @@ app.get('/about_us', sessionValidation, (req,res) => {
 app.get('/destination',sessionValidation, async(req, res) => {
 	var locationName = req.query.location;
 	var location = await locationCollection.find({ name: locationName }).project({ name: 1, description: 1, reviews: 1, _id: 1 }).toArray();
-	res.render("destination", { location: location[0] });
+
+	const { city, date, conditions, tempmin, tempmax, humidity, imageUrl } = req.query;
+
+	res.render("destination", { location: location[0], city, date, conditions, tempmin, tempmax, humidity, imageUrl });
 });
 
 
@@ -382,7 +385,7 @@ app.post('/changePersonalinfo', sessionValidation, async(req,res) => {
 app.get('/review',sessionValidation, async (req, res) => {
 	var locationName = req.query.location;
 	var location = await locationCollection.find({ name: locationName }).project({ name: 1, description: 1, reviews: 1, _id: 1 }).toArray();
-	reviews =location[0].reviews;
+	//reviews =location[0].reviews;
 	var avg = 0;
 	var a=0,b=0,c=0,d=0,e=0;
 	if(reviews.length != 0){
