@@ -104,7 +104,9 @@ router.post('/weather', async (req, res) => {
       tempmain: 0,
       humidity: 50,
       reviews: [],
-      imageUrl: 'https://images.unsplash.com/photo-1627322480993-8b7e5e7f9c1f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwyNTA5MzZ8MHwxfGFsbHwxfHNvbWV8fHxlYXJuaW5nfHx8fHx8fHwxNjI3MzIyNzIw&ixlib=rb-1.2.1&q=80&w=400' },  
+      imageUrl: 'https://res.cloudinary.com/dtljonz0f/image/upload/f_auto/q_auto/v1/gc-v1/seoul/Bongeunsa-2.jpg',
+      description: 'salam seoul hopefully today will be rainy'
+    },  
 
     {
       city: 'Vancouver',
@@ -114,7 +116,45 @@ router.post('/weather', async (req, res) => {
       tempmin: 5,
       humidity: 50,
       reviews: [],
-      imageUrl: 'https://images.unsplash.com/photo-1627322480993-8b7e5e7f9c1f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwyNTA5MzZ8MHwxfGFsbHwxfHNvbWV8fHxlYXJuaW5nfHx8fHx8fHwxNjI3MzIyNzIw&ixlib=rb-1.2.1&q=80&w=400' }
+      imageUrl: 'https://www.bucketlistpublications.com/wp-content/uploads/2012/08/Downtown-Vancouver.jpg',
+      description: 'salam dear vancouver residents today like always we have no rain'   
+    },
+
+    {
+      city: 'Vancouver',
+      datetime: '2021-08-02',
+      conditions: ['Sunny'],
+      tempmax: 25,
+      tempmin: 5,
+      humidity: 50,
+      reviews: [],
+      imageUrl: 'https://www.bucketlistpublications.com/wp-content/uploads/2012/08/Downtown-Vancouver.jpg',
+      description: 'salam dear vancouver residents today like always we have no rain'
+    },
+
+    {
+      city: 'Vancouver',
+      datetime: '2021-08-05',
+      conditions: ['Sunny'],
+      tempmax: 25,
+      tempmin: 5,
+      humidity: 50,
+      reviews: [],
+      imageUrl: 'https://www.bucketlistpublications.com/wp-content/uploads/2012/08/Downtown-Vancouver.jpg',
+      description: 'salam dear vancouver residents today like always we have no rain'
+    },
+
+    {
+      city: 'Seoul',
+      datetime: '2021-08-03',
+      conditions: ['Sunny'],
+      tempmax: 30,
+      tempmain: 0,
+      humidity: 50,
+      reviews: [],
+      imageUrl: 'https://res.cloudinary.com/dtljonz0f/image/upload/f_auto/q_auto/v1/gc-v1/seoul/Bongeunsa-2.jpg',
+      description: 'salam seoul hopefully today will be rainy'
+    }, 
 
   ];
   email = req.query.email;
@@ -125,7 +165,7 @@ router.post('/weather', async (req, res) => {
     savedLocationsNames.push(location.name);
   });
     allResults.forEach(async result => {
-      await locationCollection.updateOne({ city: result.city}, { $set: { name: result.city, description:null, date: result.datetime, conditions: result.conditions, temp: result.tempmax, imageUrl: result.imageUrl, reviews: [], rating: 0 } }, { upsert: true });
+      await locationCollection.updateOne({ city: result.city}, { $set: { name: result.city, description: result.description, date: result.datetime, conditions: result.conditions, temp: result.tempmax, imageUrl: result.imageUrl, reviews: [], rating: 0 } }, { upsert: true });
     });
     res.render('weatherResults', { data: allResults, savedLocations: savedLocationsNames});
   // } catch (error) {
