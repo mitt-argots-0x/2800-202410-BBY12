@@ -1,12 +1,12 @@
 <%- include("templates/header") %>
-<nav id="nav-hamburger">
-    <button id="hamburgerBtn" onclick="toggleMenu()">
-        <i id="hamburgerMenu" class="fa-solid fa-xl fa-bars"></i>
-        <a link href="/setting" class="menuItems">setting</a>
-        <a link href="/logout" class="menuItems">Log out</a>
-        <a link href="/about_us" class="menuItems">Contact us</a>
-    </button>
-</nav>
+    <nav id="nav-hamburger">
+        <button id="hamburgerBtn" onclick="toggleMenu()">
+            <i id="hamburgerMenu" class="fa-solid fa-xl fa-bars"></i>
+            <a link href="/setting" class="menuItems">setting</a>
+            <a link href="/logout" class="menuItems">Log out</a>
+            <a link href="/about_us" class="menuItems">Contact us</a>
+        </button>
+    </nav>
     <div class="fixed content-center w-full">
         <form class="flex justify-center">
             <input class="rounded-2xl focus:outline-none w-4/6 border-4 border-purple-400" type="text"
@@ -22,50 +22,46 @@
         <% if (data.length> 0) { %>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <% data.forEach(day=> { %>
-                    <% var bookmark = false; %>
-                    <% for(var i = 0; i < savedLocations.length; i++) { %>
-                        <% if (day.city === savedLocations[i]) { %>
-                            <% bookmark = true; %>
-                            <% break; %>
-                        <% } %>
-                    <% } %>
-                    <div class="card bg-white shadow-md rounded-lg p-4">
-                        <button id="saveBtn" onclick="saveLocation('<%= day.city %>')" class=" w-1/6"><% if (bookmark) { %><i class="fa-solid fa-bookmark"></i><% }else { %><i class="fa-regular fa-bookmark"></i><% } %></button>
-                        <h2 onclick="window.location.href='/destination?location=<%= day.city %>&&bookmark=<% bookmark %>'" class="text-xl font-semibold"><strong>City:</strong>
-                            <%= day.city %>
-                        </h2>
-                        <p><strong>Date:</strong>
-                            <%= day.datetime %>
-                        </p>
-                        <p>
-                            <strong>Conditions:</strong>
-                            <%= day.conditions %>
-                                <% if (day.conditions.includes('Rain')) { %>
-                                    <i class="fas fa-cloud-showers-heavy"></i>
-                                    <% } else if (day.conditions.includes('Snow')) { %>
-                                        <i class="fas fa-snowflake"></i>
-                                        <% } else if (day.conditions.includes('Sunny')) { %>
-                                            <i class="fas fa-sun"></i>
-                                            <% } else if (day.conditions.includes('Cloudy')) { %>
-                                                <i class="fas fa-cloud"></i>
-                                                <% } else if (day.conditions.includes('Windy')) { %>
-                                                    <i class="fas fa-wind"></i>
-                                                    <% } else if (day.conditions.includes('Fog')) { %>
-                                                        <i class="fas fa-smog"></i>
-                                                        <% } else { %>
-                                                            <i class="fas fa-cloud"></i> <!-- Default icon -->
-                                                            <% } %>
-                        </p>
-                        <p><strong>Temperature:</strong> Min: <%= day.tempmin %>°C, Max: <%= day.tempmax %>°C</p>
-                        <p><strong>Humidity:</strong>
-                            <%= day.humidity %>%
-                        </p>
-                        <% if (day.imageUrl) { %>
-                            <img src="<%= day.imageUrl %>" alt="Image of <%= day.city %>"
-                                class="w-full h-48 object-cover rounded mt-4">
-                            <% } %>
-                    </div>
-                    <% }) %>
+                    <% var bookmark=false; %>
+                        <% for(var i=0; i < savedLocations.length; i++) { %>
+                            <% if (day.city===savedLocations[i]) { %>
+                                <% bookmark=true; %>
+                                    <% break; %>
+                                        <% } %>
+                                            <% } %>
+                                                <div class="card bg-white shadow-md rounded-lg p-4"
+                                                    onclick="openModal('<%= day.city %>', '<%= day.datetime %>', '<%= day.conditions %>', '<%= day.tempmin %>', '<%= day.tempmax %>', '<%= day.humidity %>', '<%= day.description %>')">
+                                                    <% if (day.imageUrl) { %>
+                                                        <img src="<%= day.imageUrl %>" alt="Image of <%= day.city %>"
+                                                            class="w-full h-48 object-cover rounded mb-4">
+                                                        <% } %>
+                                                            <button id="saveBtn"
+                                                                onclick="saveLocation('<%= day.city %>')"
+                                                                class=" w-1/6">
+                                                                <% if (bookmark) { %><i
+                                                                        class="fa-solid fa-bookmark"></i>
+                                                                    <% } else { %><i class="fa-regular fa-bookmark"></i>
+                                                                        <% } %>
+                                                            </button>
+                                                            <h2 class="text-xl font-semibold"><strong>City:</strong>
+                                                                <%= day.city %>
+                                                            </h2>
+                                                            <p><strong>Date:</strong>
+                                                                <%= day.datetime %>
+                                                            </p>
+                                                            <p><strong>Conditions:</strong>
+                                                                <%= day.conditions %>
+                                                            </p>
+                                                            <p><strong>Temperature:</strong> Min: <%= day.tempmin %>°C,
+                                                                    Max: <%= day.tempmax %>°C</p>
+                                                            <p><strong>Humidity:</strong>
+                                                                <%= day.humidity %>%
+                                                            </p>
+                                                            <p><strong>Description:</strong>
+                                                                <%= day.description %>
+                                                            </p>
+                                                </div>
+                                                <% }) %>
             </div>
             <% } else { %>
                 <p>No data found for the selected criteria.</p>
@@ -74,43 +70,67 @@
                     <a href="/weather" class="mt-4 inline-block text-blue-500 hover:underline">Search Again</a>
     </div>
 
- 
-                
-                
-                <script>
-                    menuItems = document.querySelectorAll('.menuItems');
-                    menuItems.forEach((menuItem) => {
-                        menuItem.style.display = 'none';
-                    });
-                    navHam = document.getElementById("nav-hamburger");
-                    navHam.style.margin = '6px';
-                    navHam.style.marginTop = '14px';
+    <!-- Modal -->
+    <div id="weatherModal" class="fixed inset-0 hidden items-center justify-center bg-black bg-opacity-50">
+        <div class="bg-white p-4 rounded-lg shadow-lg w-11/12 md:w-1/2 lg:w-1/3">
+            <h2 class="text-xl font-semibold mb-4" id="modalCity"></h2>
+            <p><strong>Date:</strong> <span id="modalDate"></span></p>
+            <p><strong>Conditions:</strong> <span id="modalConditions"></span></p>
+            <p><strong>Temperature:</strong> Min: <span id="modalTempMin"></span>°C, Max: <span
+                    id="modalTempMax"></span>°C</p>
+            <p><strong>Humidity:</strong> <span id="modalHumidity"></span>%</p>
+            <p><strong>Description:</strong> <span id="modalDescription"></span></p>
+            <button class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+                onclick="closeModal()">Close</button>
+        </div>
+    </div>
 
-                    hamburgerMenu = document.getElementById("hamburgerMenu");
-                    hamburgerMenu.style.display = 'flex';
-                    hamburgerMenu.style.alignItems = 'baseline';
-                hamburgerBtn = document.getElementById("hamburgerBtn");
-                hamburgerBtn.style.position = 'fixed';
-                function toggleMenu() {
-                    if (hamburgerMenu.classList.contains("fa-bars")) {
-                        hamburgerMenu.classList.remove("fa-bars");
-                        hamburgerMenu.classList.add("fa-burger");
-                    } else {
-                        hamburgerMenu.classList.add("fa-bars");
-                        hamburgerMenu.classList.remove("fa-burger");
+    <script>
+        menuItems = document.querySelectorAll('.menuItems');
+        menuItems.forEach((menuItem) => {
+            menuItem.style.display = 'none';
+        });
+        navHam = document.getElementById("nav-hamburger");
+        navHam.style.margin = '6px';
+        navHam.style.marginTop = '14px';
+
+        hamburgerMenu = document.getElementById("hamburgerMenu");
+        hamburgerMenu.style.display = 'flex';
+        hamburgerMenu.style.alignItems = 'baseline';
+        hamburgerBtn = document.getElementById("hamburgerBtn");
+        hamburgerBtn.style.position = 'fixed';
+
+        function toggleMenu() {
+            if (hamburgerMenu.classList.contains("fa-bars")) {
+                hamburgerMenu.classList.remove("fa-bars");
+                hamburgerMenu.classList.add("fa-burger");
+            } else {
+                hamburgerMenu.classList.add("fa-bars");
+                hamburgerMenu.classList.remove("fa-burger");
+            }
+            var navLinks = document.querySelectorAll('.menuItems');
+            navLinks.forEach((navLink) => {
+                if (navLink.style.display === 'flex') {
+                    navLink.style.display = 'none';
+                } else {
+                    navLink.style.display = 'flex';
+                }
+            });
+        }
+
+        function openModal(city, date, conditions, tempMin, tempMax, humidity, description) {
+            document.getElementById('modalCity').innerText = city;
+            document.getElementById('modalDate').innerText = date;
+            document.getElementById('modalConditions').innerText = conditions;
+            document.getElementById('modalTempMin').innerText = tempMin;
+            document.getElementById('modalTempMax').innerText = tempMax;
+            document.getElementById('modalHumidity').innerText = humidity;
+            document.getElementById('modalDescription').innerText = description;
+            document.getElementById('weatherModal').classList.remove('hidden');
+                }
+
+                    function closeModal() {
+                        document.getElementById('weatherModal').classList.add('hidden');
                     }
-                    var navLinks = document.querySelectorAll('.menuItems');
-                    navLinks.forEach((navLink) => {
-                        if (navLink.style.display === 'flex') {
-                            navLink.style.display = 'none';
-                        } else {
-                            navLink.style.display = 'flex';
-                        }
-                    });
-                }
-                var bookmarkBtn = document.getElementById('bookmark');
-                function saveLocation(location) {
-                    window.location.href = '/saveLocation?location=' + location;    
-                }
                 </script>
-    <%- include("templates/footer") %>
+<%- include("templates/footer") %>
