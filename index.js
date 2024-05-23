@@ -265,7 +265,7 @@ app.post('/login', async (req, res) => {
 	if (await bcrypt.compare(password, result[0].password)) {
 		req.session.authenticated = true;
 		req.session.email = email;
-		req.session.username = result.username;
+		req.session.username = result[0].username;
 		req.session.cookie.maxAge = expireTime;
 		res.redirect('/home');
 		return;
@@ -378,6 +378,12 @@ app.post('/changePersonalinfo', sessionValidation, async (req, res) => {
 app.get('/review', sessionValidation, async (req, res) => {
 	var locationName = req.query.location;
 	var location = await locationCollection.find({ name: locationName }).project({ name: 1, description: 1, reviews: 1, _id: 1 }).toArray();
+
+	if(location.length < 1) {
+		console.log(`${locationName} is not found`);
+		return res.render("404");
+	}
+
 	reviews = location[0].reviews;
 	var avg = 0;
 	var a = 0, b = 0, c = 0, d = 0, e = 0;
