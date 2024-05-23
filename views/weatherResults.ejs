@@ -1,5 +1,12 @@
 <%- include("templates/header") %>
-
+<nav id="nav-hamburger">
+    <button id="hamburgerBtn" onclick="toggleMenu()">
+        <i id="hamburgerMenu" class="fa-solid fa-xl fa-bars"></i>
+        <a link href="/setting" class="menuItems">setting</a>
+        <a link href="/logout" class="menuItems">Log out</a>
+        <a link href="/about_us" class="menuItems">Contact us</a>
+    </button>
+</nav>
     <div class="fixed content-center w-full">
         <form class="flex justify-center">
             <input class="rounded-2xl focus:outline-none w-4/6 border-4 border-purple-400" type="text"
@@ -16,13 +23,28 @@
         <% if (data.length> 0) { %>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 
-                
                 <% data.forEach(day=> { %>
-                    <a href="/destination?city=<%= day.city %>&date=<%= day.datetime %>&conditions=<%= day.conditions %>&tempmin=<%= day.tempmin %>&tempmax=<%= day.tempmax %>&humidity=<%= day.humidity %>&imageUrl=<%= day.imageUrl %>" class="card bg-white shadow-md rounded-lg p-4 block"></a>
+                    <% var bookmark = false; %>
+                    <% for(var i = 0; i < savedLocations.length; i++) { %>
+                        <% if (day.city === savedLocations[i]) { %>
+                            <% bookmark = true; %>
+                            <% break; %>
+                        <% } %>
+                    <% } %>
                     
-                        <h2 class="text-xl font-semibold"><strong>City:</strong><%= day.city %></h2>
+                    
+
+                    <div class="card bg-white shadow-md rounded-lg p-4">
+                        <button id="saveBtn" onclick="saveLocation('<%= day.city %>')" class=" w-1/6"><% if (bookmark) { %><i class="fa-solid fa-bookmark"></i><% }else { %><i class="fa-regular fa-bookmark"></i><% } %></button>
+                        
+                        
+                    
+                        <h2 onclick="window.location.href='/destination?location=<%= day.city %>&&bookmark=<% bookmark %>'" class="text-xl font-semibold"><strong>City:</strong>
+                            <%= day.city %>
+                        </h2>
+                        
                         <p><strong>Date:</strong><%= day.datetime %></p>
-                       
+                        
                         <p>
                             <strong>Conditions:</strong>
                             
@@ -49,11 +71,17 @@
                             <%= day.humidity %>%
                         </p>
                         <% if (day.imageUrl) { %>
-                            <img src="<%= day.imageUrl %>" alt="Image of <%= day.city %>" class="w-full h-48 object-cover rounded mt-4">
+                            <img src="<%= day.imageUrl %>" alt="Image of <%= day.city %>"
+                                class="w-full h-48 object-cover rounded mt-4">
                             <% } %>
-                        </a>
+
+                        
+
+                    </div>
                     <% }) %>
+                
             </div>
+
             <% } else { %>
                 <p>No data found for the selected criteria.</p>
                 <% } %>
@@ -61,4 +89,43 @@
                     <a href="/weather" class="mt-4 inline-block text-blue-500 hover:underline">Search Again</a>
     </div>
 
+ 
+                
+                
+                <script>
+                    menuItems = document.querySelectorAll('.menuItems');
+                    menuItems.forEach((menuItem) => {
+                        menuItem.style.display = 'none';
+                    });
+                    navHam = document.getElementById("nav-hamburger");
+                    navHam.style.margin = '6px';
+                    navHam.style.marginTop = '14px';
+
+                    hamburgerMenu = document.getElementById("hamburgerMenu");
+                    hamburgerMenu.style.display = 'flex';
+                    hamburgerMenu.style.alignItems = 'baseline';
+                hamburgerBtn = document.getElementById("hamburgerBtn");
+                hamburgerBtn.style.position = 'fixed';
+                function toggleMenu() {
+                    if (hamburgerMenu.classList.contains("fa-bars")) {
+                        hamburgerMenu.classList.remove("fa-bars");
+                        hamburgerMenu.classList.add("fa-burger");
+                    } else {
+                        hamburgerMenu.classList.add("fa-bars");
+                        hamburgerMenu.classList.remove("fa-burger");
+                    }
+                    var navLinks = document.querySelectorAll('.menuItems');
+                    navLinks.forEach((navLink) => {
+                        if (navLink.style.display === 'flex') {
+                            navLink.style.display = 'none';
+                        } else {
+                            navLink.style.display = 'flex';
+                        }
+                    });
+                }
+                var bookmarkBtn = document.getElementById('bookmark');
+                function saveLocation(location) {
+                    window.location.href = '/saveLocation?location=' + location;    
+                }
+                </script>
     <%- include("templates/footer") %>

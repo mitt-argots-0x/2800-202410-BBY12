@@ -1,17 +1,20 @@
 <%- include("templates/header") %>
 
-    <div class="container mx-auto p-4">
-        <h1 class="text-2xl font-bold mb-4"><%= city %></h1>
-        <div>
+        <img src="" alt="location image" style="width: 100%; height: 300px;">
+            <p id="name_goes_here">
+                <%= location.name %>
+            </p>
+            <p id="description_goes_here">
+                <%= location.description %>
+            </p>
+            <button id="reviewBtn"
+                onclick='window.location.href="/review?location=<%= location.name %>"'>Review</button>
+            <button onclick="saveLocationl('<%= location.name %>')"><% if (bookmark) { %><i class="fa-solid fa-bookmark"></i><% }else { %><i class="fa-regular fa-bookmark"></i><% } %></button>
 
-    
-            <% if (imageUrl) { %>
-                <img src="<%= imageUrl %>" alt="Image of <%= city %>" class="w-full h-48 object-cover rounded mt-4">
-            <% } %>
-        </div>
-        <a href="/review" class="mt-4 inline-block text-blue-500 hover:underline">See reviews</a>
-    </div>
-    
-
-    <%- include("templates/homenav") %>
-<%- include("templates/footer") %>
+            <script>
+                function saveLocationl(location) {
+                    window.location.href = '/saveLocation?location=' + location;
+                }
+            </script>
+            <%- include("templates/homenav") %>
+                <%- include("templates/footer") %>
