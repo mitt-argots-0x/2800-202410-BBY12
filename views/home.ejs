@@ -16,13 +16,19 @@
 
     <br>
     <br>
+    <%bookmark=false;%>
     <%for (var i=0; i < locations.length; i++) {%>
-        <div id="<%= locations[i].name %>"
-            >
-            <%- include("templates/locations", {location: locations[i]}) %>
-        </div>
+        <div id="<%= locations[i].name %>">
+            <%for (var j=0; j < savedLocationsNames.length; j++) {%>
+                <%if (locations[i].name == savedLocationsNames[j]) {%>
+                    <%bookmark=true;%>
+                    <%break;%>
+                <%}%>
+            <%}%>
+        <%- include("templates/locations", {location: locations[i], bookmark: bookmark}) %>
+    </div>
+    <%}%>
 
-        <%}%>
 
             <script>
                 menuItems = document.querySelectorAll('.menuItems');
@@ -55,20 +61,8 @@
                     });
                 }
                 var bookmarkBtn = document.getElementById('bookmark');
-                bookmarkBtn.style.zIndex = '1';
-                 if(<%= bookmark %>) {
-                     bookmarkBtn.classList.add('fa-solid');
-                     bookmarkBtn.classList.remove('fa-regular');
-                }else{
-                    bookmarkBtn.classList.add('fa-regular');
-                    bookmarkBtn.classList.remove('fa-solid');
-                    }
-
-
-
                 function saveLocation(location) {
-                    console.log("location");
-                        window.location.href = '/saveLocation?location=' + location;    
+                    window.location.href = '/saveLocation?location=' + location;    
                 }
             </script>
 

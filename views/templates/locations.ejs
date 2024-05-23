@@ -1,9 +1,9 @@
     <div class="bg-orange-200 w-4/6 mx-auto rounded-xl outline outline-orange-300">
-        <img onclick="window.location.href='/destination?location=<%= location.name%>'" class="rounded-t-xl" src="imgs/placeholder.jpg" id="location_images_goe_here" class="w-full"/>
+        <img onclick="window.location.href='/destination?location=<%= location.name%>&&bookmark=<%= bookmark %>'" class="rounded-t-xl" src="imgs/placeholder.jpg" id="location_images_goe_here" class="w-full"/>
         <div class="grid grid-row-2 py-2 mx-2">
             <div class="grid">
                 <div class="flex">
-                    <div onclick="window.location.href='/destination?location=<%= location.name%>'" class="w-1/2 flex">
+                    <div onclick="window.location.href='/destination?location=<%= location.name%>&&bookmark=<%= bookmark %>'" class="w-1/2 flex">
                         <h1 class="text-xl  w-5/6"><%= location.name %></h1>
                         <div class="rounded-full bg-white w-1/6 flex">
                             <p class="text-3xl">🌧️</p>
@@ -11,10 +11,10 @@
                     </div>
                     <div class="flex w-1/2">
                         <button id="letsGoBtn" class="rounded-lg bg-cyan-200 outline outline-cyan-300 mx-4 w-5/6">Let's Go</button>
-                        <button id="saveBtn" onclick="saveLocation('<%= location.name%>')" class=" w-1/6"><i id="bookmark" class="fa-bookmark fa-regular"></i></button>
+                        <button id="saveBtn" onclick="saveLocation('<%= location.name%>')" class=" w-1/6"><%if (bookmark) {%><i class="fa-solid fa-bookmark"></i><%} else {%><i class="fa-regular fa-bookmark"></i><%}%></button>
                     </div>
                 </div>
-                <div onclick="window.location.href='/destination?location=<%= location.name%>'" class="flex">                                 
+                <div onclick="window.location.href='/destination?location=<%= location.name%>&&bookmark=<%= bookmark %>'" class="grid grid-cols-2">                               
                     <p id="description_goes_here" class=" w-1/2"><%= location.description %></p>
                     <p class=" w-1/2 text-5xl text-orange-400 text-center"><%= location.starRating %></p>
                 </div>
