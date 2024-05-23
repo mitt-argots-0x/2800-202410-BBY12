@@ -22,17 +22,3 @@
             </div>
         </form>
     </div>
-
-    <br>
-    <br>
-    <% if (typeof locations !=='undefined' && locations.length> 0) { %>
-        <% for (var i=0; i < locations.length; i++) { %>
-            <div id="<%= locations[i].name %>"
-                onclick="window.location.href='/destination?location=<%= locations[i].name %>'">
-                <%- include("templates/locations", {location: locations[i]}) %>
-            </div>
-            <% } %>
-                <% } %>
-
-                    <%- include("templates/homenav") %>
-                        <%- include("templates/footer") %>

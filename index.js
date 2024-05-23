@@ -130,10 +130,12 @@ const userSchema = new mongoose.Schema({
 	},
 });
 const locationSchema = new mongoose.Schema({
-	name: { type: String, required: true, unique: true },
-	description: { type: String, required: true },
+	city: { type: String },
+	date: { type: Date },
+	condition: { type: String, default: "" },
+	temp: { type: Number, default: 0 },
 	reviews: { type: [reviewSchema], default: [{ text: "" }] },
-	picture: {
+	imageUrl: {
 		data: Buffer,
 		contentType: String
 	},
@@ -173,16 +175,17 @@ app.use(function sessionInfo(req, res, next) {
 app.get('/', async (req, res) => {
 	if (req.session.authenticated) {
 		const result = await locationCollection.find().project({ name: 1, description: 1, reviews: 1, _id: 1 }).toArray();
-	    res.redirect("/home");
+		res.redirect("/home");
 	} else {
-		res.render("index", { user: null});
-	}});
+		res.render("index", { user: null });
+	}
+});
 
 app.get('/createUser', (req, res) => {
 	res.render("createUser");
 });
 
-app.get('/login', (req,res) => {
+app.get('/login', (req, res) => {
 	res.render("login");
 });
 
@@ -205,15 +208,15 @@ app.post('/createUser', async (req, res) => {
 		return;
 	}
 
-	let user = await userCollection.findOne({email: email});
-	if(user) {
+	let user = await userCollection.findOne({ email: email });
+	if (user) {
 		res.locals.message = "Email already exist. Please use other email address";
 		return res.status(400).render("errorMessage");
 	}
 
 	var hashedPassword = await bcrypt.hash(password, saltRounds);
 
-	await userCollection.insertOne({ username: username, email: email, password: hashedPassword, reviews: [{ text: "" }], savedLocations: []});
+	await userCollection.insertOne({ username: username, email: email, password: hashedPassword, reviews: [{ text: "" }], savedLocations: [] });
 	req.session.authenticated = true;
 	req.session.email = email;
 	req.session.cookie.maxAge = expireTime;
@@ -295,53 +298,41 @@ app.get('/loggingin', (req, res) => {
 	res.render("loggingin");
 });
 
-app.get('/logout', sessionValidation, (req,res) => {
+app.get('/logout', sessionValidation, (req, res) => {
 	req.session.destroy();
 	res.redirect("/");
 });
 
-app.get('/info', sessionValidation, (req,res) => {
-    res.render("info");
+app.get('/info', sessionValidation, (req, res) => {
+	res.render("info");
 });
 
-app.get('/about_us', sessionValidation, (req,res) => {
-    res.render("about_us");
+app.get('/about_us', sessionValidation, (req, res) => {
+	res.render("about_us");
 });
 
-app.get('/destination',sessionValidation, async(req, res) => {
+app.get('/destination', sessionValidation, async (req, res) => {
 	var locationName = req.query.location;
 	var location = await locationCollection.find({ name: locationName }).project({ name: 1, description: 1, reviews: 1, _id: 1 }).toArray();
-	var bookmark= false;
-	const savedLocationsArr = await userCollection.find({ email: req.session.email }).project({ savedLocations: 1, _id: 0 }).toArray();
+	var bookmark = false;
+	const savedLocationsArr = await userCollection.find({ email: email }).project({ savedLocations: 1, _id: 0 }).toArray();
 	const savedLocations = savedLocationsArr[0].savedLocations;
-	const savedLocationsNames = savedLocations.map(location => location.name);
-	if(savedLocationsNames.includes(locationName)){
+	var savedLocationsNames = [];
+	savedLocations.forEach(async location => {
+		savedLocationsNames.push(location.name);
+	});
+	if (savedLocationsNames.includes(locationName)) {
 		bookmark = true;
 	}
-	if(typeof bookmark != "undefined"){
-		res.render("destination", { location: location[0], bookmark: bookmark});
-	}else{
-		res.render("destination", { location: location[0]});
-	}
+	res.render("destination", { location: location[0],bookmark: bookmark});
 });
 
 
-app.get('/home',sessionValidation, async(req, res) => {
-<<<<<<< HEAD
-	// var bookmark = req.query.bookmark;
-	const result = await locationCollection.find().project({ name: 1, description: 1, reviews: 1, _id: 1 }).toArray();
-	// res.render("home", { locations: result , bookmark: bookmark});
-	res.render("home");
-=======
-	const result = await locationCollection.find().project({ name: 1, description: 1, reviews: 1, _id: 1 }).toArray();
-	const savedLocationsArr = await userCollection.find({ email: req.session.email }).project({ savedLocations: 1, _id: 0 }).toArray();
-	const savedLocations = savedLocationsArr[0].savedLocations;
-	const savedLocationsNames = savedLocations.map(location => location.name);
-	res.render("home", { locations: result, savedLocationsNames: savedLocationsNames});
->>>>>>> Saba_saving_locations
+app.get('/home', sessionValidation, async (req, res) => {
+	res.render("home",{email:req.session.email});
 });
 
-app.get('/post_review',sessionValidation, async (req, res) => {
+app.get('/post_review', sessionValidation, async (req, res) => {
 	var locationName = req.query.location;
 	try {
 		const username = await getUserName(req);
@@ -362,18 +353,18 @@ app.get('/post_review',sessionValidation, async (req, res) => {
 });
 
 // This section allows the user to set their profile picture and is from one of the Tech Gems code on learning hub
-app.get('/profile', sessionValidation, async(req,res) => {
+app.get('/profile', sessionValidation, async (req, res) => {
 	var imgSrc = await userCollection.find({ email: req.session.email }).project({ image_id: 1, _id: 0 }).toArray();
 	res.render('profile', { user: await getUserName(req), email: req.session.email, imgSrc: imgSrc[0].image_id });
 
 });
 
-app.get('/setting', sessionValidation, (req,res) => {
+app.get('/setting', sessionValidation, (req, res) => {
 	res.render("setting");
 });
 
 //This block of code is to change the user's password and username
-app.post('/changePersonalinfo', sessionValidation, async(req,res) => {
+app.post('/changePersonalinfo', sessionValidation, async (req, res) => {
 	var username = req.body.username;
 	var password = req.body.newpassword;
 	var curentPassword = req.body.curpassword;
@@ -399,13 +390,13 @@ app.post('/changePersonalinfo', sessionValidation, async(req,res) => {
 });
 
 
-app.get('/review',sessionValidation, async (req, res) => {
+app.get('/review', sessionValidation, async (req, res) => {
 	var locationName = req.query.location;
 	var location = await locationCollection.find({ name: locationName }).project({ name: 1, description: 1, reviews: 1, _id: 1 }).toArray();
-	reviews =location[0].reviews;
+	reviews = location[0].reviews;
 	var avg = 0;
-	var a=0,b=0,c=0,d=0,e=0;
-	if(reviews.length != 0){
+	var a = 0, b = 0, c = 0, d = 0, e = 0;
+	if (reviews.length != 0) {
 		for (var i = 0; i < reviews.length; i++) {
 			switch (reviews[i].starRating) {
 				case 1:
@@ -423,13 +414,13 @@ app.get('/review',sessionValidation, async (req, res) => {
 				case 5:
 					e++;
 					break;
-				}
 			}
-			avg= (a*1+b*2+c*3+d*4+e*5)/reviews.length;
 		}
-		avg = Math.round(avg * 100) / 100;
-		await locationCollection.updateOne({ name: locationName }, { $set: { rating: avg } });
-	    res.render("review", { location: location[0], avgRating:avg });
+		avg = (a * 1 + b * 2 + c * 3 + d * 4 + e * 5) / reviews.length;
+	}
+	avg = Math.round(avg * 100) / 100;
+	await locationCollection.updateOne({ name: locationName }, { $set: { rating: avg } });
+	res.render("review", { location: location[0], avgRating: avg });
 });
 
 app.get('/saveLocation', sessionValidation, async (req, res) => {
@@ -441,18 +432,23 @@ app.get('/saveLocation', sessionValidation, async (req, res) => {
 	if (savedLocations.length == 0) {
 		await userCollection.updateOne({ email: req.session.email }, { $push: { savedLocations: location[0] } });
 		bookmark = true;
-	}else{
-	for (var i = 0; i < savedLocations.length; i++) {
-		if (savedLocations[i].name == locationName) {
-			await userCollection.updateOne({ email: req.session.email }, { $pull: { savedLocations: location[0] } });
-			bookmark = false;
-		}else{
-			await userCollection.updateOne({ email: req.session.email }, { $push: { savedLocations: location[0] } });
+	} else {
+		for (var i = 0; i < savedLocations.length; i++) {
+			if (savedLocations[i].name == locationName) {
+				await userCollection.updateOne({ email: req.session.email }, { $pull: { savedLocations: location[0] } });
+				bookmark = false;
+			} else {
+				await userCollection.updateOne({ email: req.session.email }, { $push: { savedLocations: location[0] } });
+
+			}
 		}
 	}
-}
-
-res.redirect(req.get('referer'));
+	 
+	if(req.get('referer').includes("weather")){
+	res.redirect('/weather?email=' + req.session.email);
+	}else if(req.get('referer').includes("destination")){
+		res.redirect('/destination?location=' + locationName);
+	}
 });
 
 

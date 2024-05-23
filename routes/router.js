@@ -21,6 +21,7 @@ const upload = multer({ storage: storage });
 
 const mongodb_database = process.env.MONGODB_DATABASE;
 const userCollection = database.db(mongodb_database).collection('users');
+const locationCollection = database.db(mongodb_database).collection('locations');
 
 const Joi = require("joi");
 const mongoSanitize = require('express-mongo-sanitize');
@@ -56,8 +57,18 @@ const getImageUrl = async (city) => {
   return null; // Return null if no image is found
 };
 
-router.get('/weather', (req, res) => {
-  res.render('weather');
+router.get('/weather', async (req, res) => {
+  console.log("in weather get route");
+  email = req.query.email;
+  const result = await locationCollection.find().project({ _id: 0 }).toArray();
+	const savedLocationsArr = await userCollection.find({ email: email }).project({ savedLocations: 1, _id: 0 }).toArray();
+  const savedLocations = savedLocationsArr[0].savedLocations;
+	var savedLocationsNames = [];
+  savedLocations.forEach(async location => {
+    savedLocationsNames.push(location.name);
+  });
+  console.log(savedLocationsNames);
+  res.render('weatherResults', { data: result, savedLocations: savedLocationsNames });
 });
 
 router.post('/weather', async (req, res) => {
@@ -85,7 +96,17 @@ router.post('/weather', async (req, res) => {
       filteredData.forEach(day => allResults.push({ ...day, city, imageUrl }));
     }
 
-    res.render('weatherResults', { data: allResults });
+  email = req.query.email;
+  const savedLocationsArr = await userCollection.find({ email: email }).project({ savedLocations: 1, _id: 0 }).toArray();
+  const savedLocations = savedLocationsArr[0].savedLocations;
+	var savedLocationsNames = [];
+  savedLocations.forEach(async location => {
+    savedLocationsNames.push(location.name);
+  });
+    allResults.forEach(async result => {
+      await locationCollection.updateOne({ city: result.city , datetime: result.datetime }, { $set: { conditions: result.conditions, tempmax: result.tempmax, imageUrl: result.imageUrl } }, { upsert: true });
+    });
+    res.render('weatherResults', { data: allResults, savedLocations: savedLocationsNames});
   } catch (error) {
     console.error('Error fetching weather data:', error);
     res.status(500).send('Failed to fetch weather data');
