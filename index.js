@@ -330,6 +330,17 @@ app.get('/destination', sessionValidation, async (req, res) => {
 
 app.get('/home', sessionValidation, async (req, res) => {
 	res.render("home",{email:req.session.email});
+
+	const { city, date, conditions, tempmin, tempmax, humidity, imageUrl } = req.query;
+
+	res.render("destination", { location: location[0], city, date, conditions, tempmin, tempmax, humidity, imageUrl });
+});
+
+
+app.get('/home',sessionValidation, async(req, res) => {
+	var bookmark = req.query.bookmark;
+	const result = await locationCollection.find().project({ name: 1, description: 1, reviews: 1, _id: 1 }).toArray();
+	res.render("home", { locations: result , bookmark: bookmark});
 });
 
 app.get('/post_review', sessionValidation, async (req, res) => {
@@ -396,7 +407,7 @@ app.post('/changePersonalinfo', sessionValidation, async (req, res) => {
 app.get('/review', sessionValidation, async (req, res) => {
 	var locationName = req.query.location;
 	var location = await locationCollection.find({ name: locationName }).project({ name: 1, description: 1, reviews: 1, _id: 1 }).toArray();
-	reviews = location[0].reviews;
+	reviews =location[0].reviews;
 	var avg = 0;
 	var a = 0, b = 0, c = 0, d = 0, e = 0;
 	if (reviews.length != 0) {

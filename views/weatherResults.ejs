@@ -16,11 +16,14 @@
 
     <br>
     <br>
+
     <div class="container mx-auto p-4">
         <h1 class="text-2xl font-bold mb-4">Weather Results</h1>
 
         <% if (data.length> 0) { %>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                
+                
                 <% data.forEach(day=> { %>
                     <% var bookmark = false; %>
                     <% for(var i = 0; i < savedLocations.length; i++) { %>
@@ -29,16 +32,15 @@
                             <% break; %>
                         <% } %>
                     <% } %>
-                    <div class="card bg-white shadow-md rounded-lg p-4">
+                    <a href="/destination?city=<%= day.city %>&date=<%= day.datetime %>&conditions=<%= day.conditions %>&tempmin=<%= day.tempmin %>&tempmax=<%= day.tempmax %>&humidity=<%= day.humidity %>&imageUrl=<%= day.imageUrl %>" class="card bg-white shadow-md rounded-lg p-4 block"></a>
+                    
                         <button id="saveBtn" onclick="saveLocation('<%= day.city %>')" class=" w-1/6"><% if (bookmark) { %><i class="fa-solid fa-bookmark"></i><% }else { %><i class="fa-regular fa-bookmark"></i><% } %></button>
-                        <h2 onclick="window.location.href='/destination?location=<%= day.city %>&&bookmark=<% bookmark %>'" class="text-xl font-semibold"><strong>City:</strong>
-                            <%= day.city %>
-                        </h2>
-                        <p><strong>Date:</strong>
-                            <%= day.datetime %>
-                        </p>
+                        <h2 onclick="window.location.href='/destination?location=<%= day.city %>&&bookmark=<% bookmark %>'" class="text-xl font-semibold"><strong>City:</strong><%= day.city %></h2>
+                        <p><strong>Date:</strong><%= day.datetime %></p>
+                       
                         <p>
                             <strong>Conditions:</strong>
+                            
                             <%= day.conditions %>
                                 <% if (day.conditions.includes('Rain')) { %>
                                     <i class="fas fa-cloud-showers-heavy"></i>
@@ -56,15 +58,15 @@
                                                             <i class="fas fa-cloud"></i> <!-- Default icon -->
                                                             <% } %>
                         </p>
+                        
                         <p><strong>Temperature:</strong> Min: <%= day.tempmin %>°C, Max: <%= day.tempmax %>°C</p>
                         <p><strong>Humidity:</strong>
                             <%= day.humidity %>%
                         </p>
                         <% if (day.imageUrl) { %>
-                            <img src="<%= day.imageUrl %>" alt="Image of <%= day.city %>"
-                                class="w-full h-48 object-cover rounded mt-4">
+                            <img src="<%= day.imageUrl %>" alt="Image of <%= day.city %>" class="w-full h-48 object-cover rounded mt-4">
                             <% } %>
-                    </div>
+                        </a>
                     <% }) %>
             </div>
             <% } else { %>
