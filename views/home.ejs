@@ -39,6 +39,61 @@
 
     <br>
     <br>
+<<<<<<< HEAD
 
 <%- include("templates/homenav") %>
 <%- include("templates/footer") %>
+=======
+    <%bookmark=false;%>
+    <%for (var i=0; i < locations.length; i++) {%>
+        <div id="<%= locations[i].name %>">
+            <%for (var j=0; j < savedLocationsNames.length; j++) {%>
+                <%if (locations[i].name == savedLocationsNames[j]) {%>
+                    <%bookmark=true;%>
+                    <%break;%>
+                <%}%>
+            <%}%>
+        <%- include("templates/locations", {location: locations[i], bookmark: bookmark}) %>
+    </div>
+    <%}%>
+
+
+            <script>
+                menuItems = document.querySelectorAll('.menuItems');
+                menuItems.forEach((menuItem) => {
+                    menuItem.style.display = 'none';
+                });
+                navHam = document.getElementById("nav-hamburger");
+                navHam.style.margin = '6px';
+                navHam.style.marginTop = '14px';
+                hamburgerMenu = document.getElementById("hamburgerMenu");
+                hamburgerMenu.style.display = 'flex';
+                hamburgerMenu.style.alignItems = 'baseline';
+                hamburgerBtn = document.getElementById("hamburgerBtn");
+                hamburgerBtn.style.position = 'fixed';
+                function toggleMenu() {
+                    if (hamburgerMenu.classList.contains("fa-bars")) {
+                        hamburgerMenu.classList.remove("fa-bars");
+                        hamburgerMenu.classList.add("fa-burger");
+                    } else {
+                        hamburgerMenu.classList.add("fa-bars");
+                        hamburgerMenu.classList.remove("fa-burger");
+                    }
+                    var navLinks = document.querySelectorAll('.menuItems');
+                    navLinks.forEach((navLink) => {
+                        if (navLink.style.display === 'flex') {
+                            navLink.style.display = 'none';
+                        } else {
+                            navLink.style.display = 'flex';
+                        }
+                    });
+                }
+                var bookmarkBtn = document.getElementById('bookmark');
+                function saveLocation(location) {
+                    window.location.href = '/saveLocation?location=' + location;    
+                }
+            </script>
+
+            <%- include("templates/homenav") %>
+                <%- include("templates/footer") %>
+>>>>>>> Saba_saving_locations

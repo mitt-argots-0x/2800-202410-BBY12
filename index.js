@@ -173,7 +173,7 @@ app.use(function sessionInfo(req, res, next) {
 app.get('/', async (req, res) => {
 	if (req.session.authenticated) {
 		const result = await locationCollection.find().project({ name: 1, description: 1, reviews: 1, _id: 1 }).toArray();
-	    res.render("home", { locations: result });
+	    res.redirect("/home");
 	} else {
 		res.render("index", { user: null});
 	}});
@@ -311,15 +311,34 @@ app.get('/about_us', sessionValidation, (req,res) => {
 app.get('/destination',sessionValidation, async(req, res) => {
 	var locationName = req.query.location;
 	var location = await locationCollection.find({ name: locationName }).project({ name: 1, description: 1, reviews: 1, _id: 1 }).toArray();
-	res.render("destination", { location: location[0] });
+	var bookmark= false;
+	const savedLocationsArr = await userCollection.find({ email: req.session.email }).project({ savedLocations: 1, _id: 0 }).toArray();
+	const savedLocations = savedLocationsArr[0].savedLocations;
+	const savedLocationsNames = savedLocations.map(location => location.name);
+	if(savedLocationsNames.includes(locationName)){
+		bookmark = true;
+	}
+	if(typeof bookmark != "undefined"){
+		res.render("destination", { location: location[0], bookmark: bookmark});
+	}else{
+		res.render("destination", { location: location[0]});
+	}
 });
 
 
 app.get('/home',sessionValidation, async(req, res) => {
+<<<<<<< HEAD
 	// var bookmark = req.query.bookmark;
 	const result = await locationCollection.find().project({ name: 1, description: 1, reviews: 1, _id: 1 }).toArray();
 	// res.render("home", { locations: result , bookmark: bookmark});
 	res.render("home");
+=======
+	const result = await locationCollection.find().project({ name: 1, description: 1, reviews: 1, _id: 1 }).toArray();
+	const savedLocationsArr = await userCollection.find({ email: req.session.email }).project({ savedLocations: 1, _id: 0 }).toArray();
+	const savedLocations = savedLocationsArr[0].savedLocations;
+	const savedLocationsNames = savedLocations.map(location => location.name);
+	res.render("home", { locations: result, savedLocationsNames: savedLocationsNames});
+>>>>>>> Saba_saving_locations
 });
 
 app.get('/post_review',sessionValidation, async (req, res) => {
@@ -432,7 +451,8 @@ app.get('/saveLocation', sessionValidation, async (req, res) => {
 		}
 	}
 }
-res.redirect('/home?bookmark=' + bookmark);
+
+res.redirect(req.get('referer'));
 });
 
 
