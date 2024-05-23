@@ -355,7 +355,10 @@ app.get('/post_review', sessionValidation, async (req, res) => {
 // This section allows the user to set their profile picture and is from one of the Tech Gems code on learning hub
 app.get('/profile', sessionValidation, async (req, res) => {
 	var imgSrc = await userCollection.find({ email: req.session.email }).project({ image_id: 1, _id: 0 }).toArray();
-	res.render('profile', { user: await getUserName(req), email: req.session.email, imgSrc: imgSrc[0].image_id });
+	allLocations = await locationCollection.find().project({_id:0}).toArray();
+	result = await userCollection.find({ email: req.session.email }).project({ savedLocations: 1, _id: 0 }).toArray();
+	var savedLocations = result[0].savedLocations;
+	res.render('profile', { user: await getUserName(req), email: req.session.email, imgSrc: imgSrc[0].image_id , data:savedLocations});
 
 });
 
@@ -426,7 +429,7 @@ app.get('/review', sessionValidation, async (req, res) => {
 app.get('/saveLocation', sessionValidation, async (req, res) => {
 	var bookmark;
 	var locationName = req.query.location;
-	var location = await locationCollection.find({ name: locationName }).project({ name: 1, description: 1, reviews: 1, _id: 1 }).toArray();
+	var location = await locationCollection.find({ name: locationName }).project({ name: 1, description: 1,date:1, conditions:1, temp:1,imageUrl:1, reviews: 1,rating:1,humidity:1, _id: 1 }).toArray();
 	result = await userCollection.find({ email: req.session.email }).project({ savedLocations: 1, _id: 0 }).toArray();
 	var savedLocations = result[0].savedLocations;
 	if (savedLocations.length == 0) {
@@ -451,6 +454,21 @@ app.get('/saveLocation', sessionValidation, async (req, res) => {
 	}
 });
 
+app.get('/unsaveLocation', sessionValidation, async (req, res) => {
+	var locationName = req.query.location;
+	var location = await locationCollection.find({ name: locationName }).project({ name: 1, description: 1,date:1, conditions:1, temp:1,imageUrl:1, reviews: 1,rating:1,humidity:1, _id: 1 }).toArray();
+	result = await userCollection.find({ email: req.session.email }).project({ savedLocations: 1, _id: 0 }).toArray();
+	var savedLocations = result[0].savedLocations;
+	
+		for (var i = 0; i < savedLocations.length; i++) {
+			if (savedLocations[i].name == locationName) {
+				await userCollection.updateOne({ email: req.session.email }, { $pull: { savedLocations: location[0] } });
+				bookmark = false;
+			}
+		}
+	res.redirect('/profile');
+}); 
+
 
 // Route to display the reset password request form
 app.get('/resetPassword', (req, res) => {
@@ -469,6 +487,7 @@ app.get('/newPassword', (req, res) => {
 
 const crypto = require('crypto');
 const moment = require('moment');
+const { all } = require("./routes/router.js");
 
 app.post('/sendResetLink', async (req, res) => {
 	const email = req.body.email;

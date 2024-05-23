@@ -72,30 +72,49 @@ router.get('/weather', async (req, res) => {
 });
 
 router.post('/weather', async (req, res) => {
-  const { weatherType, startDate, endDate } = req.body;
-  const { default: fetch } = await import('node-fetch');
+  // const { weatherType, startDate, endDate } = req.body;
+  // const { default: fetch } = await import('node-fetch');
 
-  try {
-    const allResults = [];
+  // try {
+  //   const allResults = [];
 
-    for (const city of cities) {
-      const response = await fetch(`https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city}/${startDate}/${endDate}?unitGroup=metric&include=days&key=${weatherApiKey}&contentType=json`);
-      const textData = await response.text();
-      let data;
+  //   for (const city of cities) {
+  //     const response = await fetch(`https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city}/${startDate}/${endDate}?unitGroup=metric&include=days&key=${weatherApiKey}&contentType=json`);
+  //     const textData = await response.text();
+  //     let data;
 
-      try {
-        data = JSON.parse(textData);
-      } catch (jsonError) {
-        console.error(`Error parsing JSON for city ${city}:`, textData);
-        throw new Error('Received non-JSON response from the weather API');
-      }
+  //     try {
+  //       data = JSON.parse(textData);
+  //     } catch (jsonError) {
+  //       console.error(`Error parsing JSON for city ${city}:`, textData);
+  //       throw new Error('Received non-JSON response from the weather API');
+  //     }
 
-      const filteredData = data.days.filter(day => day.conditions.toLowerCase().includes(weatherType.toLowerCase()));
-      const imageUrl = await getImageUrl(city);
+  //     const filteredData = data.days.filter(day => day.conditions.toLowerCase().includes(weatherType.toLowerCase()));
+  //     const imageUrl = await getImageUrl(city);
 
-      filteredData.forEach(day => allResults.push({ ...day, city, imageUrl }));
-    }
+  //     filteredData.forEach(day => allResults.push({ ...day, city, imageUrl }));
+  //   }
+  allResults = [
+    {
+      city: 'Seoul',
+      datetime: '2021-08-01',
+      conditions: ['Sunny'],
+      tempmax: 30,
+      tempmain: 0,
+      humidity: 50,
+      imageUrl: 'https://images.unsplash.com/photo-1627322480993-8b7e5e7f9c1f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwyNTA5MzZ8MHwxfGFsbHwxfHNvbWV8fHxlYXJuaW5nfHx8fHx8fHwxNjI3MzIyNzIw&ixlib=rb-1.2.1&q=80&w=400' },  
 
+    {
+      city: 'Vancouver',
+      datetime: '2021-08-01',
+      conditions: ['Sunny'],   
+      tempmax: 25,
+      tempmin: 5,
+      humidity: 50,
+      imageUrl: 'https://images.unsplash.com/photo-1627322480993-8b7e5e7f9c1f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwyNTA5MzZ8MHwxfGFsbHwxfHNvbWV8fHxlYXJuaW5nfHx8fHx8fHwxNjI3MzIyNzIw&ixlib=rb-1.2.1&q=80&w=400' }
+
+  ];
   email = req.query.email;
   const savedLocationsArr = await userCollection.find({ email: email }).project({ savedLocations: 1, _id: 0 }).toArray();
   const savedLocations = savedLocationsArr[0].savedLocations;
@@ -104,13 +123,13 @@ router.post('/weather', async (req, res) => {
     savedLocationsNames.push(location.name);
   });
     allResults.forEach(async result => {
-      await locationCollection.updateOne({ city: result.city , datetime: result.datetime }, { $set: { conditions: result.conditions, tempmax: result.tempmax, imageUrl: result.imageUrl } }, { upsert: true });
+      await locationCollection.updateOne({ city: result.city}, { $set: { name: result.city, description:null, date: result.datetime, conditions: result.conditions, temp: result.tempmax, imageUrl: result.imageUrl, reviews: null, rating: 0 } }, { upsert: true });
     });
     res.render('weatherResults', { data: allResults, savedLocations: savedLocationsNames});
-  } catch (error) {
-    console.error('Error fetching weather data:', error);
-    res.status(500).send('Failed to fetch weather data');
-  }
+  // } catch (error) {
+  //   console.error('Error fetching weather data:', error);
+  //   res.status(500).send('Failed to fetch weather data');
+  // }
 });
 
 module.exports = router;
