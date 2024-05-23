@@ -5,6 +5,7 @@
                 </h1>
 
                     <h2>Welcome to the review page user!</h2><br>
+                    <div>
                     <% if(typeof(reviews) !='undefined' ) { %>
                         <% for (var i=0; i < reviews.length; i++) { %>
                             <h3>
@@ -22,11 +23,11 @@
                             <p>*****************************************************
                             </p>
                             <% } %>
-                                <% } %>
-                                    <button><a
-                                            href="/post_review?location=<%= location.name %>"
-                                            style="text-decoration: none; color: red;">Share
-                                            Your Experience!
-                                        </a></butt
-                                    <%- include("templates/footer",{jsFile:
-                                        ['js/review.js']}) %>
+                        <% } %>
+                    </div>
+                    <button><a href="/post_review?location=<%= location.name %>"
+                            style="text-decoration: none; color: red;">Share
+                            Your Experience!
+                        </a></button>
+
+<%- include("templates/footer",{jsFile:['js/review.js']}) %>

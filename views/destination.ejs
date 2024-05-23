@@ -1,21 +1,29 @@
 <%- include("templates/header") %>
-
-        <img src="" alt="location image" style="width: 100%; height: 300px;">
-            <p id="name_goes_here">
-                <%= location.name %>
+    <div class="grid w-5/6 h-full mx-auto mt-4">
+        <img src="imgs/placeholder.jpg" alt="location image" class="max-h-72 w-full max border-2 border-orange-400 rounded-3xl">
+            <p id="name_goes_here" class="text-center h1">
+                <span class="border-b-4 border-purple-600"><%= location.name %></span>
             </p>
-            <p id="description_goes_here">
+            <p id="description_goes_here" class="mt-2">
+                WOAH TEMPORARY DESCRIPTION WOWOOWOWOWOWOW LOREM IPSUM WHO?
+                WOAH TEMPORARY DESCRIPTION WOWOOWOWOWOWOW LOREM IPSUM WHO?
+                WOAH TEMPORARY DESCRIPTION WOWOOWOWOWOWOW LOREM IPSUM WHO?
+                WOAH TEMPORARY DESCRIPTION WOWOOWOWOWOWOW LOREM IPSUM WHO?
+                WOAH TEMPORARY DESCRIPTION WOWOOWOWOWOWOW LOREM IPSUM WHO?
                 <%= location.description %>
             </p>
-            <button id="reviewBtn"
-                onclick='window.location.href="/review?location=<%= location.name %>"'>Review</button>
-            <button id="letsGoBtn">Let's go</button>
-            <button onclick="saveLocationl('<%= location.name %>')"><% if (bookmark) { %><i class="fa-solid fa-bookmark"></i><% }else { %><i class="fa-regular fa-bookmark"></i><% } %></button>
+            <div class="mx-auto flex justify-center w-4/5 mt-2">
+                <button class="ml-auto text-2xl pb-1 text-white border-2 border-teal-400 bg-teal-300 rounded-lg px-10 hover:border-cyan-300 hover:bg-cyan-200" id="reviewBtn" onclick='window.location.href="/review?location=<%= location.name %>"'>
+                    Reviews
+                </button>
+                <button class="ml-4 mr-auto" onclick="saveLocationl('<%= location.name %>')"><% if (bookmark) { %><i class="fa-solid fa-bookmark"></i><% }else { %><i class="fa-regular fa-bookmark"></i><% } %></button>
+            </div>
 
             <script>
                 function saveLocationl(location) {
                     window.location.href = '/saveLocation?location=' + location;
                 }
             </script>
-            <%- include("templates/homenav") %>
-                <%- include("templates/footer") %>
+    </div>
+<%- include("templates/homenav") %>
+<%- include("templates/footer") %>
