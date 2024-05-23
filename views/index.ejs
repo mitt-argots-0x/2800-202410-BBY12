@@ -1,13 +1,17 @@
 <%- include("templates/header") %> 
 <%- include("templates/landingpage") %>
 
-    <div class="px-3 py-2 border-bottom mb-3">
-        <div class="container d-flex flex-wrap justify-content-center">
-          <div class="text-end">
-            <button type="button" onclick='window.location.href="/createUser"' class="btn btn-primary">Sign up</button>
-            <button type="button" onclick='window.location.href="/login"' class="btn btn-outline-primary me-2">Log In</button>
-          </div>
+    <div class="">
+      <div class="grid-row-3 w-full mt-24">
+        <div class="flex justify-center w-4/5 mx-auto">
+          <img src="imgs/logo.png" class="w-24">
+          <p class="text-7xl text-orange-400 content-center">SUNSPOT</p>
+        </div>
+        <p class="text-2xl text-center mb-4 italic text-slate-300">"For when you want rain, or shine!"</p>
+        <div class="justify-center flex">
+          <a href="/createUser"><button class="text-5xl pb-1 text-white border-2 border-teal-400 bg-teal-300 rounded-lg px-10 hover:border-cyan-300 hover:bg-cyan-200">SIGN UP</button></a>
         </div>
       </div>
+    </div>
   
 <%- include("templates/footer") %> 
