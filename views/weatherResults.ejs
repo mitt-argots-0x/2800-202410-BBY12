@@ -10,7 +10,7 @@
     <div class="fixed content-center w-full">
         <form class="flex justify-center">
             <input class="rounded-2xl focus:outline-none w-4/6 border-4 border-purple-400" type="text"
-                placeholder="What weather are you looking for?">
+                placeholder="Click to choose your weather type">
         </form>
     </div>
 
@@ -22,7 +22,7 @@
 
         <% if (data.length> 0) { %>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                
+
                 <% data.forEach(day=> { %>
                     <% var bookmark=false; %>
                         <% for(var i=0; i < savedLocations.length; i++) { %>
@@ -44,12 +44,13 @@
                                                                     <% }else { %><i class="fa-regular fa-bookmark"></i>
                                                                         <% } %>
                                                             </button>
+
                                                             <h2 onclick="window.location.href='/destination?location=<%= day.city %>&&bookmark=<% bookmark %>'"
                                                                 class="text-xl font-semibold"><strong>City:</strong>
                                                                 <%= day.city %>
                                                             </h2>
                                                             <p><strong>Date:</strong>
-                                                                <%= day.datetime %>
+                                                                <%= day.date %>
                                                             </p>
                                                             <p>
                                                                 <strong>Conditions:</strong>
@@ -80,13 +81,15 @@
                                                                                                 <!-- Default icon -->
                                                                                                 <% } %>
                                                             </p>
-                                                            <p><strong>Temperature:</strong> Min: <%= day.tempmin %>°C,
-                                                                    Max: <%= day.tempmax %>°C</p>
+                                                            <p><strong>Temperature:</strong> <%= day.temp %>°C</p>
                                                             <p><strong>Humidity:</strong>
                                                                 <%= day.humidity %>%
                                                             </p>
                                                             <p><strong>Description:</strong>
                                                                 <%= day.description %>
+                                                            </p>
+                                                            <p>Rating: 
+                                                                <%= day.rating %>
                                                             </p>
                                                 </div>
                                                 <% }) %>
@@ -130,8 +133,9 @@
             });
         }
         var bookmarkBtn = document.getElementById('bookmark');
-        // function saveLocation(location) {
-        //     window.location.href = '/saveLocation?location=' + location;
-        // }
+        function saveLocation(location) {
+            window.location.href = '/saveLocation?location=' + location;
+        }
     </script>
+    <%- include("templates/homenav") %>
     <%- include("templates/footer") %>

@@ -27,13 +27,13 @@
                             <p class="italic text-sm bg-teal-100 w-full rounded-b-2xl px-2 pb-1"><%= reviews[i].date %></p>
                         </span>
                     </div>
-                </div> 
-                <br>
+                    <button><a href="/post_review?location=<%= location.name %>" style="text-decoration: none; color: red;">
+                            Share
+                            Your Experience!
+                        </a></button>
+                </div>
             <% } %>
         <% } %>
-        <button class="mx-auto bg-purple-400 rounded-2xl mt-2 px-2 mb-20"><a class="" href="/post_review?location=<%= location.name %>">
-            <p class="">Share Your Experience!</p>
-        </a></button>
     </div>
 
 <%- include("templates/homenav") %>
