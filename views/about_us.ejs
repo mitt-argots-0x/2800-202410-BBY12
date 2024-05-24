@@ -13,13 +13,44 @@
         75% { color: cyan; }
         100% { color: magenta; }
     }
-    .sunspot {
+    .shiny-sparkle {
         animation: sparkle 1s infinite, colorChange 2s infinite;
         display: inline-block;
         position: relative;
     }
 </style>
-<script></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const sunSpotElements = document.querySelectorAll('.sunspot');
+        let clickedCount = 0;
+
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function applyRandomMovement(element) {
+            const moveX = getRandomInt(-50, 50);
+            const moveY = getRandomInt(-50, 50);
+            element.style.transform = `translate(${moveX}px, ${moveY}px)`;
+            element.style.transition = 'transform 2s ease-in-out';
+        }
+
+        sunSpotElements.forEach(element => {
+            element.addEventListener('click', function () {
+                if (!element.classList.contains('clicked')) {
+                    element.classList.add('clicked');
+                    clickedCount++;
+                }
+                if (clickedCount === sunSpotElements.length) {
+                    sunSpotElements.forEach(el => {
+                        el.classList.add('shiny-sparkle');
+                        setInterval(() => applyRandomMovement(el), 2000);
+                    });
+                }
+            });
+        });
+    });
+</script>
 
 <div class="fixed top-0 w-full">
     <%- include("templates/landingpage") %>
