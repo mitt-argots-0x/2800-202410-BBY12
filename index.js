@@ -155,7 +155,7 @@ app.use(function sessionInfo(req, res, next) {
 //This block of code to do sign up, login, log out, and home page is from COMP2537 assignment 2 and modified to fit the project
 app.get('/', async (req, res) => {
 	if (req.session.authenticated) {
-		const result = await locationCollection.find().project({ name: 1, description: 1, reviews: 1, _id: 1 }).toArray();
+		const result = await locationCollection.find().project({ name: 1, description: 1,date:1, conditions:1, temp:1,imageUrl:1, reviews: 1,rating:1,humidity:1, _id: 1 }).toArray();
 		res.redirect("/home");
 	} else {
 		res.render("index", { user: null });
@@ -295,8 +295,10 @@ app.get('/about_us', sessionValidation, (req, res) => {
 });
 
 app.get('/destination', sessionValidation, async (req, res) => {
+	var email = req.session.email;
+	console.log(email);
 	var locationName = req.query.location;
-	var location = await locationCollection.find({ name: locationName }).project({ name: 1, description: 1, reviews: 1, _id: 1 }).toArray();
+	var location = await locationCollection.find({ name: locationName }).project({ name: 1, description: 1,date:1, conditions:1, temp:1,imageUrl:1, reviews: 1,rating:1,humidity:1, _id: 1 }).toArray();
 	var bookmark = false;
 	const savedLocationsArr = await userCollection.find({ email: req.session.email }).project({ savedLocations: 1, _id: 0 }).toArray();
 	const savedLocations = savedLocationsArr[0].savedLocations;
@@ -307,7 +309,7 @@ app.get('/destination', sessionValidation, async (req, res) => {
 	if (savedLocationsNames.includes(locationName)) {
 		bookmark = true;
 	}
-	res.render("destination", { location: location[0],bookmark: bookmark});
+	res.render("destination", { location: location[0],bookmark: bookmark, email});
 });
 
 
@@ -389,7 +391,7 @@ app.post('/changePersonalinfo', sessionValidation, async (req, res) => {
 
 app.get('/review', sessionValidation, async (req, res) => {
 	var locationName = req.query.location;
-	var location = await locationCollection.find({ name: locationName }).project({ name: 1, description: 1, reviews: 1, _id: 1 }).toArray();
+	var location = await locationCollection.find({ name: locationName }).project({ name: 1, description: 1,date:1, conditions:1, temp:1,imageUrl:1, reviews: 1,rating:1,humidity:1, _id: 1 }).toArray();
 
 	if(location.length < 1) {
 		console.log(`${locationName} is not found`);
