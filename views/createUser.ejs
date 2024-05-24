@@ -1,20 +1,25 @@
+
 <%- include("templates/header") %> 
 <%- include("templates/landingpage") %>
     <div class="grid grid-row-2">
     <p class="text-center text-3xl my-4"><span class="border-b-4 border-purple-600">CREATE USER</span></p>
     <br>
     <div class="bg-orange-100 rounded-lg w-3/5 justify-self-center py-5">
-        <form action='/createUser' method='post' class="grid grid-row-2 justify-center">
+        <form id='createUserForm' action='/createUser' method='post' class="grid grid-row-2 justify-center">
             <div class="space-y-1">
                 <div class="border-2 border-orange-300 rounded-2xl">
-                    <input class="px-2 rounded-2xl focus:outline-none" name='username' type='text' placeholder='name'><br>
+                    <input class="px-2 rounded-2xl focus:outline-none w-full" name='username' type='text' placeholder='name'><br>
                 </div>
                 <div class="border-2 border-orange-300 rounded-2xl">
-                    <input class="px-2 rounded-2xl focus:outline-none" name='email' type='email' placeholder='email'><br>
+                    <input class="px-2 rounded-2xl focus:outline-none w-full" name='email' type='email' placeholder='email'><br>
                 </div>
                 <div class="border-2 border-orange-300 rounded-2xl">
-                    <input class="px-2 rounded-2xl focus:outline-none" name='password' type='password' placeholder='password'><br>
+                    <input class="px-2 rounded-2xl focus:outline-none w-full" name='password' type='password' placeholder='password'><br>
                 </div>
+            </div>
+            <div class="my-2 flex items-center">
+                <input type="checkbox" id="termsCheckbox" name="termsCheckbox" class="mr-2">
+                <label for="termsCheckbox">I agree to the <a href="#" id="termsLink" class="text-cyan-400">terms and conditions</a></label>
             </div>
             <div class="my-2 justify-center flex">
             <button class="border-2 border-teal-300 bg-teal-200 rounded-3xl px-2 hover:border-cyan-300 hover:bg-cyan-200">Submit</button>
@@ -24,3 +29,31 @@
     <br>
     </div>
 <%- include("templates/footer") %> 
+<!-- Modal for terms and conditions -->
+<div id="termsModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white rounded-lg p-4 w-3/4 max-w-xl">
+        <h2 class="text-xl font-bold mb-4">Terms and Conditions</h2>
+        <p>
+            By checking the Terms and Conditions button you agree to allow Sunspot to use and display the name and picture you will provide in your profile.
+            This information will be used for identification purposes within our appplication and may be visible to other users. 
+        </p>
+        <div class="mt-4 text-right">
+            <button id="closeModal" class="bg-purple-500 text-white px-4 py-2 rounded">Close</button>
+        </div>
+    </div>
+</div>
+<script>
+    document.getElementById('createUserForm').addEventListener('submit', function(event) {
+        if (!document.getElementById('termsCheckbox').checked) {
+            event.preventDefault();
+            alert('You must agree to the terms and conditions before proceeding.');
+        }
+    });
+    document.getElementById('termsLink').addEventListener('click', function(event) {
+        event.preventDefault();
+        document.getElementById('termsModal').classList.remove('hidden');
+    });
+    document.getElementById('closeModal').addEventListener('click', function() {
+        document.getElementById('termsModal').classList.add('hidden');
+    });
+</script>
