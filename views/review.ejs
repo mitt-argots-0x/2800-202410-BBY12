@@ -1,31 +1,40 @@
 <%- include("templates/header") %>
 
-                <h1>
-                    <%= avgRating %>
-                </h1>
+<h1 class="h1 text-center mt-2">
+    <span class="bg-purple-400 px-4 rounded-3xl pb-1">
+        Average Rating: <%= avgRating %> Stars!
+    </span>
+</h1>
 
-                    <h2>Welcome to the review page user!</h2><br>
-                    <div>
-                    <% if(typeof(reviews) !='undefined' ) { %>
-                        <% for (var i=0; i < reviews.length; i++) { %>
-                            <h3>
-                                <%= reviews[i].user %>
-                            </h3>
-                            <span>
-                                <%= reviews[i].text %>
-                            </span>
-                            <span id="<%= i %>">
-                                <%= reviews[i].starRating %>
-                            </span>
-                            <span>
-                                <%= reviews[i].date %>
-                            </span>
-                            <% } %>
-                        <% } %>
+<h2 class="text-slate-500 italic text-center">Welcome to the <%= location.name %> review page user!</h2><br>
+    
+    <div class="grid mx-auto w-3/4">
+        <% if(typeof(reviews) !='undefined' ) { %>
+            <% for (var i=0; i < reviews.length; i++) { %>
+                <div class="bg-orange-300 w-full p-2 rounded-2xl">
+                    <p class="font-bold pl-1 pb-1">
+                        <%= reviews[i].user %>
+                        <span id="<%= i %>">
+                            (<%= reviews[i].starRating %> Stars)
+                        </span>
+                    </p>
+
+                    <div class="bg-white rounded-2xl">
+                        <p>
+                            <p class="px-2 break-all"><%= reviews[i].text %></p>
+                        </p>
+                        <span class="">
+                            <p class="italic text-sm bg-teal-100 w-full rounded-b-2xl px-2 pb-1"><%= reviews[i].date %></p>
+                        </span>
                     </div>
-                    <button><a href="/post_review?location=<%= location.name %>" style="text-decoration: none; color: red;">
-                            Share
-                            Your Experience!
-                        </a></button>
+                </div> 
+                <br>
+            <% } %>
+        <% } %>
+        <button class="mx-auto bg-purple-400 rounded-2xl mt-2 px-2 mb-20"><a class="" href="/post_review?location=<%= location.name %>">
+            <p class="">Share Your Experience!</p>
+        </a></button>
+    </div>
 
+<%- include("templates/homenav") %>
 <%- include("templates/footer",{jsFile:['js/review.js']}) %>
