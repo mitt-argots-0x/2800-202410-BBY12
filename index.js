@@ -573,7 +573,7 @@ app.post('/reset-password/:token', async (req, res) => {
 		}
 	});
 
-	res.send('Your password has been updated successfully.');
+	res.render('newPasswordSuccess');
 });
 
 app.get("*", (req, res) => {
