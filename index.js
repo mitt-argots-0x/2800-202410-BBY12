@@ -200,6 +200,7 @@ app.post('/createUser', async (req, res) => {
 	await userCollection.insertOne({ username: username, email: email, password: hashedPassword, reviews: [{ text: "" }], savedLocations: [] });
 	req.session.authenticated = true;
 	req.session.email = email;
+	req.session.username = username;
 	req.session.cookie.maxAge = expireTime;
 	res.redirect('/');
 });
@@ -265,7 +266,7 @@ app.post('/login', async (req, res) => {
 	if (await bcrypt.compare(password, result[0].password)) {
 		req.session.authenticated = true;
 		req.session.email = email;
-		req.session.username = result.username;
+		req.session.username = result[0].username;
 		req.session.cookie.maxAge = expireTime;
 		res.redirect('/home');
 		return;
@@ -321,6 +322,7 @@ app.get('/post_review', sessionValidation, async (req, res) => {
 		const email = req.session.email;
 		const user = await User.findOne({ email });
 
+		console.log(req.session);
 		res.render('post_review', {
 			user: user,
 			username: username,
@@ -381,6 +383,7 @@ app.get('/review', sessionValidation, async (req, res) => {
 	reviews = location[0].reviews;
 	var avg = 0;
 	var a = 0, b = 0, c = 0, d = 0, e = 0;
+	console.log(req.session);
 	if (reviews.length != 0) {
 		for (var i = 0; i < reviews.length; i++) {
 			switch (reviews[i].starRating) {
