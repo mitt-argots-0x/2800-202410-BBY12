@@ -40,9 +40,6 @@
                 max-height: 100%;
                 align-items: center;
                 justify-items: center;
-
-                
-     
             }
 
             img{
@@ -54,7 +51,7 @@
         </style>
 
         <h2>
-          <%- username %>
+          <%= username %>
         </h2>
 
    
@@ -152,13 +149,13 @@
                         }
                     });
                 });
-                console.log(document.getElementById('starRating').value);
+                // console.log(document.getElementById('starRating').value);
             </script>
         <input id="starRating" type="text" name="starRating" hidden> 
             <textarea name="opinion" placeholder="Everyone wants to hear from you..." required></textarea>
            
             <button onclick="document.getElementById('starRating').value = ratingValue.value;" type="submit">Post Review</button>
-        
+            
         </form>
        
        
