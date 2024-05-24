@@ -64,6 +64,7 @@ router.get('/weather', async (req, res) => {
   const savedLocations = savedLocationsArr[0].savedLocations;
 	var savedLocationsNames = [];
   savedLocations.forEach(async location => {
+    if(location.name != null)
     savedLocationsNames.push(location.name);
   });
   console.log(savedLocationsNames);
