@@ -7,14 +7,14 @@
         <a link href="/about_us" class="menuItems">Contact us</a>
     </button>
 </nav>
-    <div class="fixed content-center w-full">
-        <form class="flex justify-center">
+    <div class=" content-center w-full">
+        <form id="searchBar" class="flex justify-center">
             <input class="rounded-2xl focus:outline-none w-4/6 border-4 border-purple-400" type="text"
                 placeholder="What weather are you looking for?">
         </form>
         <!-- above is SABA -->
         <!-- radman changes -->
-        <form class="flex justify-center" action="/weather?email=<%= email %>" method="post">
+        <form id="searchBox" class="flex justify-center" action="/weather?email=<%= email %>" method="post">
             <div class="rounded-2xl focus:outline-none w-4/6 border-4 border-purple-400 p-4 bg-white">
                 <h1 class="text-xl font-bold mb-4">Search Weather</h1>
                 <label for="weatherType" class="block mb-2">Weather Type:</label>
@@ -35,9 +35,99 @@
             </div>
         </form>
     </div>
-
+    <div class="container mx-auto p-4">
+        <% if (data.length> 0) { %>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 
+                <% data.forEach(day=> { %>
+                    <% var bookmark=false; %>
+                    <% for(var i=0; i < savedLocations.length; i++) { %>
+                        <% if (day.name===savedLocations[i]) { %>
+                            <% bookmark=true; %>
+                            <% break; %>
+                            <% } %>
+                            <% } %>
+                                                <div class="card bg-white shadow-md rounded-lg p-4">
+                                                    <% if (day.imageUrl) { %>
+                                                        <img src="<%= day.imageUrl %>" alt="Image of <%= day.city %>"
+                                                            class="w-full h-48 object-cover rounded mb-4">
+                                                        <% } %>
+                                                            <button id="saveBtn"
+                                                                onclick="saveLocation('<%= day.name %>')"
+                                                                class=" w-1/6">
+                                                                <% if (bookmark) { %><i
+                                                                        class="fa-solid fa-bookmark"></i>
+                                                                    <% }else { %><i class="fa-regular fa-bookmark"></i>
+                                                                        <% } %>
+                                                            </button>
+
+                                                            <h2 onclick="window.location.href='/destination?location=<%= day.name%>&&bookmark=<% bookmark %>'"
+                                                                class="text-xl font-semibold"><strong>City:</strong>
+                                                                <%= day.name %>
+                                                            </h2>
+                                                            <p><strong>Date:</strong>
+                                                                <%= day.date %>
+                                                            </p>
+                                                            <p>
+                                                                <strong>Conditions:</strong>
+                                                                <%= day.conditions %>
+                                                                    <% if (day.conditions.includes('Rain')) { %>
+                                                                        <i class="fas fa-cloud-showers-heavy"></i>
+                                                                        <% } else if (day.conditions.includes('Snow')) {
+                                                                            %>
+                                                                            <i class="fas fa-snowflake"></i>
+                                                                            <% } else if
+                                                                                (day.conditions.includes('Sunny')) { %>
+                                                                                <i class="fas fa-sun"></i>
+                                                                                <% } else if
+                                                                                    (day.conditions.includes('Cloudy'))
+                                                                                    { %>
+                                                                                    <i class="fas fa-cloud"></i>
+                                                                                    <% } else if
+                                                                                        (day.conditions.includes('Windy'))
+                                                                                        { %>
+                                                                                        <i class="fas fa-wind"></i>
+                                                                                        <% } else if
+                                                                                            (day.conditions.includes('Fog'))
+                                                                                            { %>
+                                                                                            <i class="fas fa-smog"></i>
+                                                                                            <% } else { %>
+                                                                                                <i
+                                                                                                    class="fas fa-cloud"></i>
+                                                                                                <!-- Default icon -->
+                                                                                                <% } %>
+                                                            </p>
+                                                            <p><strong>Temperature:</strong> <%= day.temp %>°C</p>
+                                                            <p><strong>Humidity:</strong>
+                                                                <%= day.humidity %>%
+                                                            </p>
+                                                            <p><strong>Description:</strong>
+                                                                <%= day.description %>
+                                                            </p>
+                                                            <p>Rating: 
+                                                                <%= day.rating %>
+                                                            </p>
+                                                </div>
+                                                <% }) %>
+            </div>
+            <% } else { %>
+                <p>No data found for the selected criteria.</p>
+                <% } %>
+
+     </div>           
+
                 <script>
+                    searchBar = document.getElementById("searchBar");
+                    searchBox = document.getElementById("searchBox");
+                    searchBox.style.display = 'none';
+                    searchBar.addEventListener('click', function () {
+                        if(searchBox.style.display === 'flex') {
+                            searchBox.style.display = 'none';
+                        } else{
+                            searchBox.style.display = 'flex';
+                        }
+                    });
+
                     menuItems = document.querySelectorAll('.menuItems');
                     menuItems.forEach((menuItem) => {
                         menuItem.style.display = 'none';

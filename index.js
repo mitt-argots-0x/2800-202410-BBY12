@@ -312,7 +312,16 @@ app.get('/destination', sessionValidation, async (req, res) => {
 
 
 app.get('/home', sessionValidation, async (req, res) => {
-	res.render("home",{email:req.session.email});
+	// find the locations that have rating greater than 4
+	const locations = await locationCollection.find({ rating: { $gt: 4 } }).project({ name: 1, description: 1,date:1, conditions:1, temp:1,imageUrl:1, reviews: 1,rating:1,humidity:1, _id: 1 }).toArray();
+	//find saved locations
+	const savedLocationsArr = await userCollection.find({ email: req.session.email }).project({ savedLocations: 1, _id: 0 }).toArray();
+	const savedLocations = savedLocationsArr[0].savedLocations;
+	var savedLocationsNames = [];
+	savedLocations.forEach(async location => {
+		savedLocationsNames.push(location.name);
+	});
+	res.render("home",{email:req.session.email,data:locations,savedLocations:savedLocationsNames});
 });
 
 app.get('/post_review', sessionValidation, async (req, res) => {
@@ -342,6 +351,7 @@ app.get('/profile', sessionValidation, async (req, res) => {
 	allLocations = await locationCollection.find().project({_id:0}).toArray();
 	result = await userCollection.find({ email: req.session.email }).project({ savedLocations: 1, _id: 0 }).toArray();
 	var savedLocations = result[0].savedLocations;
+	console.log(savedLocations);
 	res.render('profile', { user: req.session.username, email: req.session.email, imgSrc: imgSrc[0].image_id , data:savedLocations});
 
 });
@@ -431,6 +441,7 @@ app.get('/saveLocation', sessionValidation, async (req, res) => {
 			if (savedLocations[i].name == locationName) {
 				await userCollection.updateOne({ email: req.session.email }, { $pull: { savedLocations: location[0] } });
 				bookmark = false;
+				console.log("removed");
 			} else {
 				await userCollection.updateOne({ email: req.session.email }, { $push: { savedLocations: location[0] } });
 
@@ -442,6 +453,8 @@ app.get('/saveLocation', sessionValidation, async (req, res) => {
 	res.redirect('/weather?email=' + req.session.email);
 	}else if(req.get('referer').includes("destination")){
 		res.redirect('/destination?location=' + locationName);
+	}else if(req.get('referer').includes("home")){
+		res.redirect('/home');
 	}
 });
 
