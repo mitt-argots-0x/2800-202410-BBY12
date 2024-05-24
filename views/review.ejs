@@ -4,7 +4,8 @@
                     <%= avgRating %>
                 </h1>
 
-                    <h2>Everyone wants to hear from you!</h2><br>
+                    <h2>Welcome to the review page user!</h2><br>
+                    <div>
                     <% if(typeof(reviews) !='undefined' ) { %>
                         <% for (var i=0; i < reviews.length; i++) { %>
                             <h3>
@@ -19,9 +20,8 @@
                             <span>
                                 <%= reviews[i].date %>
                             </span>
-                            <p>*****************************************************
-                            </p>
                             <% } %>
+<<<<<<< HEAD
                                 <% } %>
                                     <button><a
                                             href="/post_review?location=<%= location.name %>"
@@ -31,3 +31,13 @@
                                         <button><a href='/destination' class="btn cancel">Go Back</a></button>
                                     <%- include("templates/footer",{jsFile:
                                         ['js/review.js']}) %>
+=======
+                        <% } %>
+                    </div>
+                    <button><a href="/post_review?location=<%= location.name %>" style="text-decoration: none; color: red;">
+                            Share
+                            Your Experience!
+                        </a></button>
+
+<%- include("templates/footer",{jsFile:['js/review.js']}) %>
+>>>>>>> 374d4c4eeb8b0b8058364931833c707e8cc5a8ff

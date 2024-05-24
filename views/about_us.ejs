@@ -1,4 +1,44 @@
-<%- include("templates/header") %> 
-<%- include("templates/landingpage") %>
-    <h1>Welcome to ABOUT page!</h1>
-<%- include("templates/footer") %> 
+<%- include("templates/header") %>
+<div class="fixed top-0 w-full">
+    <%- include("templates/landingpage") %>
+</div>
+
+    <div class="w-5/6 mx-auto mt-28 pb-2 px-2 text-md rounded-2xl bg-orange-100">
+
+        <div>
+            <br><h2 class="text-center h1 text-2xl"><span class="px-2 bg-orange-200 pb-1 rounded-lg">SunSpot: For when you want rain or shine!</span></h2><br>
+        </div>    
+        
+        Imagine a weather app that not only tells you the forecast but also filters locations all around the world based on your unique weather preferences. 
+        Introducing SunSpot, the next-generation weather app designed to provide you with the best destination spots.
+        <br>
+            
+        <p class="text-center h2">Key Features:</p>
+
+        <div class="grid grid-cols-3">
+            <div class="py-4 w-full h-full bg-orange-300 rounded-3xl text-center">
+                Customized Weather Filters 
+                <img src="imgs/logo.png" class="w-full bg-white rounded-full">
+                With SunSpot, you can tailor your next destination spots according to your specific needs.
+            </div>
+            <div class="py-4 w-full h-full bg-teal-300 rounded-3xl text-center">
+                Detailed Forecasts
+                <img src="imgs/logo.png" class="w-full bg-white rounded-full">
+                SunSpot provides detailed daily forecasts, complete with minimum and maximum temperature, humidity, and predominant condition.
+            </div>
+            <div class="py-4 w-full h-full bg-purple-300 rounded-3xl text-center">
+                Community Insights
+                <img src="imgs/logo.png" class="w-full bg-white rounded-full">
+                Join a community of outdoor enthusiasts and share your experiences. SunSpot allows users to post reviews and share their experiences in each location.
+            </div>
+        </div> 
+            
+            <p class="mt-4">    
+            SunSpot goes beyond traditional weather apps by focusing on what truly matters to you. Whether you’re a sun-seeker, a winter enthusiast, or someone who loves a mild breeze, 
+            SunSpot ensures you find the perfect destination to match your weather preferences. With SunSpot say hello to a personalized weather experience!<br>
+            <br>
+            Get started today by creating an account or logging in!
+            </p>
+    </div>
+
+<%- include("templates/footer") %>

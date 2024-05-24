@@ -200,6 +200,7 @@ app.post('/createUser', async (req, res) => {
 	await userCollection.insertOne({ username: username, email: email, password: hashedPassword, reviews: [{ text: "" }], savedLocations: [] });
 	req.session.authenticated = true;
 	req.session.email = email;
+	req.session.username = username;
 	req.session.cookie.maxAge = expireTime;
 	res.redirect('/');
 });
@@ -265,7 +266,11 @@ app.post('/login', async (req, res) => {
 	if (await bcrypt.compare(password, result[0].password)) {
 		req.session.authenticated = true;
 		req.session.email = email;
+<<<<<<< HEAD
 		req.session.username = result.username;
+=======
+		req.session.username = result[0].username;
+>>>>>>> 374d4c4eeb8b0b8058364931833c707e8cc5a8ff
 		req.session.cookie.maxAge = expireTime;
 		res.redirect('/home');
 		return;
@@ -321,6 +326,7 @@ app.get('/post_review', sessionValidation, async (req, res) => {
 		const email = req.session.email;
 		const user = await User.findOne({ email });
 
+		console.log(req.session);
 		res.render('post_review', {
 			user: user,
 			username: username,
@@ -340,7 +346,7 @@ app.get('/profile', sessionValidation, async (req, res) => {
 	allLocations = await locationCollection.find().project({_id:0}).toArray();
 	result = await userCollection.find({ email: req.session.email }).project({ savedLocations: 1, _id: 0 }).toArray();
 	var savedLocations = result[0].savedLocations;
-	res.render('profile', { user: await getUserName(req), email: req.session.email, imgSrc: imgSrc[0].image_id , data:savedLocations});
+	res.render('profile', { user: req.session.username, email: req.session.email, imgSrc: imgSrc[0].image_id , data:savedLocations});
 
 });
 
@@ -378,9 +384,20 @@ app.post('/changePersonalinfo', sessionValidation, async (req, res) => {
 app.get('/review', sessionValidation, async (req, res) => {
 	var locationName = req.query.location;
 	var location = await locationCollection.find({ name: locationName }).project({ name: 1, description: 1, reviews: 1, _id: 1 }).toArray();
+<<<<<<< HEAD
 	reviews =location[0].reviews;
+=======
+
+	if(location.length < 1) {
+		console.log(`${locationName} is not found`);
+		return res.render("404");
+	}
+
+	reviews = location[0].reviews;
+>>>>>>> 374d4c4eeb8b0b8058364931833c707e8cc5a8ff
 	var avg = 0;
 	var a = 0, b = 0, c = 0, d = 0, e = 0;
+	console.log(req.session);
 	if (reviews.length != 0) {
 		for (var i = 0; i < reviews.length; i++) {
 			switch (reviews[i].starRating) {

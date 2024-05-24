@@ -1,21 +1,19 @@
 <%- include("templates/header") %>
 <div class="grid justify-center grid-cols-2 w-full mt-4 h-5/6">
   <div class="grid justify-center">
-    <button id="setting"  onclick='window.location.href="/setting"'>Setting</button>
   <img class="mx-auto rounded-full border-4 border-teal-300 mb-2" <% if (typeof(imgSrc) != 'undefined'){ %>src="<%= imgSrc %>" <% } %> alt="profile image" style="width: 200px;"/>
     <h2 class="text-center mb-4 text-3xl"><span class=" border-b-4 border-teal-300"><%= user %></span></h2>
-    <form class="bg-teal-100 rounded-3xl" action="/picUpload?email=<%= email %>" method="post" enctype="multipart/form-data">
+    <form class="grid bg-teal-100 rounded-3xl" action="/picUpload?email=<%= email %>" method="post" enctype="multipart/form-data">
       <div>
         <input class="bg-teal-200 rounded-tr-3xl" type="file" id="image" name="image" value="" required />
       </div>
-      <div>
-        <button class="ml-2 my-2 border-2 border-teal-300 bg-teal-200 rounded-3xl px-2 hover:border-cyan-300 hover:bg-cyan-200" type="submit">Save</button>
-      </div>
+      <button class="m-auto my-2 border-2 border-teal-300 bg-teal-200 rounded-3xl px-2 hover:border-cyan-300 hover:bg-cyan-200" type="submit">Save New Profile Picture</button>
     </form>
-      
+    <button class="h-3/4 ml-2 my-2 border-2 border-teal-300 bg-teal-200 rounded-3xl px-2 hover:border-cyan-300 hover:bg-cyan-200"id="setting"  onclick='window.location.href="/setting"'>Change Name/Password</button>
+    <button class="h-3/4 ml-2 my-2 border-2 border-teal-300 bg-teal-200 rounded-3xl px-2 hover:border-cyan-300 hover:bg-cyan-200"id="setting"  onclick='window.location.href="/about_us"'>About Us</button>
+    <button class="h-3/4 ml-2 my-2 border-2 border-teal-300 bg-teal-200 rounded-3xl px-2 hover:border-cyan-300 hover:bg-cyan-200" id=""  onclick='window.location.href="/logout"'>Logout</button>
   </div>
   <div class="bg-teal-100 grid h-full rounded-3xl mr-4 justify-center">
-      <button class="h-3/4 ml-2 my-2 border-2 border-teal-300 bg-teal-200 rounded-3xl px-2 hover:border-cyan-300 hover:bg-cyan-200"id="setting"  onclick='window.location.href="/setting"'>Change Name/Password</button>
       <button class="h-3/4 ml-2 my-2 border-2 border-teal-300 bg-teal-200 rounded-3xl px-2 hover:border-cyan-300 hover:bg-cyan-200"id="plannedLocationsBtn">Planned Locations</button>
       <div id="plannedLocations_goes_here">
       </div>
