@@ -1,12 +1,3 @@
-// //Define the include function for absolute file name
-global.base_dir = __dirname;
-global.abs_path = function (path) {
-	return base_dir + path;
-}
-global.include = function (file) {
-	return require(abs_path('/' + file));
-}
-
 //all the "requires"
 require("./utils.js");
 require('dotenv').config();
@@ -144,16 +135,6 @@ const locationSchema = new mongoose.Schema({
 const User = mongoose.model('User', userSchema);
 const Location = mongoose.model('Location', locationSchema);
 
-//This fuction returns the user obj that is currently logged in
-async function getUserName(req) {
-	if (req.session.authenticated) {
-		var email = req.session.email;
-		const result = await userCollection.find({ email: email }).project({ username: 1, _id: 1 }).toArray();
-		return result[0].username;
-	} else {
-		return null;
-	}
-}
 function sessionValidation(req, res, next) {
 	if (req.session.authenticated) {
 		next();
@@ -230,7 +211,7 @@ app.post('/post_review', async (req, res) => {
 		let name = req.query.location;
 		var description = "blah blah blah";
 		const email = req.session.email;
-		var user = await getUserName(req);
+		var user = req.session.username;
 		const { opinion } = req.body;
 		const { starRating } = req.body;
 		// Find the user by email or create a new one
@@ -284,6 +265,7 @@ app.post('/login', async (req, res) => {
 	if (await bcrypt.compare(password, result[0].password)) {
 		req.session.authenticated = true;
 		req.session.email = email;
+		req.session.username = result.username;
 		req.session.cookie.maxAge = expireTime;
 		res.redirect('/home');
 		return;
@@ -314,20 +296,28 @@ app.get('/about_us', sessionValidation, (req, res) => {
 app.get('/destination', sessionValidation, async (req, res) => {
 	var locationName = req.query.location;
 	var location = await locationCollection.find({ name: locationName }).project({ name: 1, description: 1, reviews: 1, _id: 1 }).toArray();
-	res.render("destination", { location: location[0] });
+	var bookmark = false;
+	const savedLocationsArr = await userCollection.find({ email: req.session.email }).project({ savedLocations: 1, _id: 0 }).toArray();
+	const savedLocations = savedLocationsArr[0].savedLocations;
+	var savedLocationsNames = [];
+	savedLocations.forEach(async location => {
+		savedLocationsNames.push(location.name);
+	});
+	if (savedLocationsNames.includes(locationName)) {
+		bookmark = true;
+	}
+	res.render("destination", { location: location[0],bookmark: bookmark});
 });
 
 
-app.get('/home',sessionValidation, async(req, res) => {
-	var bookmark = req.query.bookmark;
-	const result = await locationCollection.find().project({ name: 1, description: 1, reviews: 1, _id: 1 }).toArray();
-	res.render("home", { locations: result , bookmark: bookmark});
+app.get('/home', sessionValidation, async (req, res) => {
+	res.render("home",{email:req.session.email});
 });
 
 app.get('/post_review', sessionValidation, async (req, res) => {
 	var locationName = req.query.location;
 	try {
-		const username = await getUserName(req);
+		const username = req.session.username;
 		const email = req.session.email;
 		const user = await User.findOne({ email });
 
@@ -460,7 +450,7 @@ app.get('/unsaveLocation', sessionValidation, async (req, res) => {
 		}
 	res.redirect('/profile');
 }); 
-
+	
 
 // Route to display the reset password request form
 app.get('/resetPassword', (req, res) => {

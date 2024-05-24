@@ -72,7 +72,7 @@ router.get('/weather', async (req, res) => {
 });
 
 router.post('/weather', async (req, res) => {
-  // const { weatherType, startDate, endDate } = req.body;
+ // const { weatherType, startDate, endDate } = req.body;
   // const { default: fetch } = await import('node-fetch');
 
   // try {
@@ -103,6 +103,7 @@ router.post('/weather', async (req, res) => {
       tempmax: 30,
       tempmain: 0,
       humidity: 50,
+      reviews: [],
       imageUrl: 'https://images.unsplash.com/photo-1627322480993-8b7e5e7f9c1f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwyNTA5MzZ8MHwxfGFsbHwxfHNvbWV8fHxlYXJuaW5nfHx8fHx8fHwxNjI3MzIyNzIw&ixlib=rb-1.2.1&q=80&w=400' },  
 
     {
@@ -112,6 +113,7 @@ router.post('/weather', async (req, res) => {
       tempmax: 25,
       tempmin: 5,
       humidity: 50,
+      reviews: [],
       imageUrl: 'https://images.unsplash.com/photo-1627322480993-8b7e5e7f9c1f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwyNTA5MzZ8MHwxfGFsbHwxfHNvbWV8fHxlYXJuaW5nfHx8fHx8fHwxNjI3MzIyNzIw&ixlib=rb-1.2.1&q=80&w=400' }
 
   ];
@@ -119,7 +121,6 @@ router.post('/weather', async (req, res) => {
   const savedLocationsArr = await userCollection.find({ email: email }).project({ savedLocations: 1, _id: 0 }).toArray();
   const savedLocations = savedLocationsArr[0].savedLocations;
 	var savedLocationsNames = [];
-  
   savedLocations.forEach(async location => {
     savedLocationsNames.push(location.name);
   });
