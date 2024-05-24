@@ -295,6 +295,8 @@ app.get('/about_us', sessionValidation, (req, res) => {
 });
 
 app.get('/destination', sessionValidation, async (req, res) => {
+	var email = req.session.email;
+	console.log(email);
 	var locationName = req.query.location;
 	var location = await locationCollection.find({ name: locationName }).project({ name: 1, description: 1, reviews: 1, _id: 1 }).toArray();
 	var bookmark = false;
@@ -307,7 +309,7 @@ app.get('/destination', sessionValidation, async (req, res) => {
 	if (savedLocationsNames.includes(locationName)) {
 		bookmark = true;
 	}
-	res.render("destination", { location: location[0],bookmark: bookmark});
+	res.render("destination", { location: location[0],bookmark: bookmark, email});
 });
 
 
