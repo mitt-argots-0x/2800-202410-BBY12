@@ -124,9 +124,9 @@ router.post('/weather', async (req, res) => {
   savedLocations.forEach(async location => {
     savedLocationsNames.push(location.name);
   });
-    allResults.forEach(async result => {
-      await locationCollection.updateOne({ city: result.city}, { $set: { name: result.city, description:null, date: result.datetime, conditions: result.conditions, temp: result.tempmax, imageUrl: result.imageUrl, reviews: [], rating: 0 } }, { upsert: true });
-    });
+    // allResults.forEach(async result => {
+    //   await locationCollection.updateOne({ city: result.city}, { $set: { name: result.city, description:null, date: result.datetime, conditions: result.conditions, temp: result.tempmax, imageUrl: result.imageUrl, reviews: [], rating: 0 } }, { upsert: true });
+    // });
     res.render('weatherResults', { data: allResults, savedLocations: savedLocationsNames});
   // } catch (error) {
   //   console.error('Error fetching weather data:', error);
