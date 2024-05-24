@@ -1,8 +1,22 @@
 <%- include("templates/header") %>
 
 <style>
+    @keyframes sparkle {
+        0%, 100% { text-shadow: 0 0 10px #fff, 0 0 20px #ff00ff, 0 0 30px #ff00ff, 0 0 40px #ff00ff; }
+        50% { text-shadow: 0 0 20px #fff, 0 0 30px #ff00ff, 0 0 40px #ff00ff, 0 0 50px #ff00ff; }
+    }
+
+    @keyframes colorChange {
+        0% { color: red; }
+        25% { color: yellow; }
+        50% { color: lime; }
+        75% { color: cyan; }
+        100% { color: magenta; }
+    }
     .sunspot {
-        background-color: red;
+        animation: sparkle 1s infinite, colorChange 2s infinite;
+        display: inline-block;
+        position: relative;
     }
 </style>
 <script></script>
