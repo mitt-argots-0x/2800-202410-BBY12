@@ -59,7 +59,7 @@ const getImageUrl = async (city) => {
 router.get('/weather', async (req, res) => {
   console.log("in weather get route");
   email = req.query.email;
-  const result = await locationCollection.find().project({ _id: 0 }).toArray();
+  const result = await locationCollection.find().project({ name: 1, description: 1,date:1, conditions:1, temp:1,imageUrl:1, reviews: 1,rating:1,humidity:1, _id: 1 }).toArray();
 	const savedLocationsArr = await userCollection.find({ email: email }).project({ savedLocations: 1, _id: 0 }).toArray();
   const savedLocations = savedLocationsArr[0].savedLocations;
 	var savedLocationsNames = [];
