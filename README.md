@@ -2,6 +2,8 @@
 
 ## 1. Project Description
 Our project team, BBY-12, is developing a travel app to help travelers choose their perfect trip destinations with a range of locations that are offered based on their preferred weather conditions.
+the hosted link:
+https://sunspot.onrender.com/
 
 ## 2. Names of Contributors
 * Radman Mohammadi
@@ -17,11 +19,18 @@ List technologies (with version numbers), API's, icons, fonts, images, media or 
 * Firebase 8.0 (BAAS - Backend as a Service)
 * JavaScript
 * MongoDB
+* Visual Crossing API
+* Unsplash API
 
 ## 4. Complete setup/installion/usage
-State what a user needs to do when they come to your project.  How do others start using your code or application?
-Here are the steps ...
-* In Progress
+* if you run in your local Host make sure to download the below packages:
+- cloudinary
+- mongoDB (we suggest to use 3T to have easy access to database)
+* install node js
+* go to your Command Line and try node index.js for windows users
+* go to any browser and try for localhost address (we defined http://localhost:3000/)
+* SignUp first, then you will be redirected to the home page
+* In progress
 
 ## 5. Known Bugs and Limitations
 Here are some known bugs:
