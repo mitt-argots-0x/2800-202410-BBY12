@@ -4,7 +4,7 @@
             <i id="hamburgerMenu" class="fa-solid fa-xl fa-bars"></i>
             <a link href="/setting" class="menuItems">setting</a>
             <a link href="/logout" class="menuItems">Log out</a>
-            <a link href="/about_us" class="menuItems">Contact us</a>
+            <a link href="/about_us" class="menuItems">About us</a>
         </button>
     </nav>
     <div class="content-center w-full">
@@ -25,7 +25,7 @@
                 <% data.forEach(day=> { %>
                     <% var bookmark=false; %>
                         <% for(var i=0; i < savedLocations.length; i++) { %>
-                            <% if (day.city===savedLocations[i]) { %>
+                            <% if (day.name===savedLocations[i]) { %>
                                 <% bookmark=true; %>
                                     <% break; %>
                                         <% } %>
@@ -36,7 +36,7 @@
                                                             class="w-full h-48 object-cover rounded mb-4">
                                                         <% } %>
                                                             <button id="saveBtn"
-                                                                onclick="saveLocation('<%= day.city %>')"
+                                                                onclick="saveLocation('<%= day.name %>')"
                                                                 class=" w-1/6">
                                                                 <% if (bookmark) { %><i
                                                                         class="fa-solid fa-bookmark"></i>
@@ -46,7 +46,7 @@
 
                                                             <h2 onclick="window.location.href='/destination?location=<%= day.city %>&&bookmark=<% bookmark %>'"
                                                                 class="text-xl font-semibold"><strong>City:</strong>
-                                                                <%= day.city %>
+                                                                <%= day.name %>
                                                             </h2>
                                                             <p><strong>Date:</strong>
                                                                 <%= day.date %>
@@ -81,6 +81,8 @@
                                                                                                 <% } %>
                                                             </p>
                                                             <p><strong>Temperature:</strong> <%= day.temp %>°C</p>
+                                                            <p><strong>Max temp:</strong> <%= day.tempmax %>°C</p>
+                                                            <p><strong>Min temp:</strong> <%= day.tempmin %>°C</p>
                                                             <p><strong>Humidity:</strong>
                                                                 <%= day.humidity %>%
                                                             </p>
@@ -94,7 +96,7 @@
                                 </div>
                 <% } %>
 
-                    <a href="/weather" class="mt-4 inline-block text-blue-500 hover:underline">Search Again</a>
+                    <a href="/home" class="mt-4 inline-block text-blue-500 hover:underline">Search Again</a>
     </div>
 
         <style>

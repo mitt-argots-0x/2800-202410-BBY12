@@ -7,6 +7,10 @@
             <p id="description_goes_here" class="mt-2">
                 <%= location.description %>
             </p>
+            <p><strong>Temperature:</strong> <%= location.temp %>°C</p>
+            <p><strong>Max temp:</strong> <%= location.tempmax %>°C</p>
+            <p><strong>Min temp:</strong> <%= location.tempmin %>°C</p>
+            <p><strong>Humidity:</strong> <%= location.humidity %>%</p>
             <div class="mx-auto flex justify-center w-4/5 mt-2">
                 <span>Rating:<%= location.rating %></span>
                 <button class="ml-auto text-2xl pb-1 text-white border-2 border-teal-400 bg-teal-300 rounded-lg px-10 hover:border-cyan-300 hover:bg-cyan-200" id="reviewBtn" onclick='window.location.href="/review?location=<%= location.name %>"'>

@@ -4,7 +4,7 @@
             <i id="hamburgerMenu" class="fa-solid fa-xl fa-bars"></i>
             <a link href="/setting" class="menuItems">setting</a>
             <a link href="/logout" class="menuItems">Log out</a>
-            <a link href="/about_us" class="menuItems">Contact us</a>
+            <a link href="/about_us" class="menuItems">About us</a>
         </button>
     </nav>
     <div class="grid content-center w-full">
@@ -97,11 +97,10 @@
                                                             <p><strong>Temperature:</strong>
                                                                 <%= day.temp %>°C
                                                             </p>
+                                                            <p><strong>Max temp:</strong> <%= day.tempmax %>°C</p>
+                                                            <p><strong>Min temp:</strong> <%= day.tempmin %>°C</p>
                                                             <p><strong>Humidity:</strong>
                                                                 <%= day.humidity %>%
-                                                            </p>
-                                                            <p><strong>Description:</strong>
-                                                                <%= day.description %>
                                                             </p>
                                                             <p>Rating: <%= day.rating %>
                                                             </p>

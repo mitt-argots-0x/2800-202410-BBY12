@@ -13,9 +13,12 @@
             <% for (var i=0; i < reviews.length; i++) { %>
                 <div class="bg-orange-300 w-full p-2 rounded-2xl">
                     <p class="font-bold pl-1 pb-1">
+                        <img src="<%= reviews[i].profileUrl %>" alt="profile image" class="rounded-full border-2 border-teal-300 " style="width:50px;height: 50px;object-fit: cover; "/>
                         <%= reviews[i].user %>
                         <span id="<%= i %>">
-                            (<%= reviews[i].starRating %> Stars)
+                            <% for (var j=0; j < reviews[i].starRating; j++) { %>
+                                <i class="fa-solid fa-star"></i>                            
+                            <% } %>
                         </span>
                     </p>
 
@@ -24,7 +27,7 @@
                             <p class="px-2 break-all"><%= reviews[i].text %></p>
                         </p>
                         <span class="">
-                            <p class="italic text-sm bg-teal-100 w-full rounded-b-2xl px-2 pb-1"><%= reviews[i].date %></p>
+                            <p class="text-sm bg-teal-100 w-full rounded-b-2xl px-2 pb-1"><span style="font-style: italic;">date posted:</span> <%= reviews[i].date %> </p>
                         </span>
                     </div>
                 </div> 
