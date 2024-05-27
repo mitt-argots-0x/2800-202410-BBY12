@@ -2,8 +2,24 @@
 
 <h1 class="h1 text-center mt-2">
     <span class="bg-purple-400 px-4 rounded-3xl pb-1">
-        Average Rating: <%= avgRating %> Stars!
+        <%= avgRating %>
+        <% 
+        var fullStars = Math.floor(avgRating);
+        var halfStars = avgRating % 1 >= 0.5 ? 1 : 0;
+        var emptyStars = 5 - fullStars - halfStars;
+        %>
+        <% for (var i=0; i < fullStars; i++) { %>
+            <i class="fa-solid fa-star"></i>
+        <% } %>
+        
+        <% if (halfStars) { %>
+            <i class="fa-solid fa-star-half-stroke"></i>
+        <% } %>
+        <% for (var i = 0; i < emptyStars; i++) { %>
+            <i class="fa-regular fa-star"></i>
+        <% } %>
     </span>
+   
 </h1>
 
 <h2 class="text-slate-500 italic text-center">Welcome to the <%= location.name %> review page user!</h2><br>
@@ -34,7 +50,7 @@
                 <br>
             <% } %>
         <% } %>
-        <button class="mx-auto bg-purple-400 rounded-2xl mt-2 px-2 mb-20"><a class="" href="/post_review?location=<%= location.name %>">
+        <button style="position: sticky; bottom: 70px;" class="mx-auto bg-purple-400 rounded-2xl  px-2 mb-20"><a class="" href="/post_review?location=<%= location.name %>">
             <p class="">Share Your Experience!</p>
         </a></button>
     </div>

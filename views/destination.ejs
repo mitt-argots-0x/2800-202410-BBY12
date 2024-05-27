@@ -12,7 +12,22 @@
             <p><strong>Min temp:</strong> <%= location.tempmin %>°C</p>
             <p><strong>Humidity:</strong> <%= location.humidity %>%</p>
             <div class="mx-auto flex justify-center w-4/5 mt-2">
-                <span>Rating:<%= location.rating %></span>
+                <span style="margin-right: 16px;">Rating:<%= location.rating %>
+                    <% 
+                    var fullStars = Math.floor(location.rating);
+                    var halfStars = location.rating % 1 >= 0.5 ? 1 : 0;
+                    var emptyStars = 5 - fullStars - halfStars;
+                    %>
+                    <% for (var i=0; i < fullStars; i++) { %>
+                        <i style="margin-right: -6px;" class="fa-solid fa-star"></i>
+                    <% } %>
+                    
+                    <% if (halfStars) { %>
+                        <i style="margin-right: -6px;" class="fa-solid fa-star-half-stroke"></i>
+                    <% } %>
+                    <% for (var i = 0; i < emptyStars; i++) { %>
+                        <i style="margin-right: -6px;" class="fa-regular fa-star"></i>
+                    <% } %></span>
                 <button class="ml-auto text-2xl pb-1 text-white border-2 border-teal-400 bg-teal-300 rounded-lg px-10 hover:border-cyan-300 hover:bg-cyan-200" id="reviewBtn" onclick='window.location.href="/review?location=<%= location.name %>"'>
                     Reviews
                 </button>
