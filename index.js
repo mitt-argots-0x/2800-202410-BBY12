@@ -109,6 +109,7 @@ const reviewSchema = new mongoose.Schema({
 	text: { type: String, default: "" },
 	starRating: { type: Number, default: 0 },
 	user: { type: String, default: "" },
+	email: { type: String, default: "", unique: true },
 	profileUrl: { type: String, default: "" },
 	date: { type: String, default: "" }
 });
@@ -228,7 +229,7 @@ app.post('/post_review', async (req, res) => {
 		var year = date.getFullYear();
 		date = `${day}/${month}/${year}`;
 		// Add the new review to the reviews array
-		l.reviews.push({ text: opinion, starRating: starRating, user: req.session.username, profileUrl: user[0].image_id, date: date });
+		l.reviews.push({ text: opinion, starRating: starRating, user: req.session.username,email:req.session.email, profileUrl: user[0].image_id, date: date });
 
 		// Save the user
 		await l.save();
@@ -357,6 +358,14 @@ app.get('/post_review', sessionValidation, async (req, res) => {
 app.get('/profile', sessionValidation, async (req, res) => {
 	var imgSrc = await userCollection.find({ email: req.session.email }).project({ image_id: 1, _id: 0 }).toArray();
 	allLocations = await locationCollection.find().project({_id:0}).toArray();
+	allLocations.forEach(async location => {
+		location.reviews.forEach(async review => {
+			if(review.email == req.session.email){
+				review.profileUrl = imgSrc[0].image_id;
+				await locationCollection.updateOne({name:location.name},{$set:{reviews:location.reviews}});
+			}
+		});
+	});
 	result = await userCollection.find({ email: req.session.email }).project({ savedLocations: 1, _id: 0 }).toArray();
 	var savedLocations = result[0].savedLocations;
 	res.render('profile', { user: req.session.username, email: req.session.email, imgSrc: imgSrc[0].image_id , data:savedLocations});
@@ -500,6 +509,7 @@ app.get('/newPassword', (req, res) => {
 const crypto = require('crypto');
 const moment = require('moment');
 const { all } = require("./routes/router.js");
+const { loadEnvFile } = require("process");
 
 app.post('/sendResetLink', async (req, res) => {
 	const email = req.body.email;

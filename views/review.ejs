@@ -1,8 +1,8 @@
 <%- include("templates/header") %>
 
-<h1 class="h1 text-center mt-2">
+<h1 class="h3 text-center mt-2">
     <span class="bg-purple-400 px-4 rounded-3xl pb-1">
-        <%= avgRating %>
+      (<%= avgRating %>stars)
         <% 
         var fullStars = Math.floor(avgRating);
         var halfStars = avgRating % 1 >= 0.5 ? 1 : 0;
@@ -29,11 +29,11 @@
             <% for (var i=0; i < reviews.length; i++) { %>
                 <div class="bg-orange-300 w-full p-2 rounded-2xl">
                     <p class="font-bold pl-1 pb-1">
-                        <img src="<%= reviews[i].profileUrl %>" alt="profile image" class="rounded-full border-2 border-teal-300 " style="width:50px;height: 50px;object-fit: cover; "/>
-                        <%= reviews[i].user %>
-                        <span id="<%= i %>">
+                        <img src="<%= reviews[i].profileUrl %>" alt="profile image" class="rounded-full border-2 border-teal-300 " style="width:50px;height: 50px;object-fit: cover; display: inline; "/>
+                        <span><%= reviews[i].user %></span>
+                        <span style="display: block;" id="<%= i %>">
                             <% for (var j=0; j < reviews[i].starRating; j++) { %>
-                                <i class="fa-solid fa-star"></i>                            
+                                <i style="margin-right: -5px;" class="fa-solid fa-star"></i>                            
                             <% } %>
                         </span>
                     </p>
