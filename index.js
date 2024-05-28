@@ -440,7 +440,60 @@ app.get('/review', sessionValidation, async (req, res) => {
 	}
 	avg = Math.round(avg * 100) / 100;
 	await locationCollection.updateOne({ name: locationName }, { $set: { rating: avg } });
-	res.render("review", { location: location[0], avgRating: avg });
+	res.render("review", { location: location[0], avgRating: avg,email:req.session.email });
+});
+
+app.get('/edit_review', sessionValidation, async (req, res) => {
+	var locationName = req.query.location;
+	var location = await locationCollection.find({ name: locationName }).project({ _id: 0 }).toArray();
+	var reviewId = req.query.reviewId;
+	location[0].reviews.forEach(async review => {
+		if (review._id == reviewId) {
+			res.render("editReview", { location: locationName, review: review, reviewId: reviewId });
+		}
+	});
+});
+
+app.post('/edit_review', sessionValidation, async (req, res) => {
+    let locationName = req.query.location;
+    var description = "blah blah blah";
+    var user = await userCollection.find({ email: req.session.email }).project({ image_id: 1, _id: 0 }).toArray();
+    const { opinion } = req.body;
+    let { starRating } = req.body;
+
+    starRating = Number(starRating);
+    let l = await Location.findOne({ "name": locationName });
+    
+    var date = new Date();
+    var day = date.getDate();
+    var month = date.getMonth() + 1;
+    var year = date.getFullYear();
+    date = `${day}/${month}/${year}`;
+    
+    // Add the new review to the reviews array
+    l.reviews.forEach(async review => {
+        if (review._id == req.query.reviewId) {
+            review.text = opinion;
+            review.starRating = starRating;
+            review.date = date;
+        }
+    });
+
+    await l.save();
+    res.redirect('/review?location=' + locationName);
+});
+
+app.get('/delete_review', sessionValidation, async (req, res) => {
+	var locationName = req.query.location;
+	var location = await locationCollection.find({ name: locationName }).project({ _id: 0 }).toArray();
+	var reviewId = req.query.reviewId;
+	location[0].reviews.forEach(async review => {
+		if (review._id == reviewId) {
+			await locationCollection.updateOne({ name: locationName }, { $pull: { reviews: review } });
+		}
+	}
+	);
+	res.redirect('/review?location=' + locationName);
 });
 
 app.get('/saveLocation', sessionValidation, async (req, res) => {

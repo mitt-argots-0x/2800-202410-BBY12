@@ -31,6 +31,10 @@
                     <p class="font-bold pl-1 pb-1">
                         <img src="<%= reviews[i].profileUrl %>" alt="profile image" class="rounded-full border-2 border-teal-300 " style="width:50px;height: 50px;object-fit: cover; display: inline; "/>
                         <span><%= reviews[i].user %></span>
+                        <% if (reviews[i].email === email) { %>
+                            <button id="deleteBtn" class="ml-auto" onclick='window.location.href="/delete_review?location=<%= location.name %>&reviewId=<%= reviews[i]._id %>"'><i class="fa-solid fa-trash"></i></button>
+                            <button id="editBtn" class="ml-2" onclick='window.location.href="/edit_review?location=<%= location.name %>&reviewId=<%= reviews[i]._id %>"'><i class="fa-solid fa-edit"></i></button>
+                        <% } %>
                         <span style="display: block;" id="<%= i %>">
                             <% for (var j=0; j < reviews[i].starRating; j++) { %>
                                 <i style="margin-right: -5px;" class="fa-solid fa-star"></i>                            
