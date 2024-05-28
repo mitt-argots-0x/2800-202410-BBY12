@@ -542,6 +542,51 @@ app.get('/unsaveLocation', sessionValidation, async (req, res) => {
 		}
 	res.redirect('/profile');
 }); 
+
+app.get('/signOut', (req,res) => { 
+    res.render('signOut');
+});
+app.post('/signOut', async (req,res) => { //destroys session and account
+    
+    const email = req.session.email; 
+    console.log(email);
+    
+    const entered_password = req.body.password;
+    
+    console.log(entered_password);
+    if(!entered_password){
+        res.status(400).send('password is required.');
+        return;
+    }{
+        console.log("password has been entered");
+    }
+    let currentuser = await userCollection.findOne({ email : email
+    });
+    console.log(currentuser.password);
+    user_password = currentuser.password;
+    bcrypt.compare(entered_password, user_password, (err, isMatch) => {
+        if (err) {
+            console.log("Error comparing passwords:", err);
+            res.status(500).send("Internal Server Error");
+            return;
+        }
+        if (!isMatch) {
+            res.status(401).send("Incorrect password");
+            return;
+        }
+        userCollection.deleteOne({email: email }, (err, result) => {
+            if (err) {
+                console.log("Error deleting user account:", err);
+                res.status(500).send("Internal Server Error");
+                return;
+            }
+        });
+        req.session.destroy();
+        res.redirect('/createUser');
+    });  
+    
+});
+
 	
 
 // Route to display the reset password request form
