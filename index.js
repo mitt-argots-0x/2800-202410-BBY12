@@ -321,7 +321,7 @@ app.get('/destination', sessionValidation, async (req, res) => {
 
 app.get('/home', sessionValidation, async (req, res) => {
 	// find the locations that have rating greater than 4
-	const locations = await locationCollection.find().project({ name: 1, description: 1,date:1, conditions:1, temp:1,tempmin:1,tempmax:1,imageUrl:1, reviews: 1,rating:1,humidity:1, _id: 1 }).toArray();
+	const locations = await locationCollection.find().project({ _id: 0 }).toArray();
 	//find saved locations
 	const savedLocationsArr = await userCollection.find({ email: req.session.email }).project({ savedLocations: 1, _id: 0 }).toArray();
 	const savedLocations = savedLocationsArr[0].savedLocations;
@@ -495,6 +495,21 @@ app.get('/delete_review', sessionValidation, async (req, res) => {
 	);
 	res.redirect('/review?location=' + locationName);
 });
+
+app.get('/sort', sessionValidation, async (req, res) => {
+	var value = req.query.value;
+	savedLocationsArr = await userCollection.find({ email: req.session.email }).project({ savedLocations: 1, _id: 0 }).toArray();
+	const savedLocations = savedLocationsArr[0].savedLocations;
+	var savedLocationsNames = [];
+	savedLocations.forEach(async location => {
+		savedLocationsNames.push(location.name);
+	});
+	if(value == "rating"){
+		const locations = await locationCollection.find().sort({rating:-1}).project({_id:0}).toArray();
+		res.render("home", {email:req.session.email, data: locations,savedLocations:savedLocationsNames });
+	}
+});
+	
 
 app.get('/saveLocation', sessionValidation, async (req, res) => {
 	var bookmark;

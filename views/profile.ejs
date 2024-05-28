@@ -90,41 +90,8 @@
                                             class="text-xl font-semibold"><strong>City:</strong>
                                             <%= day.name %>
                                         </h2>
-                                        <p><strong>Date:</strong>
-                                            <%= day.date %>
-                                        </p>
-                                        <p><strong>Conditions:</strong>
-                                            <%= day.conditions %>
-                                                <% if (day.conditions.includes('Rain')) { %> <i
-                                                        class="fas fa-cloud-showers-heavy"></i>
-                                                    <% } else if (day.conditions.includes('Snow')) { %> <i
-                                                            class="fas fa-snowflake"></i>
-                                                        <% } else if (day.conditions.includes('Sunny')) { %> <i
-                                                                class="fas fa-sun"></i>
-                                                            <% } else if (day.conditions.includes('Cloudy')) { %> <i
-                                                                    class="fas fa-cloud"></i>
-                                                                <% } else if (day.conditions.includes('Windy')) { %> <i
-                                                                        class="fas fa-wind"></i>
-                                                                    <% } else if (day.conditions.includes('Fog')) { %>
-                                                                        <i class="fas fa-smog"></i>
-                                                                        <% } else { %> <i class="fas fa-cloud"></i>
-                                                                            <!-- Default icon -->
-                                                                            <% } %>
-                                        </p>
-                                        <p><strong>Temperature:</strong>
-                                            <%= day.temp %>°C
-                                        </p>
-                                        <p><strong>Max temp:</strong>
-                                            <%= day.tempmax %>°C
-                                        </p>
-                                        <p><strong>Min temp:</strong>
-                                            <%= day.tempmin %>°C
-                                        </p>
-                                        <p><strong>Humidity:</strong>
-                                            <%= day.humidity %>%
-                                        </p>
                                         <% if (day.imageUrl) { %>
-                                            <img src="<%= day.imageUrl %>" alt="Image of <%= day.city %>"
+                                            <img onclick="window.location.href='/destination?location=<%= day.name %>&&bookmark=<% bookmark %>'" src="<%= day.imageUrl %>" alt="Image of <%= day.city %>"
                                                 class="w-full h-48 object-cover rounded mt-4">
                                             <% } %>
                                     </div>
