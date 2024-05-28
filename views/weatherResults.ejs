@@ -56,25 +56,11 @@
                                                                 <%= day.conditions %>
                                                                     <% if (day.conditions.includes('Rain')) { %>
                                                                         <i class="fas fa-cloud-showers-heavy"></i>
-                                                                        <% } else if (day.conditions.includes('Snow')) {
-                                                                            %>
-                                                                            <i class="fas fa-snowflake"></i>
-                                                                            <% } else if
-                                                                                (day.conditions.includes('Sunny')) { %>
-                                                                                <i class="fas fa-sun"></i>
-                                                                                <% } else if
+                                                                        <% } else if
                                                                                     (day.conditions.includes('Cloudy'))
                                                                                     { %>
                                                                                     <i class="fas fa-cloud"></i>
-                                                                                    <% } else if
-                                                                                        (day.conditions.includes('Windy'))
-                                                                                        { %>
-                                                                                        <i class="fas fa-wind"></i>
-                                                                                        <% } else if
-                                                                                            (day.conditions.includes('Fog'))
-                                                                                            { %>
-                                                                                            <i class="fas fa-smog"></i>
-                                                                                            <% } else { %>
+                                                                                    <% } else { %>
                                                                                                 <i
                                                                                                     class="fas fa-cloud"></i>
                                                                                                 <!-- Default icon -->
