@@ -21,92 +21,45 @@
 
         <% if (data.length> 0) { %>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-
-                <% data.forEach(day=> { %>
-                    <% var bookmark=false; %>
-                        <% for(var i=0; i < savedLocations.length; i++) { %>
-                            <% if (day.name===savedLocations[i]) { %>
-                                <% bookmark=true; %>
-                                    <% break; %>
-                                        <% } %>
-                                            <% } %>
-                                                <div class="card bg-white shadow-md rounded-lg p-4">
-                                                    <% if (day.imageUrl) { %>
-                                                        <img src="<%= day.imageUrl %>" alt="Image of <%= day.city %>"
-                                                            class="w-full h-48 object-cover rounded mb-4">
-                                                        <% } %>
-                                                            <button id="saveBtn"
-                                                                onclick="saveLocation('<%= day.name %>')"
-                                                                class=" w-1/6">
-                                                                <% if (bookmark) { %><i
-                                                                        class="fa-solid fa-bookmark"></i>
-                                                                    <% }else { %><i class="fa-regular fa-bookmark"></i>
-                                                                        <% } %>
-                                                            </button>
-
-                                                            <h2 onclick="window.location.href='/destination?location=<%= day.city %>&&bookmark=<% bookmark %>'"
-                                                                class="text-xl font-semibold"><strong>City:</strong>
-                                                                <%= day.name %>
-                                                            </h2>
-                                                            <p><strong>Date:</strong>
-                                                                <%= day.date %>
-                                                            </p>
-                                                            <p>
-                                                                <strong>Conditions:</strong>
-                                                                <%= day.conditions %>
-                                                                    <% if (day.conditions.includes('Rain')) { %>
-                                                                        <i class="fas fa-cloud-showers-heavy"></i>
-                                                                        <% } else if
-                                                                                    (day.conditions.includes('Cloudy'))
-                                                                                    { %>
-                                                                                    <i class="fas fa-cloud"></i>
-                                                                                    <% } else { %>
-                                                                                                <i
-                                                                                                    class="fas fa-cloud"></i>
-                                                                                                <!-- Default icon -->
-                                                                                                <% } %>
-                                                            </p>
-                                                            <p><strong>Temperature:</strong> <%= day.temp %>°C</p>
-                                                            <p><strong>Max temp:</strong> <%= day.tempmax %>°C</p>
-                                                            <p><strong>Min temp:</strong> <%= day.tempmin %>°C</p>
-                                                            <p><strong>Humidity:</strong>
-                                                                <%= day.humidity %>%
-                                                            </p>
-                                                            
-                                                </div>
-                                                <% }) %>
+                <% const seenCities={}; data.forEach(city=> {
+                    if (!seenCities[city.city]) {
+                    seenCities[city.city] = true;
+                    %>
+                    <div class="card bg-white shadow-md rounded-lg p-4">
+                        <% if (city.imageUrl) { %>
+                            <img src="<%= city.imageUrl %>" alt="Image of <%= city.city %>"
+                                class="w-full h-48 object-cover rounded mb-4">
+                            <% } %>
+                                <h2 onclick="window.location.href='/destination?city=<%= city.city %>&startDate=<%= startDate %>&endDate=<%= endDate %>'"
+                                    class="text-xl font-semibold">
+                                    <strong>City:</strong>
+                                    <%= city.city %>
+                                </h2>
+                    </div>
+                    <% } }); %>
             </div>
             <% } else { %>
-                                <div class="no-data-box">
-                                    No data found for the selected criteria.
-                                </div>
+                <div class="no-data-box">
+                    No data found for the selected criteria.
+                </div>
                 <% } %>
 
                     <a href="/home" class="mt-4 inline-block text-blue-500 hover:underline">Search Again</a>
     </div>
 
-        <style>
-            .no-data-box {
-                border: 1px solid #d1d5db;
-                /* Light gray border */
-                background-color: #f9fafb;
-                /* Light gray background */
-                color: #6b7280;
-                /* Dark gray text */
-                padding: 10px;
-                /* Padding inside the box */
-                border-radius: 8px;
-                /* Rounded corners */
-                text-align: center;
-                /* Center the text */
-                font-size: 0.875rem;
-                /* Small font size */
-                width: fit-content;
-                /* Adjust width to fit content */
-                margin: 20px auto;
-                /* Center the box horizontally with some margin */
-            }
-        </style>
+    <style>
+        .no-data-box {
+            border: 1px solid #d1d5db;
+            background-color: #f9fafb;
+            color: #6b7280;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 0.875rem;
+            width: fit-content;
+            margin: 20px auto;
+        }
+    </style>
 
     <script>
         menuItems = document.querySelectorAll('.menuItems');
@@ -122,6 +75,7 @@
         hamburgerMenu.style.alignItems = 'baseline';
         hamburgerBtn = document.getElementById("hamburgerBtn");
         hamburgerBtn.style.position = 'fixed';
+
         function toggleMenu() {
             if (hamburgerMenu.classList.contains("fa-bars")) {
                 hamburgerMenu.classList.remove("fa-bars");
@@ -139,10 +93,6 @@
                 }
             });
         }
-        var bookmarkBtn = document.getElementById('bookmark');
-        function saveLocation(location) {
-            window.location.href = '/saveLocation?location=' + location;
-        }
     </script>
     <%- include("templates/homenav") %>
-    <%- include("templates/footer") %>
+        <%- include("templates/footer") %>
