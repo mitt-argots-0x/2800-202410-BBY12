@@ -84,7 +84,7 @@ let transporter = nodemailer.createTransport({
 //all the app.use
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(__dirname + "/public"));
-app.use('/', router);
+
 app.use(session({
 	secret: node_session_secret,
 	store: mongoStore, //default is memory store 
@@ -92,6 +92,7 @@ app.use(session({
 	resave: true
 }
 ));
+app.use('/', router);
 
 //moongose connection and review/user schemas
 mongoose.connect(`mongodb+srv://${mongodb_user}:${mongodb_password}@${mongodb_host}/${mongodb_database}`, {
