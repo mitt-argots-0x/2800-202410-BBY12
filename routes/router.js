@@ -28,13 +28,22 @@ const mongoSanitize = require('express-mongo-sanitize');
 
 router.use(mongoSanitize({ replaceWith: '%' }));
 
-router.post('/picUpload', upload.single('image'), async function (req, res, next) {
+function sessionValidation(req, res, next) {
+	if (req.session.authenticated) {
+		next();
+	}
+	else {
+		res.redirect('/login');
+	}
+}
+
+router.post('/picUpload', sessionValidation, upload.single('image'), async function (req, res, next) {
   let buf64 = req.file.buffer.toString('base64');
   cloudinary.uploader.upload("data:image/png;base64," + buf64, async function (error, result) {
     if (error) {
       return next(error);
     }
-    await userCollection.updateOne({ email: req.query.email }, { $set: { image_id: result.url } });
+    await userCollection.updateOne({ email: req.session.email }, { $set: { image_id: result.url } });
     res.redirect('/profile');
   });
 });
@@ -53,6 +62,31 @@ const getImageUrl = async (city) => {
   }
   return null;
 };
+router.get('/weather', sessionValidation, async (req, res) => {
+  // console.log("in weather get route");
+  // email = req.query.email;
+  const result = await locationCollection.find().project({ _id: 0 }).toArray();
+	const savedLocationsArr = await userCollection.find({ email: req.session.email }).project({ savedLocations: 1, _id: 0 }).toArray();
+  const savedLocations = savedLocationsArr[0].savedLocations;
+	var savedLocationsNames = [];
+  savedLocations.forEach(async location => {
+    if(location != null)
+    savedLocationsNames.push(location.name);
+  });
+  res.render('weatherResults', { data: result, savedLocations: savedLocationsNames });
+});
+
+router.post('/weather', sessionValidation, async (req, res) => {
+  // email = req.query.email;
+  const result = await locationCollection.find().project({ _id: 0 }).toArray();
+	const savedLocationsArr = await userCollection.find({ email: req.session.email }).project({ savedLocations: 1, _id: 0 }).toArray();
+  const savedLocations = savedLocationsArr[0].savedLocations;
+	var savedLocationsNames = [];
+  savedLocations.forEach(async location => {
+    savedLocationsNames.push(location.name);
+  });
+  res.render('weatherResults', { data: result, savedLocations: savedLocationsNames });
+});
 
 // router.post('/weather', async (req, res) => {
 //   const { weatherType, startDate, endDate } = req.body;
