@@ -38,6 +38,28 @@
                 
                 <button class="ml-4 mr-auto" onclick="saveLocationl('<%= location.name %>')"><% if (bookmark) { %><i class="fa-solid fa-bookmark"></i><% }else { %><i class="fa-regular fa-bookmark"></i><% } %></button>
             </div>
+            <h1>this is donghoon test map</h1>
+            <div id="map" style="height: 400px; width: 100%;">
+                Map
+            </div>
+            <script>
+                let map;
+        
+                async function initMap() {
+                const { Map } = await google.maps.importLibrary("maps");
+        
+                map = new Map(document.getElementById("map"), {
+                    center: { lat: 49.284040676696016, lng: -123.13114135301554 },
+                    zoom: 12,
+                    mapId: "23eb0e7a56e2992b"
+                });
+                }
+        
+                initMap();
+            </script>
+            <script async
+                src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBsDIZVQ-hAu_88uBuHfMWIC-rHooYIlZU&loading=async&callback=initMap">
+            </script>
 
             <script>
                 function saveLocationl(location) {
