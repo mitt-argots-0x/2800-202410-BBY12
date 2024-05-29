@@ -12,6 +12,11 @@
             <p class="text-center my-auto">Click to choose your preferred weather</p>
         </div>
         <!-- above is SABA -->
+        <button id="sort" onclick="sort()"><i class="fa-solid fa-sort"></i></button>
+        <div id="sortOptions">
+
+            <button onclick="window.location.href='/sort?value=rating'" value="rating">Sort by popularity</button>
+        </div>
         <!-- radman changes -->
         <form id="searchBox" class="flex justify-center" action="/weather?email=<%= email %>" method="post">
             <div class="rounded-2xl focus:outline-none w-4/6 border-4 border-purple-400 p-4 bg-white">
@@ -44,7 +49,8 @@
                                             <% } %>
                                                 <div class="card bg-white shadow-md rounded-lg p-4">
                                                     <% if (day.imageUrl) { %>
-                                                        <img src="<%= day.imageUrl %>" alt="Image of <%= day.city %>"
+                                                        <img onclick="window.location.href='/destination?location=<%= day.name %>&&bookmark=<% bookmark %>'"
+                                                            src="<%= day.imageUrl %>" alt="Image of <%= day.city %>"
                                                             class="w-full h-48 object-cover rounded mb-4">
                                                         <% } %>
                                                             <button id="saveBtn"
@@ -60,51 +66,6 @@
                                                                 class="text-xl font-semibold"><strong>City:</strong>
                                                                 <%= day.name %>
                                                             </h2>
-                                                            <p><strong>Date:</strong>
-                                                                <%= day.date %>
-                                                            </p>
-                                                            <p><strong>Conditions:</strong>
-                                                                <%= day.conditions %>
-                                                                    <% if (day.conditions &&
-                                                                        day.conditions.includes('Rain')) { %>
-                                                                        <i class="fas fa-cloud-showers-heavy"></i>
-                                                                        <% } else if (day.conditions &&
-                                                                            day.conditions.includes('Snow')) { %>
-                                                                            <i class="fas fa-snowflake"></i>
-                                                                            <% } else if (day.conditions &&
-                                                                                day.conditions.includes('Sunny')) { %>
-                                                                                <i class="fas fa-sun"></i>
-                                                                                <% } else if (day.conditions &&
-                                                                                    day.conditions.includes('Cloudy')) {
-                                                                                    %>
-                                                                                    <i class="fas fa-cloud"></i>
-                                                                                    <% } else if (day.conditions &&
-                                                                                        day.conditions.includes('Windy'))
-                                                                                        { %>
-                                                                                        <i class="fas fa-wind"></i>
-                                                                                        <% } else if (day.conditions &&
-                                                                                            day.conditions.includes('Fog'))
-                                                                                            { %>
-                                                                                            <i class="fas fa-smog"></i>
-                                                                                            <% } else { %>
-                                                                                                <i
-                                                                                                    class="fas fa-cloud"></i>
-                                                                                                <!-- Default icon -->
-                                                                                                <% } %>
-                                                            </p>
-
-                                                            <p><strong>Temperature:</strong>
-                                                                <%= day.temp %>°C
-                                                            </p>
-                                                            <p><strong>Max temp:</strong>
-                                                                <%= day.tempmax %>°C
-                                                            </p>
-                                                            <p><strong>Min temp:</strong>
-                                                                <%= day.tempmin %>°C
-                                                            </p>
-                                                            <p><strong>Humidity:</strong>
-                                                                <%= day.humidity %>%
-                                                            </p>
                                                             <p>Rating: <%= day.rating %>
                                                             </p>
                                                 </div>
@@ -188,11 +149,33 @@
         function saveLocation(location) {
             window.location.href = '/saveLocation?location=' + location;
         }
+        document.getElementById("sortOptions").style.display = 'none';
+        function sort() {
+            if (document.getElementById("sortOptions").style.display === 'none') {
+                document.getElementById("sortOptions").style.display = 'block';
+            } else {
+                document.getElementById("sortOptions").style.display = 'none';
+            }
+        }
 
         // Disable previous dates in the date inputs
         const today = new Date().toISOString().split('T')[0];
         document.getElementById("startDate").setAttribute('min', today);
         document.getElementById("endDate").setAttribute('min', today);
+
+        // Limit end date to 7 days after the start date
+        const startDateInput = document.getElementById('startDate');
+        const endDateInput = document.getElementById('endDate');
+
+        startDateInput.addEventListener('change', function () {
+            const startDate = new Date(this.value);
+            const maxEndDate = new Date(startDate);
+            maxEndDate.setDate(startDate.getDate() + 7);
+            const maxEndDateString = maxEndDate.toISOString().split('T')[0];
+            endDateInput.setAttribute('max', maxEndDateString);
+            endDateInput.setAttribute('min', this.value);
+        });
+
     </script>
 
     <%- include("templates/homenav") %>
