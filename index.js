@@ -440,7 +440,7 @@ app.get('/review', sessionValidation, async (req, res) => {
 	}
 	avg = Math.round(avg * 100) / 100;
 	await locationCollection.updateOne({ name: locationName }, { $set: { rating: avg } });
-	res.render("review", { location: location[0], avgRating: avg,email:req.session.email });
+	res.render("review", { location: location[0], avgRating: avg,email:req.session.email,userName:req.session.username });
 });
 
 app.get('/edit_review', sessionValidation, async (req, res) => {
