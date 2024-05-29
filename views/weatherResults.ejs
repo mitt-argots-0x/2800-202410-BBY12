@@ -30,7 +30,7 @@
                             <img src="<%= city.imageUrl %>" alt="Image of <%= city.city %>"
                                 class="w-full h-48 object-cover rounded mb-4">
                             <% } %>
-                                <h2 onclick="window.location.href='/destination?city=<%= city.city %>&startDate=<%= startDate %>&endDate=<%= endDate %>'"
+                                <h2 onclick="window.location.href='/destination?city=<%= city.city %>&startDate=<%= startDate %>&endDate=<%= endDate %>&email=<%= email %>'"
                                     class="text-xl font-semibold">
                                     <strong>City:</strong>
                                     <%= city.city %>
