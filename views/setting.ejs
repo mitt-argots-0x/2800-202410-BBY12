@@ -71,6 +71,14 @@
                 class="border-2 border-purple-500 bg-purple-400 rounded-3xl px-2 hover:border-purple-400 hover:bg-purple-300">Submit</button>
         </div>
     </form>
+    <div class="grid justify-center grid-cols-2 w-full mt-4 h-5/6">
+    <button
+    class="h-3/4 ml-2 my-2 border-2 border-teal-300 bg-teal-200 rounded-3xl px-2 hover:border-cyan-300 hover:bg-cyan-200"
+    id="setting" onclick='window.location.href="/signOut"'><i class="fa-solid fa-trash"></i> Destroy account</button>
+<button
+    class="h-3/4 ml-2 my-2 border-2 border-teal-300 bg-teal-200 rounded-3xl px-2 hover:border-cyan-300 hover:bg-cyan-200"
+    id="" onclick='window.location.href="/logout"'><i class="fa-solid fa-sign-out"></i> Logout</button>
+</div>
     <%- include("templates/homenav") %>
         <%- include("templates/footer") %>
 
@@ -87,4 +95,36 @@
                         }
                     });
                 });
+                const menuItems = document.querySelectorAll('.menuItems');
+    menuItems.forEach((menuItem) => {
+        menuItem.style.display = 'none';
+    });
+    const navHam = document.getElementById("nav-hamburger");
+    navHam.style.margin = '6px';
+    navHam.style.marginTop = '14px';
+
+    const hamburgerMenu = document.getElementById("hamburgerMenu");
+    hamburgerMenu.style.display = 'flex';
+    hamburgerMenu.style.alignItems = 'baseline';
+
+    const hamburgerBtn = document.getElementById("hamburgerBtn");
+    hamburgerBtn.style.position = 'fixed';
+
+    function toggleMenu() {
+        if (hamburgerMenu.classList.contains("fa-bars")) {
+            hamburgerMenu.classList.remove("fa-bars");
+            hamburgerMenu.classList.add("fa-burger");
+        } else {
+            hamburgerMenu.classList.add("fa-bars");
+            hamburgerMenu.classList.remove("fa-burger");
+        }
+        const navLinks = document.querySelectorAll('.menuItems');
+        navLinks.forEach((navLink) => {
+            if (navLink.style.display === 'flex') {
+                navLink.style.display = 'none';
+            } else {
+                navLink.style.display = 'flex';
+            }
+        });
+    }
             </script>
