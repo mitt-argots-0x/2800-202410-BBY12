@@ -39,9 +39,14 @@
                 <button class="ml-4 mr-auto" onclick="saveLocationl('<%= location.name %>')"><% if (bookmark) { %><i class="fa-solid fa-bookmark"></i><% }else { %><i class="fa-regular fa-bookmark"></i><% } %></button>
             </div>
             <h1>this is donghoon test map</h1>
+            label for="date-range" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Date range</label>
+<input id="date-range" type="range" value="0" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+<br>
             <div id="map" style="height: 400px; width: 100%;">
                 Map
             </div>
+
+<
             <script>
                 let map;
         
@@ -60,7 +65,6 @@
                         borderColor: "#ff8300",
                         scale: 2
                     });
-
             
                     map = new Map(document.getElementById("map"), {
                         center: position,
@@ -70,13 +74,41 @@
                     const marker = new AdvancedMarkerElement({
                         map: map,
                         position: position,
-                        title: "I don't know~~~~~",
+                        title: "AAAAAAAA",
                         content: pin.element
                     });
+
+                    const position2 = { lat: 49.294040676696016, lng: -123.14114135301554 };
+                    const icon2 = document.createElement("div");
+                    icon2.innerHTML = '<i id="thisWeather2" class="fas fa-cloud-showers-heavy fa-3x"></i>';
+                    const pin2 = new PinElement({
+                        glyph: icon2,
+                        glyphColor: "#ff8300",
+                        background: "#FFD514",
+                        borderColor: "#ff8300",
+                        scale: 2
+                    });
+
+
+                    const weatherTag = document.createElement("div");
+                    weatherTag.className = "weather-tag";
+                    weatherTag.innerHTML = '<i id="thisWeather2" class="fas fa-cloud-showers-heavy fa-1x">35.0</i>'
+                    const marker2 = new AdvancedMarkerElement({
+                        map: map,
+                        position: position2,
+                        title: "",
+                        content: weatherTag
+                    });
+
+
                 }
         
                 // initMap();
             </script>
+
+
+
+
             <script async
                 src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBsDIZVQ-hAu_88uBuHfMWIC-rHooYIlZU&loading=async&callback=initMap">
             </script>
@@ -87,12 +119,24 @@
                 }
 
                 //################ Please change this function later ############
-                function testingIconChange() {
-                    setTimeout(() => {
-                        document.getElementById("thisWeather").className= "fas fa-snowflake fa-3x"
-                    }, 2000)
+
+
+                function testingIconChange(text) {
+                    document.getElementById("thisWeather").className = text;
+                    console.log(text);
                 }
-                testingIconChange();
+                // testingIconChange("fas fa-cloud-showers-heavy");
+
+                let sampleWeather = ["fas fa-cloud-showers-heavy fa-3x",
+                "fas fa-snowflake fa-3x",
+                "fas fa-sun fa-3x",
+                "fas fa-cloud fa-3x",
+                "fas fa-wind fa-3x"
+                ];
+                document.getElementById('date-range').addEventListener('input', function() {
+                    let msg = sampleWeather[Math.floor(this.value / 101 * sampleWeather.length)];
+                    testingIconChange(msg);
+                });
             </script>
     </div>
 <%- include("templates/homenav") %>
