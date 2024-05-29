@@ -1,31 +1,29 @@
 <%- include("templates/header") %>
 
-<h1 class="h3 text-center mt-2">
-    <span class="bg-purple-400 px-4 rounded-3xl pb-1">
-      (<%= avgRating %>stars)
-        <% 
-        var fullStars = Math.floor(avgRating);
-        var halfStars = avgRating % 1 >= 0.5 ? 1 : 0;
-        var emptyStars = 5 - fullStars - halfStars;
-        %>
-        <% for (var i=0; i < fullStars; i++) { %>
-            <i class="fa-solid fa-star"></i>
-        <% } %>
-        
-        <% if (halfStars) { %>
-            <i class="fa-solid fa-star-half-stroke"></i>
-        <% } %>
-        <% for (var i = 0; i < emptyStars; i++) { %>
-            <i class="fa-regular fa-star"></i>
-        <% } %>
-    </span>
-   
-</h1>
+    <h1 class="h3 text-center mt-2">
+        <span class="bg-purple-400 px-4 rounded-3xl pb-1">
+            (<%= avgRating %> stars)
+                <% var fullStars=Math.floor(avgRating); var halfStars=avgRating % 1>= 0.5 ? 1 : 0;
+                    var emptyStars = 5 - fullStars - halfStars;
+                    %>
+                    <% for (var i=0; i < fullStars; i++) { %>
+                        <i class="fa-solid fa-star"></i>
+                        <% } %>
 
-<h2 class="text-slate-500 italic text-center">Welcome to the <%= location.name %> review page user!</h2><br>
-    
+                            <% if (halfStars) { %>
+                                <i class="fa-solid fa-star-half-stroke"></i>
+                                <% } %>
+                                    <% for (var i=0; i < emptyStars; i++) { %>
+                                        <i class="fa-regular fa-star"></i>
+                                        <% } %>
+        </span>
+
+    </h1>
+
+    <h2 class="text-slate-500 italic text-center">Welcome to the <%= location.name %> review page user!</h2><br>
+
     <div class="grid mx-auto w-3/4">
-        <% if(typeof(reviews) !='undefined' ) { %>
+        <% if (typeof(reviews) !='undefined' ) { %>
             <% for (var i=0; i < reviews.length; i++) { %>
                 <div class="bg-orange-300 w-full p-2 rounded-2xl">
                     <p class="font-bold pl-1 pb-1">
@@ -37,27 +35,30 @@
                         <% } %>
                         <span style="display: block;" id="<%= i %>">
                             <% for (var j=0; j < reviews[i].starRating; j++) { %>
-                                <i style="margin-right: -5px;" class="fa-solid fa-star"></i>                            
-                            <% } %>
+                                <i style="margin-right: -5px;" class="fa-solid fa-star"></i>
+                                <% } %>
                         </span>
                     </p>
-
                     <div class="bg-white rounded-2xl">
-                        <p>
-                            <p class="px-2 break-all"><%= reviews[i].text %></p>
+                        <p class="px-2 break-all">
+                            <%= reviews[i].text %>
                         </p>
-                        <span class="">
-                            <p class="text-sm bg-teal-100 w-full rounded-b-2xl px-2 pb-1"><span style="font-style: italic;">date posted:</span> <%= reviews[i].date %> </p>
+                        <span class="text-sm bg-teal-100 w-full rounded-b-2xl px-2 pb-1">
+                            <span style="font-style: italic;">date posted:</span>
+                            <%= reviews[i].date %>
                         </span>
                     </div>
-                </div> 
+                </div>
                 <br>
-            <% } %>
-        <% } %>
-        <button style="position: sticky; bottom: 70px;" class="mx-auto bg-purple-400 rounded-2xl  px-2 mb-20"><a class="" href="/post_review?location=<%= location.name %>">
-            <p class="">Share Your Experience!</p>
-        </a></button>
+                <% } %>
+                    <% } %>
+                        <button style="position: sticky; bottom: 70px;"
+                            class="mx-auto bg-purple-400 rounded-2xl px-2 mb-20">
+                            <a class="" href="/post_review?location=<%= location.name %>">
+                                <p>Share Your Experience!</p>
+                            </a>
+                        </button>
     </div>
 
-<%- include("templates/homenav") %>
-<%- include("templates/footer",{jsFile:['js/review.js']}) %>
+    <%- include("templates/homenav") %>
+        <%- include("templates/footer", {jsFile: ['js/review.js']}) %>

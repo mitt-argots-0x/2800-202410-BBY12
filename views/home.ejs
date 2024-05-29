@@ -14,8 +14,13 @@
         <!-- above is SABA -->
         <button id="sort" onclick="sort()"><i class="fa-solid fa-sort"></i></button>
         <div id="sortOptions">
+<<<<<<< HEAD
             
         <button onclick="window.location.href='/sort?value=rating'" value="rating">Sort by popularity</button>
+=======
+
+            <button onclick="window.location.href='/sort?value=rating'" value="rating">Sort by popularity</button>
+>>>>>>> radman_api_version
         </div>
         <!-- radman changes -->
         <form id="searchBox" class="flex justify-center" action="/weather?email=<%= email %>" method="post">
@@ -49,7 +54,12 @@
                                             <% } %>
                                                 <div class="card bg-white shadow-md rounded-lg p-4">
                                                     <% if (day.imageUrl) { %>
+<<<<<<< HEAD
                                                         <img onclick="window.location.href='/destination?location=<%= day.name %>&&bookmark=<% bookmark %>'" src="<%= day.imageUrl %>" alt="Image of <%= day.city %>"
+=======
+                                                        <img onclick="window.location.href='/destination?location=<%= day.name %>&&bookmark=<% bookmark %>'"
+                                                            src="<%= day.imageUrl %>" alt="Image of <%= day.city %>"
+>>>>>>> radman_api_version
                                                             class="w-full h-48 object-cover rounded mb-4">
                                                         <% } %>
                                                             <button id="saveBtn"
@@ -157,25 +167,37 @@
         }
     }
 
-    // Disable previous dates in the date inputs
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById("startDate").setAttribute('min', today);
-    document.getElementById("endDate").setAttribute('min', today);
+        function saveLocation(location) {
+            window.location.href = '/saveLocation?location=' + location;
+        }
+        document.getElementById("sortOptions").style.display = 'none';
+        function sort() {
+            if (document.getElementById("sortOptions").style.display === 'none') {
+                document.getElementById("sortOptions").style.display = 'block';
+            } else {
+                document.getElementById("sortOptions").style.display = 'none';
+            }
+        }
 
-    // Limit end date to 7 days after the start date
-    const startDateInput = document.getElementById('startDate');
-    const endDateInput = document.getElementById('endDate');
+        // Disable previous dates in the date inputs
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById("startDate").setAttribute('min', today);
+        document.getElementById("endDate").setAttribute('min', today);
 
-    startDateInput.addEventListener('change', function () {
-        const startDate = new Date(this.value);
-        const maxEndDate = new Date(startDate);
-        maxEndDate.setDate(startDate.getDate() + 7);
-        const maxEndDateString = maxEndDate.toISOString().split('T')[0];
-        endDateInput.setAttribute('max', maxEndDateString);
-        endDateInput.setAttribute('min', this.value);
-    });
+        // Limit end date to 7 days after the start date
+        const startDateInput = document.getElementById('startDate');
+        const endDateInput = document.getElementById('endDate');
 
-</script>
+        startDateInput.addEventListener('change', function () {
+            const startDate = new Date(this.value);
+            const maxEndDate = new Date(startDate);
+            maxEndDate.setDate(startDate.getDate() + 7);
+            const maxEndDateString = maxEndDate.toISOString().split('T')[0];
+            endDateInput.setAttribute('max', maxEndDateString);
+            endDateInput.setAttribute('min', this.value);
+        });
+
+    </script>
 
     <%- include("templates/homenav") %>
         <%- include("templates/footer") %>
