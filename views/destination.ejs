@@ -46,16 +46,36 @@
                 let map;
         
                 async function initMap() {
-                const { Map } = await google.maps.importLibrary("maps");
-        
-                map = new Map(document.getElementById("map"), {
-                    center: { lat: 49.284040676696016, lng: -123.13114135301554 },
-                    zoom: 12,
-                    mapId: "23eb0e7a56e2992b"
-                });
+                    const position = { lat: 49.284040676696016, lng: -123.13114135301554 };
+                    
+                    const { Map } = await google.maps.importLibrary("maps");
+                    const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
+
+                    const icon = document.createElement("div");
+                    icon.innerHTML = '<i id="thisWeather" class="fas fa-cloud-showers-heavy fa-3x"></i>';
+                    const pin = new PinElement({
+                        glyph: icon,
+                        glyphColor: "#ff8300",
+                        background: "#FFD514",
+                        borderColor: "#ff8300",
+                        scale: 2
+                    });
+
+            
+                    map = new Map(document.getElementById("map"), {
+                        center: position,
+                        zoom: 12,
+                        mapId: "23eb0e7a56e2992b"
+                    });
+                    const marker = new AdvancedMarkerElement({
+                        map: map,
+                        position: position,
+                        title: "I don't know~~~~~",
+                        content: pin.element
+                    });
                 }
         
-                initMap();
+                // initMap();
             </script>
             <script async
                 src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBsDIZVQ-hAu_88uBuHfMWIC-rHooYIlZU&loading=async&callback=initMap">
@@ -65,6 +85,14 @@
                 function saveLocationl(location) {
                     window.location.href = '/saveLocation?location=' + location;
                 }
+
+                //################ Please change this function later ############
+                function testingIconChange() {
+                    setTimeout(() => {
+                        document.getElementById("thisWeather").className= "fas fa-snowflake fa-3x"
+                    }, 2000)
+                }
+                testingIconChange();
             </script>
     </div>
 <%- include("templates/homenav") %>
