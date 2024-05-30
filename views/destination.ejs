@@ -1,6 +1,6 @@
 <%- include("templates/header") %>
 
-    <div class="grid w-1/2 h-full mx-auto mt-4">
+    <div class="grid w-5/6 h-full mx-auto mt-4">
         <img src="<%= location.imageUrl %>" alt="location image"
             class="max-h-72 w-full max border-2 border-orange-400 rounded-3xl">
         <p id="name_goes_here" class="text-center h1">
@@ -13,7 +13,7 @@
                 <p class="text-center">No weather data found for the selected city and date range.</p>
                 <% } %>
                     <div class="mx-auto flex justify-center w-4/5 mt-2">
-                        <span style="margin-right: 16px;">Rating:<%= location.rating %>
+                        <span style="margin-right: 16px;"><b>Rating:</b>
                                 <% var fullStars=Math.floor(location.rating); var halfStars=location.rating % 1>= 0.5 ?
                                     1 : 0;
                                     var emptyStars = 5 - fullStars - halfStars;
@@ -33,15 +33,16 @@
                             id="reviewBtn" onclick='window.location.href="/review?location=<%= location.city %>"'>
                             Reviews
                         </button>
+
                     </div>
                     <label for="date-range" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"></label>
                     <div class="flex items-center justify-between">
-                        <span id="start-date" class="text-sm text-gray-900 dark:text-white">Start Date</span>
+                        <span id="start-date" class="text-sm text-gray-900 dark:text-white"><b>Start Date</b></span>
                         <input id="date-range" type="range" value="0" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 mx-2">
-                        <span id="end-date" class="text-sm text-gray-900 dark:text-white">End Date</span>
+                        <span id="end-date" class="text-sm text-gray-900 dark:text-white"><b>End Date</b></span>
                     </div>
                     <br>
-                    <div id="map" style="height: 400px; width: 100%; margin-bottom: 10%;">
+                    <div id="map" style="height: 400px; width: 100%;">
                         Map
                     </div>
         
@@ -86,10 +87,14 @@
                         }
 
                         function weatherInfoText(weather) {
-                            return `<div>date: ${weather.datetime}</div>
+                            return `<div><b>date: ${weather.datetime}</b></div>
+                            <br>
                             <div><b>condition: ${weather.conditions}</b></div>
+                            <br>
                             <div>max: ${weather.tempmax}°C</div>
+                            <br>
                             <div>min: ${weather.tempmin}°C</div>
+                            <br>
                             <div>humidity: ${weather.humidity}%</div>`;
                         }
 
