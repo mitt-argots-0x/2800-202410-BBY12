@@ -80,9 +80,12 @@
                                     <% } %>
                         </button>
                     </div>
-                    <h1>this is donghoon test map</h1>
-                    <label for="date-range" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Date range</label>
-                    <input id="date-range" type="range" value="0" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+                    <label for="date-range" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"></label>
+                    <div class="flex items-center justify-between">
+                        <span id="start-date" class="text-sm text-gray-900 dark:text-white">Start Date</span>
+                        <input id="date-range" type="range" value="0" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 mx-2">
+                        <span id="end-date" class="text-sm text-gray-900 dark:text-white">End Date</span>
+                    </div>
                     <br>
                     <div id="map" style="height: 400px; width: 100%;">
                         Map
@@ -91,13 +94,12 @@
                     <script>
                         const weatherArr = <%- JSON.stringify(location.data) %>;
                         console.log(weatherArr);
-                        // console.log(dateArr);
                         let map;
                 
                         async function initMap() {
                             const { Map } = await google.maps.importLibrary("maps");
                             const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
-                            const position = { lat: 49.294040676696016, lng: -123.14114135301554 };
+                            const position = { lat: <%= location.latitude %>, lng: <%= location.longitude %> };
                             
                             map = new Map(document.getElementById("map"), {
                                 center: position,
@@ -107,53 +109,43 @@
         
                             const weatherTag = document.createElement("div");
                             weatherTag.className = "weather-tag";
+                            // class="fas fa-cloud-showers-heavy fa-3x"
                             weatherTag.innerHTML = `
-                                <i id="thisWeather" class="fas fa-cloud-showers-heavy fa-3x">
-                                    <%= location.data[0].tempmax %>
-                                </i>`
+                                <i id="thisWeather" class="  fa-2x">
+                                    ${weatherInfoText(weatherArr[0])}
+                                </i>`;
                             const marker = new AdvancedMarkerElement({
                                 map: map,
                                 position: position,
                                 title: "",
                                 content: weatherTag
                             });
-        
-        
                         }
-                
                         // initMap();
-                    </script>
-        
-                    <script async
-                        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBsDIZVQ-hAu_88uBuHfMWIC-rHooYIlZU&loading=async&callback=initMap">
-                    </script>
-        
-                    <script>
+
                         function saveLocationl(location) {
                             window.location.href = '/saveLocation?location=' + location;
                         }
         
-                        //################ Please change this function later ############
-        
-        
-                        function testingIconChange(text) {
-                            document.getElementById("thisWeather").className = text;
-                            console.log(text);
+                        function changeWeatherInfoText(weather) {
+                            document.getElementById("thisWeather").innerHTML = weatherInfoText(weather);
                         }
-                        // testingIconChange("fas fa-cloud-showers-heavy");
-        
-                        let sampleWeather = ["fas fa-cloud-showers-heavy fa-3x",
-                        "fas fa-snowflake fa-3x",
-                        "fas fa-sun fa-3x",
-                        "fas fa-cloud fa-3x",
-                        "fas fa-wind fa-3x"
-                        ];
+
+                        function weatherInfoText(weather) {
+                            return `<div>date: ${weather.datetime}</div>
+                            <div>condition: ${weather.conditions}</div>
+                            <div>max: ${weather.tempmax}°C</div>
+                            <div>min: ${weather.tempmin}°C</div>
+                            <div>humidity: ${weather.humidity}%</div>`;
+                        }
+
                         document.getElementById('date-range').addEventListener('input', function() {
                             let weather = weatherArr[Math.floor(this.value / 101 * weatherArr.length)];
-                            // testingIconChange(weather.conditions);
-                            document.getElementById("thisWeather").innerHTML = weather.conditions;
-                            console.log(weather.conditions);
+                            changeWeatherInfoText(weather);
                         });
+                    </script>
+                    <script async
+                        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBsDIZVQ-hAu_88uBuHfMWIC-rHooYIlZU&loading=async&callback=initMap">
                     </script>
             </div>
         <%- include("templates/homenav") %>

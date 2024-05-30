@@ -75,7 +75,7 @@ router.get('/weather', sessionValidation, async (req, res) => {
   res.render('weatherResults', { data: result, savedLocations: savedLocationsNames, email });
 });
 
-router.post('/weather', async (req, res) => {
+router.post('/weather', sessionValidation, async (req, res) => {
   const { weatherType, startDate, endDate } = req.body;
   const { default: fetch } = await import('node-fetch');
   const email = req.query.email;
@@ -116,7 +116,7 @@ router.post('/weather', async (req, res) => {
   }
 });
 
-router.post('/weather', async (req, res) => {
+router.post('/weather', sessionValidation, async (req, res) => {
   const { weatherType, startDate, endDate } = req.body;
   const { default: fetch } = await import('node-fetch');
 
@@ -159,7 +159,7 @@ router.post('/weather', async (req, res) => {
 });
 
 
-router.get('/destination', async (req, res) => {
+router.get('/destination', sessionValidation, async (req, res) => {
   const city = req.query.city;
   const startDate = req.query.startDate;
   const endDate = req.query.endDate;
@@ -186,12 +186,16 @@ router.get('/destination', async (req, res) => {
       return res.status(404).send('Weather data not found for the selected city and date range');
     }
 
+    console.log(data);
+
     const filteredData = data.days.filter(day => {
       const date = new Date(day.datetime);
       return date >= new Date(startDate) && date <= new Date(endDate);
     });
 
     const location = {
+      latitude: data.latitude,
+      longitude: data.longitude,
       city,
       data: filteredData
     };
