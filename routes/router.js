@@ -224,62 +224,86 @@ router.get('/destination', async (req, res) => {
     return res.status(400).send('City and date range must be provided');
   }
 
-  const { default: fetch } = await import('node-fetch');
-  const response = await fetch(`https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city}/${startDate}/${endDate}?unitGroup=metric&include=days&key=${weatherApiKey}&contentType=json`);
-  const textData = await response.text();
-  let data;
-
   try {
-    data = JSON.parse(textData);
-  } catch (jsonError) {
-    console.error(`Error parsing JSON for city ${city}:`, textData);
-    return res.status(500).send('Failed to fetch weather data');
+    const { default: fetch } = await import('node-fetch');
+    const response = await fetch(`https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city}/${startDate}/${endDate}?unitGroup=metric&include=days&key=${weatherApiKey}&contentType=json`);
+    const textData = await response.text();
+    let data;
+
+    try {
+      data = JSON.parse(textData);
+    } catch (jsonError) {
+      console.error(`Error parsing JSON for city ${city}:`, textData);
+      return res.status(500).send('Failed to fetch weather data');
+    }
+
+    if (!data || !data.days) {
+      return res.status(404).send('Weather data not found for the selected city and date range');
+    }
+
+    const filteredData = data.days.filter(day => {
+      const date = new Date(day.datetime);
+      return date >= new Date(startDate) && date <= new Date(endDate);
+    });
+
+    const location = {
+      city,
+      data: filteredData
+    };
+
+    const user = await userCollection.findOne({ email: email });
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
+
+    const savedLocations = user.savedLocations || [];
+    const bookmark = savedLocations.some(loc => loc.name === city);
+
+    res.render("destination", { location, bookmark, email });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
   }
-
-  if (!data || !data.days) {
-    return res.status(404).send('Weather data not found for the selected city and date range');
-  }
-
-  const filteredData = data.days.filter(day => {
-    const date = new Date(day.datetime);
-    return date >= new Date(startDate) && date <= new Date(endDate);
-  });
-
-  const imageUrl = await getImageUrl(city);
-
-  const location = {
-    city,
-    data: filteredData,
-    imageUrl
-  };
-
-  const user = await userCollection.findOne({ email: email });
-  const savedLocations = user ? user.savedLocations : [];
-  const bookmark = savedLocations.some(loc => loc.name === location.city);
-
-  res.render('destination', { location, bookmark, email });
 });
 
-router.get('/review', async (req, res) => {
-  const locationName = req.query.location;
-  const location = await locationCollection.findOne({ city: locationName });
 
-  if (!location) {
-    console.log(`${locationName} not found`);
-    return res.render("404");
+
+router.get('/review', sessionValidation, async (req, res) => {
+  try {
+    const locationName = req.query.location;
+    if (!locationName) {
+      return res.status(400).send('Location name is required');
+    }
+
+    const location = await locationCollection.findOne({ name: locationName });
+    if (!location) {
+      console.log(`${locationName} not found`);
+      return res.render("404");
+    }
+
+    const reviews = location.reviews || [];
+    let avgRating = 0;
+
+    if (reviews.length > 0) {
+      const totalStars = reviews.reduce((acc, review) => acc + review.starRating, 0);
+      avgRating = totalStars / reviews.length;
+      avgRating = Math.round(avgRating * 100) / 100;
+    }
+
+    res.render("review", {
+      location,
+      avgRating,
+      reviews,
+      email: req.session.email,
+      userName: req.session.username
+    });
+  } catch (error) {
+    console.error('Error fetching review data:', error);
+    res.status(500).send('Internal Server Error');
   }
-
-  const reviews = location.reviews || [];
-  let avgRating = 0;
-
-  if (reviews.length > 0) {
-    const totalStars = reviews.reduce((acc, review) => acc + review.starRating, 0);
-    avgRating = totalStars / reviews.length;
-    avgRating = Math.round(avgRating * 100) / 100;
-  }
-
-  res.render("review", { location, avgRating, reviews });
 });
+
 
 
 
