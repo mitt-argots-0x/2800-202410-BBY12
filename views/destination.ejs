@@ -9,9 +9,6 @@
             </span>
         </p>
         <% if (location && location.data && location.data.length> 0) { %>
-            <h1 class="text-center text-2xl font-bold mb-4">
-                <%= location.city %>
-            </h1>
             <% } else { %>
                 <p class="text-center">No weather data found for the selected city and date range.</p>
                 <% } %>
@@ -97,7 +94,7 @@
 
                         function weatherInfoText(weather) {
                             return `<div>date: ${weather.datetime}</div>
-                            <div>condition: ${weather.conditions}</div>
+                            <div><b>condition: ${weather.conditions}</b></div>
                             <div>max: ${weather.tempmax}°C</div>
                             <div>min: ${weather.tempmin}°C</div>
                             <div>humidity: ${weather.humidity}%</div>`;
