@@ -124,7 +124,7 @@ router.get('/destination', sessionValidation, async (req, res) => {
   const email = req.query.email;
 
   if (!city || !startDate || !endDate) {
-    return res.status(400).send('City and date range must be provided');
+    return res.status(400).render('destinationFail');
   }
 
   try {
