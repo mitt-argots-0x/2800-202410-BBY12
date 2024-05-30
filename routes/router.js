@@ -132,6 +132,10 @@ router.get('/destination', sessionValidation, async (req, res) => {
     const response = await fetch(`https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city}/${startDate}/${endDate}?unitGroup=metric&include=days&key=${weatherApiKey}&contentType=json`);
     const textData = await response.text();
     const imageUrl = await getImageUrl(city);
+    const result = await locationCollection.findOne({ name: city });
+    let rating = 0;
+    result.reviews.forEach(review => { rating += review.starRating });
+    rating /= result.reviews.length;
     let data;
 
     try {
@@ -153,6 +157,7 @@ router.get('/destination', sessionValidation, async (req, res) => {
     });
 
     const location = {
+      rating: rating,
       latitude: data.latitude,
       longitude: data.longitude,
       imageUrl: imageUrl,
