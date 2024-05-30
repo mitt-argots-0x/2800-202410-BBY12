@@ -284,20 +284,12 @@ app.post('/login', async (req, res) => {
 	}
 });
 
-app.get('/loggingin', (req, res) => {
-	res.render("loggingin");
-});
-
 app.get('/logout', sessionValidation, (req, res) => {
 	req.session.destroy();
 	res.redirect("/");
 });
 
-app.get('/info', sessionValidation, (req, res) => {
-	res.render("info");
-});
-
-app.get('/about_us', sessionValidation, (req, res) => {
+app.get('/about_us', (req, res) => {
 	res.render("about_us");
 });
 
