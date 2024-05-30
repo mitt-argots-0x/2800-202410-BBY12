@@ -34,45 +34,41 @@
     </div>
 
     <div class="container mx-auto p-4">
-        <% if (data.length> 0) { %>
+        <% if (data.length > 0) { %>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <% data.forEach(day=> { %>
-                    <% var bookmark=false; %>
-                        <% for (var i=0; i < savedLocations.length; i++) { %>
-                            <% if (day.name===savedLocations[i]) { %>
-                                <% bookmark=true; %>
-                                    <% break; %>
-                                        <% } %>
-                                            <% } %>
-                                                <div class="card bg-white shadow-md rounded-lg p-4">
-                                                    <% if (day.imageUrl) { %>
-                                                        <img onclick="window.location.href='/destination?location=<%= day.name %>&&bookmark=<% bookmark %>'"
-                                                            src="<%= day.imageUrl %>" alt="Image of <%= day.city %>"
-                                                            class="w-full h-48 object-cover rounded mb-4">
-                                                        <% } %>
-                                                            <button id="saveBtn"
-                                                                onclick="saveLocation('<%= day.name %>')"
-                                                                class=" w-1/6">
-                                                                <% if (bookmark) { %><i
-                                                                        class="fa-solid fa-bookmark"></i>
-                                                                    <% } else { %><i class="fa-regular fa-bookmark"></i>
-                                                                        <% } %>
-                                                            </button>
-
-                                                            <h2 onclick="window.location.href='/destination?location=<%= day.name %>&&bookmark=<%= bookmark %>'"
-                                                                class="text-xl font-semibold"><strong>City:</strong>
-                                                                <%= day.name %>
-                                                            </h2>
-                                                            <p>Rating: <%= day.rating %>
-                                                            </p>
-                                                </div>
-                                                <% }) %>
-            </div>
-            <% } else { %>
-                <div class="no-data-box">
-                    No data found for the selected criteria.
-                </div>
+            <% data.forEach(day=> { %>
+                <% var bookmark=false; %>
+                <% for (var i=0; i < savedLocations.length; i++) { %>
+                    <% if (day.name===savedLocations[i]) { %>
+                        <% bookmark=true; %>
+                        <% break; %>
+                    <% } %>
                 <% } %>
+                <div class="card bg-white shadow-md rounded-lg p-4">
+                    <% if (day.imageUrl) { %>
+                        <img onclick="window.location.href='/destination?location=<%= day.name %>&&bookmark=<% bookmark %>'"
+                            src="<%= day.imageUrl %>" alt="Image of <%= day.city %>"
+                            class="w-full h-48 object-cover rounded mb-4">
+                    <% } %>
+                    <button id="saveBtn" onclick="saveLocation('<%= day.name %>')" class=" w-1/6">
+                        <% if (bookmark) { %>
+                            <i class="fa-solid fa-bookmark"></i>
+                        <% } else { %>
+                            <i class="fa-regular fa-bookmark"></i>
+                        <% } %>
+                    </button>
+                    <h2 onclick="window.location.href='/destination?location=<%= day.name %>&&bookmark=<%= bookmark %>'"
+                        class="text-xl font-semibold"><strong>City:</strong> <%= day.name %>
+                    </h2>
+                    <p>Rating: <%= day.rating %></p>
+                </div>
+            <% }) %>
+            </div>
+        <% } else { %>
+            <div class="no-data-box">
+                No data found for the selected criteria.
+            </div>
+        <% } %>
     </div>
 
     <style>
