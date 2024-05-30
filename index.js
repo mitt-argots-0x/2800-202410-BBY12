@@ -84,7 +84,7 @@ let transporter = nodemailer.createTransport({
 //all the app.use
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(__dirname + "/public"));
-app.use('/', router);
+
 app.use(session({
 	secret: node_session_secret,
 	store: mongoStore, //default is memory store 
@@ -92,6 +92,7 @@ app.use(session({
 	resave: true
 }
 ));
+app.use('/', router);
 
 //moongose connection and review/user schemas
 mongoose.connect(`mongodb+srv://${mongodb_user}:${mongodb_password}@${mongodb_host}/${mongodb_database}`, {
@@ -300,23 +301,11 @@ app.get('/about_us', sessionValidation, (req, res) => {
 	res.render("about_us");
 });
 
-app.get('/destination', sessionValidation, async (req, res) => {
-	var email = req.session.email;
-	// console.log(email);
-	var locationName = req.query.location;
-	var location = await locationCollection.find({ name: locationName }).project({ _id: 0 }).toArray();
-	var bookmark = false;
-	const savedLocationsArr = await userCollection.find({ email: req.session.email }).project({ savedLocations: 1, _id: 0 }).toArray();
-	const savedLocations = savedLocationsArr[0].savedLocations;
-	var savedLocationsNames = [];
-	savedLocations.forEach(async location => {
-		savedLocationsNames.push(location.name);
-	});
-	if (savedLocationsNames.includes(locationName)) {
-		bookmark = true;
-	}
-	res.render("destination", { location: location[0],bookmark: bookmark, email});
-});
+
+
+
+// Similar updates should be made to other routes that need `email`
+
 
 
 app.get('/home', sessionValidation, async (req, res) => {
@@ -440,7 +429,7 @@ app.get('/review', sessionValidation, async (req, res) => {
 	}
 	avg = Math.round(avg * 100) / 100;
 	await locationCollection.updateOne({ name: locationName }, { $set: { rating: avg } });
-	res.render("review", { location: location[0], avgRating: avg,email:req.session.email });
+	res.render("review", { location: location[0], avgRating: avg,email:req.session.email,userName:req.session.username });
 });
 
 app.get('/edit_review', sessionValidation, async (req, res) => {

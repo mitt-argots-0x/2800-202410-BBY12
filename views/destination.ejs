@@ -1,143 +1,184 @@
 <%- include("templates/header") %>
+
     <div class="grid w-5/6 h-full mx-auto mt-4">
-        <img src="<%= location.imageUrl %>" alt="location image" class="max-h-72 w-full max border-2 border-orange-400 rounded-3xl">
-            <p id="name_goes_here" class="text-center h1">
-                <span class="border-b-4 border-purple-600"><%= location.name %></span>
-            </p>
-            <p id="description_goes_here" class="mt-2">
-                <%= location.description %>
-            </p>
-            <p><strong>Temperature:</strong> <%= location.temp %>°C</p>
-            <p><strong>Max temp:</strong> <%= location.tempmax %>°C</p>
-            <p><strong>Min temp:</strong> <%= location.tempmin %>°C</p>
-            <p><strong>Humidity:</strong> <%= location.humidity %>%</p>
-            <div class="mx-auto flex justify-center w-4/5 mt-2">
-                <span style="margin-right: 16px;">Rating:<%= location.rating %>
-                    <% 
-                    var fullStars = Math.floor(location.rating);
-                    var halfStars = location.rating % 1 >= 0.5 ? 1 : 0;
-                    var emptyStars = 5 - fullStars - halfStars;
-                    %>
-                    <% for (var i=0; i < fullStars; i++) { %>
-                        <i style="margin-right: -6px;" class="fa-solid fa-star"></i>
-                    <% } %>
-                    
-                    <% if (halfStars) { %>
-                        <i style="margin-right: -6px;" class="fa-solid fa-star-half-stroke"></i>
-                    <% } %>
-                    <% for (var i = 0; i < emptyStars; i++) { %>
-                        <i style="margin-right: -6px;" class="fa-regular fa-star"></i>
-                    <% } %></span>
-                <button class="ml-auto text-2xl pb-1 text-white border-2 border-teal-400 bg-teal-300 rounded-lg px-10 hover:border-cyan-300 hover:bg-cyan-200" id="reviewBtn" onclick='window.location.href="/review?location=<%= location.name %>"'>
-                    Reviews
-                </button>
-
-                <button class="ml-auto text-2xl pb-1 text-white border-2 border-teal-400 bg-teal-300 rounded-lg px-10 hover:border-cyan-300 hover:bg-cyan-200" id="reviewBtn" onclick='window.location.href="/weather?email=<%= email %>"'>
-                    Back
-                </button>
+        <img src="<%= location.imageUrl %>" alt="location image"
+            class="max-h-72 w-full max border-2 border-orange-400 rounded-3xl">
+        <p id="name_goes_here" class="text-center h1">
+            <span class="border-b-4 border-purple-600">
+                <%= location.city %>
+            </span>
+        </p>
+        <% if (location && location.data && location.data.length> 0) { %>
+            <h1 class="text-center text-2xl font-bold mb-4">
+                <%= location.city %>
+            </h1>
+            <table class="table-auto w-full border-collapse border border-gray-200">
+                <thead>
+                    <tr>
+                        <th class="border border-gray-200 px-4 py-2">Date</th>
+                        <th class="border border-gray-200 px-4 py-2">Temperature (°C)</th>
+                        <th class="border border-gray-200 px-4 py-2">Max Temp (°C)</th>
+                        <th class="border border-gray-200 px-4 py-2">Min Temp (°C)</th>
+                        <th class="border border-gray-200 px-4 py-2">Conditions</th>
+                        <th class="border border-gray-200 px-4 py-2">Humidity (%)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% location.data.forEach(day=> { %>
+                        <tr>
+                            <td class="border border-gray-200 px-4 py-2">
+                                <%= day.datetime %>
+                            </td>
+                            <td class="border border-gray-200 px-4 py-2">
+                                <%= day.temp %>
+                            </td>
+                            <td class="border border-gray-200 px-4 py-2">
+                                <%= day.tempmax %>
+                            </td>
+                            <td class="border border-gray-200 px-4 py-2">
+                                <%= day.tempmin %>
+                            </td>
+                            <td class="border border-gray-200 px-4 py-2">
+                                <%= day.conditions %>
+                            </td>
+                            <td class="border border-gray-200 px-4 py-2">
+                                <%= day.humidity %>
+                            </td>
+                        </tr>
+                        <% }) %>
+                </tbody>
+            </table>
+            <% } else { %>
+                <p class="text-center">No weather data found for the selected city and date range.</p>
+                <% } %>
+                    <div class="mx-auto flex justify-center w-4/5 mt-2">
+                        <span style="margin-right: 16px;">Rating:<%= location.rating %>
+                                <% var fullStars=Math.floor(location.rating); var halfStars=location.rating % 1>= 0.5 ?
+                                    1 : 0;
+                                    var emptyStars = 5 - fullStars - halfStars;
+                                    %>
+                                    <% for (var i=0; i < fullStars; i++) { %>
+                                        <i style="margin-right: -6px;" class="fa-solid fa-star"></i>
+                                        <% } %>
+                                            <% if (halfStars) { %>
+                                                <i style="margin-right: -6px;" class="fa-solid fa-star-half-stroke"></i>
+                                                <% } %>
+                                                    <% for (var i=0; i < emptyStars; i++) { %>
+                                                        <i style="margin-right: -6px;" class="fa-regular fa-star"></i>
+                                                        <% } %>
+                        </span>
+                        <button
+                            class="ml-auto text-2xl pb-1 text-white border-2 border-teal-400 bg-teal-300 rounded-lg px-10 hover:border-cyan-300 hover:bg-cyan-200"
+                            id="reviewBtn" onclick='window.location.href="/review?location=<%= location.city %>"'>
+                            Reviews
+                        </button>
+                        <button class="ml-4 mr-auto" onclick="saveLocation('<%= location.city %>')">
+                            <% if (bookmark) { %>
+                                <i class="fa-solid fa-bookmark"></i>
+                                <% } else { %>
+                                    <i class="fa-regular fa-bookmark"></i>
+                                    <% } %>
+                        </button>
+                    </div>
+                    <h1>this is donghoon test map</h1>
+                    <label for="date-range" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Date range</label>
+        <input id="date-range" type="range" value="0" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+        <br>
+                    <div id="map" style="height: 400px; width: 100%;">
+                        Map
+                    </div>
+        
+                    <script>
+                        let map;
                 
-                <button class="ml-4 mr-auto" onclick="saveLocationl('<%= location.name %>')"><% if (bookmark) { %><i class="fa-solid fa-bookmark"></i><% }else { %><i class="fa-regular fa-bookmark"></i><% } %></button>
-            </div>
-            <h1>this is donghoon test map</h1>
-            label for="date-range" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Date range</label>
-<input id="date-range" type="range" value="0" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
-<br>
-            <div id="map" style="height: 400px; width: 100%;">
-                Map
-            </div>
-
-<
-            <script>
-                let map;
+                        async function initMap() {
+                            const position = { lat: 49.284040676696016, lng: -123.13114135301554 };
+                            
+                            const { Map } = await google.maps.importLibrary("maps");
+                            const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
         
-                async function initMap() {
-                    const position = { lat: 49.284040676696016, lng: -123.13114135301554 };
+                            const icon = document.createElement("div");
+                            icon.innerHTML = '<i id="thisWeather" class="fas fa-cloud-showers-heavy fa-3x"></i>';
+                            const pin = new PinElement({
+                                glyph: icon,
+                                glyphColor: "#ff8300",
+                                background: "#FFD514",
+                                borderColor: "#ff8300",
+                                scale: 2
+                            });
                     
-                    const { Map } = await google.maps.importLibrary("maps");
-                    const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
-
-                    const icon = document.createElement("div");
-                    icon.innerHTML = '<i id="thisWeather" class="fas fa-cloud-showers-heavy fa-3x"></i>';
-                    const pin = new PinElement({
-                        glyph: icon,
-                        glyphColor: "#ff8300",
-                        background: "#FFD514",
-                        borderColor: "#ff8300",
-                        scale: 2
-                    });
-            
-                    map = new Map(document.getElementById("map"), {
-                        center: position,
-                        zoom: 12,
-                        mapId: "23eb0e7a56e2992b"
-                    });
-                    const marker = new AdvancedMarkerElement({
-                        map: map,
-                        position: position,
-                        title: "AAAAAAAA",
-                        content: pin.element
-                    });
-
-                    const position2 = { lat: 49.294040676696016, lng: -123.14114135301554 };
-                    const icon2 = document.createElement("div");
-                    icon2.innerHTML = '<i id="thisWeather2" class="fas fa-cloud-showers-heavy fa-3x"></i>';
-                    const pin2 = new PinElement({
-                        glyph: icon2,
-                        glyphColor: "#ff8300",
-                        background: "#FFD514",
-                        borderColor: "#ff8300",
-                        scale: 2
-                    });
-
-
-                    const weatherTag = document.createElement("div");
-                    weatherTag.className = "weather-tag";
-                    weatherTag.innerHTML = '<i id="thisWeather2" class="fas fa-cloud-showers-heavy fa-1x">35.0</i>'
-                    const marker2 = new AdvancedMarkerElement({
-                        map: map,
-                        position: position2,
-                        title: "",
-                        content: weatherTag
-                    });
-
-
-                }
+                            map = new Map(document.getElementById("map"), {
+                                center: position,
+                                zoom: 12,
+                                mapId: "23eb0e7a56e2992b"
+                            });
+                            const marker = new AdvancedMarkerElement({
+                                map: map,
+                                position: position,
+                                title: "AAAAAAAA",
+                                content: pin.element
+                            });
         
-                // initMap();
-            </script>
-
-
-
-
-            <script async
-                src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBsDIZVQ-hAu_88uBuHfMWIC-rHooYIlZU&loading=async&callback=initMap">
-            </script>
-
-            <script>
-                function saveLocationl(location) {
-                    window.location.href = '/saveLocation?location=' + location;
-                }
-
-                //################ Please change this function later ############
-
-
-                function testingIconChange(text) {
-                    document.getElementById("thisWeather").className = text;
-                    console.log(text);
-                }
-                // testingIconChange("fas fa-cloud-showers-heavy");
-
-                let sampleWeather = ["fas fa-cloud-showers-heavy fa-3x",
-                "fas fa-snowflake fa-3x",
-                "fas fa-sun fa-3x",
-                "fas fa-cloud fa-3x",
-                "fas fa-wind fa-3x"
-                ];
-                document.getElementById('date-range').addEventListener('input', function() {
-                    let msg = sampleWeather[Math.floor(this.value / 101 * sampleWeather.length)];
-                    testingIconChange(msg);
-                });
-            </script>
-    </div>
-<%- include("templates/homenav") %>
-<%- include("templates/footer") %>
+                            const position2 = { lat: 49.294040676696016, lng: -123.14114135301554 };
+                            const icon2 = document.createElement("div");
+                            icon2.innerHTML = '<i id="thisWeather2" class="fas fa-cloud-showers-heavy fa-3x"></i>';
+                            const pin2 = new PinElement({
+                                glyph: icon2,
+                                glyphColor: "#ff8300",
+                                background: "#FFD514",
+                                borderColor: "#ff8300",
+                                scale: 2
+                            });
+        
+        
+                            const weatherTag = document.createElement("div");
+                            weatherTag.className = "weather-tag";
+                            weatherTag.innerHTML = '<i id="thisWeather2" class="fas fa-cloud-showers-heavy fa-1x">35.0</i>'
+                            const marker2 = new AdvancedMarkerElement({
+                                map: map,
+                                position: position2,
+                                title: "",
+                                content: weatherTag
+                            });
+        
+        
+                        }
+                
+                        // initMap();
+                    </script>
+        
+        
+        
+        
+                    <script async
+                        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBsDIZVQ-hAu_88uBuHfMWIC-rHooYIlZU&loading=async&callback=initMap">
+                    </script>
+        
+                    <script>
+                        function saveLocationl(location) {
+                            window.location.href = '/saveLocation?location=' + location;
+                        }
+        
+                        //################ Please change this function later ############
+        
+        
+                        function testingIconChange(text) {
+                            document.getElementById("thisWeather").className = text;
+                            console.log(text);
+                        }
+                        // testingIconChange("fas fa-cloud-showers-heavy");
+        
+                        let sampleWeather = ["fas fa-cloud-showers-heavy fa-3x",
+                        "fas fa-snowflake fa-3x",
+                        "fas fa-sun fa-3x",
+                        "fas fa-cloud fa-3x",
+                        "fas fa-wind fa-3x"
+                        ];
+                        document.getElementById('date-range').addEventListener('input', function() {
+                            let msg = sampleWeather[Math.floor(this.value / 101 * sampleWeather.length)];
+                            testingIconChange(msg);
+                        });
+                    </script>
+            </div>
+        <%- include("templates/homenav") %>
+        <%- include("templates/footer") %>
