@@ -82,61 +82,38 @@
                     </div>
                     <h1>this is donghoon test map</h1>
                     <label for="date-range" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Date range</label>
-        <input id="date-range" type="range" value="0" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
-        <br>
+                    <input id="date-range" type="range" value="0" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700">
+                    <br>
                     <div id="map" style="height: 400px; width: 100%;">
                         Map
                     </div>
         
                     <script>
+                        const weatherArr = <%- JSON.stringify(location.data) %>;
+                        console.log(weatherArr);
+                        // console.log(dateArr);
                         let map;
                 
                         async function initMap() {
-                            const position = { lat: 49.284040676696016, lng: -123.13114135301554 };
-                            
                             const { Map } = await google.maps.importLibrary("maps");
                             const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
-        
-                            const icon = document.createElement("div");
-                            icon.innerHTML = '<i id="thisWeather" class="fas fa-cloud-showers-heavy fa-3x"></i>';
-                            const pin = new PinElement({
-                                glyph: icon,
-                                glyphColor: "#ff8300",
-                                background: "#FFD514",
-                                borderColor: "#ff8300",
-                                scale: 2
-                            });
-                    
+                            const position = { lat: 49.294040676696016, lng: -123.14114135301554 };
+                            
                             map = new Map(document.getElementById("map"), {
                                 center: position,
-                                zoom: 12,
+                                zoom: 14,
                                 mapId: "23eb0e7a56e2992b"
                             });
-                            const marker = new AdvancedMarkerElement({
-                                map: map,
-                                position: position,
-                                title: "AAAAAAAA",
-                                content: pin.element
-                            });
-        
-                            const position2 = { lat: 49.294040676696016, lng: -123.14114135301554 };
-                            const icon2 = document.createElement("div");
-                            icon2.innerHTML = '<i id="thisWeather2" class="fas fa-cloud-showers-heavy fa-3x"></i>';
-                            const pin2 = new PinElement({
-                                glyph: icon2,
-                                glyphColor: "#ff8300",
-                                background: "#FFD514",
-                                borderColor: "#ff8300",
-                                scale: 2
-                            });
-        
         
                             const weatherTag = document.createElement("div");
                             weatherTag.className = "weather-tag";
-                            weatherTag.innerHTML = '<i id="thisWeather2" class="fas fa-cloud-showers-heavy fa-1x">35.0</i>'
-                            const marker2 = new AdvancedMarkerElement({
+                            weatherTag.innerHTML = `
+                                <i id="thisWeather" class="fas fa-cloud-showers-heavy fa-3x">
+                                    <%= location.data[0].tempmax %>
+                                </i>`
+                            const marker = new AdvancedMarkerElement({
                                 map: map,
-                                position: position2,
+                                position: position,
                                 title: "",
                                 content: weatherTag
                             });
@@ -146,9 +123,6 @@
                 
                         // initMap();
                     </script>
-        
-        
-        
         
                     <script async
                         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBsDIZVQ-hAu_88uBuHfMWIC-rHooYIlZU&loading=async&callback=initMap">
@@ -175,8 +149,10 @@
                         "fas fa-wind fa-3x"
                         ];
                         document.getElementById('date-range').addEventListener('input', function() {
-                            let msg = sampleWeather[Math.floor(this.value / 101 * sampleWeather.length)];
-                            testingIconChange(msg);
+                            let weather = weatherArr[Math.floor(this.value / 101 * weatherArr.length)];
+                            // testingIconChange(weather.conditions);
+                            document.getElementById("thisWeather").innerHTML = weather.conditions;
+                            console.log(weather.conditions);
                         });
                     </script>
             </div>
