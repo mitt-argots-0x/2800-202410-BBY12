@@ -376,6 +376,7 @@ app.post('/changePersonalinfo', sessionValidation, async (req, res) => {
 	var currentPassword = await userCollection.find({ email: req.session.email }).project({ password: 1, _id: 0 }).toArray();
 	if (await bcrypt.compare(curentPassword, currentPassword[0].password)) {
 		var hashedPassword = await bcrypt.hash(password, saltRounds);
+		req.session.username = username;
 		await userCollection.updateOne({ email: req.session.email }, { $set: { username: username, password: hashedPassword } });
 		res.redirect('/profile');
 	} else {
