@@ -78,47 +78,7 @@ router.get('/weather', sessionValidation, async (req, res) => {
 router.post('/weather', sessionValidation, async (req, res) => {
   const { weatherType, startDate, endDate } = req.body;
   const { default: fetch } = await import('node-fetch');
-  const email = req.query.email;
-
-  try {
-    const allResults = [];
-    const uniqueCities = new Set();
-
-    for (const city of cities) {
-      const response = await fetch(`https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city}/${startDate}/${endDate}?unitGroup=metric&include=days&key=${weatherApiKey}&contentType=json`);
-      const textData = await response.text();
-      let data;
-
-      try {
-        data = JSON.parse(textData);
-      } catch (jsonError) {
-        console.error(`Error parsing JSON for city ${city}:`, textData);
-        throw new Error('Received non-JSON response from the weather API');
-      }
-
-      const filteredData = data.days.filter(day => day.conditions.toLowerCase().includes(weatherType.toLowerCase()));
-      const imageUrl = await getImageUrl(city);
-
-      if (filteredData.length > 0 && !uniqueCities.has(city)) {
-        uniqueCities.add(city);
-        allResults.push({ ...filteredData[0], city, imageUrl });
-      }
-    }
-
-    const savedLocationsArr = await userCollection.find({ email: email }).project({ savedLocations: 1, _id: 0 }).toArray();
-    const savedLocations = savedLocationsArr[0] ? savedLocationsArr[0].savedLocations : [];
-    const savedLocationsNames = savedLocations.map(location => location.name);
-
-    res.render('weatherResults', { data: allResults, savedLocations: savedLocationsNames, startDate, endDate, email });
-  } catch (error) {
-    console.error('Error fetching weather data:', error);
-    res.status(500).send('Failed to fetch weather data');
-  }
-});
-
-router.post('/weather', sessionValidation, async (req, res) => {
-  const { weatherType, startDate, endDate } = req.body;
-  const { default: fetch } = await import('node-fetch');
+  const email = req.session.email;
 
   try {
     const allResults = [];
@@ -146,18 +106,16 @@ router.post('/weather', sessionValidation, async (req, res) => {
       }
     }
 
-    const email = req.query.email;
     const savedLocationsArr = await userCollection.find({ email: email }).project({ savedLocations: 1, _id: 0 }).toArray();
     const savedLocations = savedLocationsArr[0] ? savedLocationsArr[0].savedLocations : [];
     const savedLocationsNames = savedLocations.map(location => location.name);
 
-    res.render('weatherResults', { data: allResults, savedLocations: savedLocationsNames, startDate, endDate });
+    res.render('weatherResults', { data: allResults, savedLocations: savedLocationsNames, startDate, endDate, email });
   } catch (error) {
     console.error('Error fetching weather data:', error);
     res.status(500).send('Failed to fetch weather data');
   }
 });
-
 
 router.get('/destination', sessionValidation, async (req, res) => {
   const city = req.query.city;
@@ -173,6 +131,7 @@ router.get('/destination', sessionValidation, async (req, res) => {
     const { default: fetch } = await import('node-fetch');
     const response = await fetch(`https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city}/${startDate}/${endDate}?unitGroup=metric&include=days&key=${weatherApiKey}&contentType=json`);
     const textData = await response.text();
+    const imageUrl = await getImageUrl(city);
     let data;
 
     try {
@@ -196,6 +155,7 @@ router.get('/destination', sessionValidation, async (req, res) => {
     const location = {
       latitude: data.latitude,
       longitude: data.longitude,
+      imageUrl: imageUrl,
       city,
       data: filteredData
     };
