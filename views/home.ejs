@@ -44,21 +44,20 @@
                 <% } %>
                 <div class="card bg-white shadow-md rounded-lg p-4">
                     <% if (day.imageUrl) { %>
-                        <img 
-                            src="<%= day.imageUrl %>" alt="Image of <%= day.city %>"
-                            class="w-full h-48 object-cover rounded mb-4">
-                    <% } %>
-                    <button id="saveBtn" onclick="saveLocation('<%= day.name %>')" class=" w-1/6">
-                        <% if (bookmark) { %>
-                            <i class="fa-solid fa-bookmark"></i>
-                        <% } else { %>
-                            <i class="fa-regular fa-bookmark"></i>
+                        <img src="<%= day.imageUrl %>" alt="Image of <%= day.city %>" class="w-full h-48 object-cover rounded mb-4">
                         <% } %>
-                    </button>
-                    <h2
-                        class="text-xl font-semibold"><strong>City:</strong> <%= day.name %>
-                    </h2>
-                    <p>Rating: <%= day.rating %></p>
+                            <button id="saveBtn" disabled class="w-1/6">
+                                <% if (bookmark) { %>
+                                    <i class="fa-solid fa-bookmark"></i>
+                                    <% } else { %>
+                                        <i class="fa-regular fa-bookmark"></i>
+                                        <% } %>
+                            </button>
+                            <h2 class="text-xl font-semibold"><strong>City:</strong>
+                                <%= day.name %>
+                            </h2>
+                            <p>Rating: <%= day.rating %>
+                            </p>
                 </div>
             <% }) %>
             </div>
