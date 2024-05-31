@@ -8797,15 +8797,6 @@ D:.
 ├───routes
 │       router.js
 │
-├───uploads
-│       image-1715783329240
-│       image-1715903964140
-│       image-1715903965980
-│       image-1715904024778
-│       image-1715917463312
-│       image-1715917475434
-│       image-1715917545883
-│       image-1715921309055
 │
 └───views
     │   404.ejs
@@ -8837,7 +8828,6 @@ D:.
             homenav.ejs
             landingpage.ejs
             locations.ejs
-            template.ejs
 
 ## 5. Complete setup/installion/usage
 State what a user needs to do when they come to your project.  How do others start using your code or application?
