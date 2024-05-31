@@ -535,10 +535,10 @@ app.get('/unsaveLocation', sessionValidation, async (req, res) => {
 	res.redirect('/profile');
 }); 
 
-app.get('/signOut', (req,res) => { 
+app.get('/signOut', sessionValidation, (req,res) => { 
     res.render('signOut');
 });
-app.post('/signOut', async (req,res) => { //destroys session and account
+app.post('/signOut', sessionValidation, async (req,res) => { //destroys session and account
     
     const email = req.session.email; 
     console.log(email);
