@@ -3,6 +3,8 @@
 
 ## 1. Project Description
 Our project team, BBY-12, is developing a travel app to help travelers choose their perfect trip destinations with a range of locations that are offered based on their preferred weather conditions.
+the hosted link:
+https://sunspot.onrender.com/
 
 ## 2. Names of Contributors
 * Radman Mohammadi
@@ -95,23 +97,23 @@ Here are the steps ...
 * git clone https://github.com/mitt-argots-0x/2800-202410-BBY12.git
 * npm i
 * create .env file and put your information :
-CLOUDINARY_CLOUD_NAME=
-CLOUDINARY_CLOUD_KEY=
-CLOUDINARY_CLOUD_SECRET=
+CLOUDINARY_CLOUD_NAME=YOUR_SECRET_GOES_HERE
+CLOUDINARY_CLOUD_KEY=YOUR_SECRET_GOES_HERE
+CLOUDINARY_CLOUD_SECRET=YOUR_SECRET_GOES_HERE
 
-WEATHER_API_KEY=
-UNSPLASH_ACCESS_KEY=
+WEATHER_API_KEY=YOUR_SECRET_GOES_HERE
+UNSPLASH_ACCESS_KEY=YOUR_SECRET_GOES_HERE
 
-MONGODB_HOST=
-MONGODB_USER=
-MONGODB_PASSWORD=
-MONGODB_DATABASE=
+MONGODB_HOST=YOUR_SECRET_GOES_HERE
+MONGODB_USER=YOUR_SECRET_GOES_HERE
+MONGODB_PASSWORD=YOUR_SECRET_GOES_HERE
+MONGODB_DATABASE=YOUR_SECRET_GOES_HERE
 
-MONGODB_SESSION_SECRET=
-NODE_SESSION_SECRET=
+MONGODB_SESSION_SECRET=YOUR_SECRET_GOES_HERE
+NODE_SESSION_SECRET=YOUR_SECRET_GOES_HERE
 
-EMAIL=
-APP_PASSWORD=
+EMAIL=YOUR_SECRET_GOES_HERE
+APP_PASSWORD=YOUR_SECRET_GOES_HERE
 
 # 6.How to use the product (Features)
 * create an account with your email and a chosen password and username
