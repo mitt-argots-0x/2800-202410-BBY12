@@ -639,7 +639,7 @@ app.post('/sendResetLink', async (req, res) => {
             <p>You requested a password reset. Please use the following link to reset your password:</p>
             <a href="${resetLink}" style="display: inline-block; margin-top: 10px; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px;">Reset Password</a>
             <br>
-			<img src="cid:logo" alt="logo" style="max-width: 100%; height: auto;" />
+			<img src="cid:logo" alt="logo" style="max-width: 300px; height: auto;" />
 			</div>`,
 		attachments: [
 			{
