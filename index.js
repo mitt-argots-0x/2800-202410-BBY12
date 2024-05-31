@@ -563,7 +563,7 @@ app.post('/signOut', async (req,res) => { //destroys session and account
             return;
         }
         if (!isMatch) {
-            res.status(401).send("Incorrect password");
+            res.status(401).render("userDeletionFail");
             return;
         }
         userCollection.deleteOne({email: email }, (err, result) => {
