@@ -4,11 +4,9 @@
             <p id="searchBar" class="text-center pt-1 my-auto bg-purple-400 w-2/3 h-10 rounded-2xl"><i class="fa-solid fa-magnifying-glass"></i> Search by weather</p>
             <button id="sort" onclick="sort()" class=" ml-8 bg-purple-400 px-4 rounded-full"><i class="fa-solid fa-filter"></i></button>
         </div>
-        <!-- above is SABA -->
 
         <div class="mb-20"></div>
 
-        <!-- radman changes -->
         <form id="searchBox" class="flex justify-center" action="/weather?email=<%= email %>" method="post">
             <div class="rounded-2xl focus:outline-none w-4/6 border-4 border-purple-400 p-4 bg-white">
                 <h1 class="text-xl font-bold mb-4">Search Weather</h1>
@@ -46,7 +44,7 @@
                 <% } %>
                 <div class="card bg-white shadow-md rounded-lg p-4">
                     <% if (day.imageUrl) { %>
-                        <img onclick="window.location.href='/destination?location=<%= day.name %>&&bookmark=<% bookmark %>'"
+                        <img 
                             src="<%= day.imageUrl %>" alt="Image of <%= day.city %>"
                             class="w-full h-48 object-cover rounded mb-4">
                     <% } %>
@@ -57,7 +55,7 @@
                             <i class="fa-regular fa-bookmark"></i>
                         <% } %>
                     </button>
-                    <h2 onclick="window.location.href='/destination?location=<%= day.name %>&&bookmark=<%= bookmark %>'"
+                    <h2
                         class="text-xl font-semibold"><strong>City:</strong> <%= day.name %>
                     </h2>
                     <p>Rating: <%= day.rating %></p>

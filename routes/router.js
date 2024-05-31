@@ -51,7 +51,7 @@ router.post('/picUpload', sessionValidation, upload.single('image'), async funct
 const weatherApiKey = process.env.WEATHER_API_KEY;
 const unsplashAccessKey = process.env.UNSPLASH_ACCESS_KEY;
 
-const cities = ["vancouver", "toronto"];
+const cities = ["vancouver", "toronto", "montreal", "edmonton", "halifax", "ottawa", "winnipeg", "quebec city", "hamilton", "kitchener", "london", "victoria", "oshawa", "windsor", "saskatoon", "kelowna", "abbotsford", "kingston", "nanaimo", "whistler"];
 
 const getImageUrl = async (city) => {
   const { default: fetch } = await import('node-fetch');
