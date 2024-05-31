@@ -1,41 +1,40 @@
-//all the "requires"
-require("./utils.js");
-require('dotenv').config();
-const express = require('express');
-const router = include('routes/router');
-var { database } = include('databaseConnection');
-const { google } = require('googleapis');
-const port = process.env.PORT || 3000;
-const app = express();
-app.set('view engine', 'ejs');
-const session = require('express-session');
-const MongoStore = require('connect-mongo');
-const mongoose = require('mongoose');
-const bcrypt = require('bcrypt');
-const Joi = require("joi");
+// all the "requires"
+require("./utils.js"); // Require custom utility functions
+require('dotenv').config(); // Load environment variables from .env file
+const express = require('express'); // Require Express framework
+const router = include('routes/router'); // Include router module
+var { database } = include('databaseConnection'); // Include database connection module
+const { google } = require('googleapis'); // Require Google APIs module
+const port = process.env.PORT || 3000; // Set port based on environment variable or default to 3000
+const app = express(); // Create Express app
+app.set('view engine', 'ejs'); // Set view engine to EJS
+const session = require('express-session'); // Require Express session module
+const MongoStore = require('connect-mongo'); // Require Connect Mongo module for session storage
+const mongoose = require('mongoose'); // Require Mongoose for MongoDB interactions
+const bcrypt = require('bcrypt'); // Require bcrypt for password hashing
+const Joi = require("joi"); // Require Joi for data validation
 
-const saltRounds = 12;
-const expireTime = 6 * 4 * 7 * 24 * 60 * 60 * 1000; //expires after 6 months (months * weeks * days * hours * minutes * seconds * millis)
+const saltRounds = 12; // Number of salt rounds for bcrypt hashing
+const expireTime = 6 * 4 * 7 * 24 * 60 * 60 * 1000; // expires after 6 months (months * weeks * days * hours * minutes * seconds * millis)
 
 /* secret information section */
-const mongodb_host = process.env.MONGODB_HOST;
-const mongodb_user = process.env.MONGODB_USER;
-const mongodb_password = process.env.MONGODB_PASSWORD;
-const mongodb_database = process.env.MONGODB_DATABASE;
-const mongodb_session_secret = process.env.MONGODB_SESSION_SECRET;
-const node_session_secret = process.env.NODE_SESSION_SECRET;
+const mongodb_host = process.env.MONGODB_HOST; // MongoDB host
+const mongodb_user = process.env.MONGODB_USER; // MongoDB username
+const mongodb_password = process.env.MONGODB_PASSWORD; // MongoDB password
+const mongodb_database = process.env.MONGODB_DATABASE; // MongoDB database name
+const mongodb_session_secret = process.env.MONGODB_SESSION_SECRET; // MongoDB session secret
+const node_session_secret = process.env.NODE_SESSION_SECRET; // Node session secret
 /* END secret section */
 
-//database related variables and functions on start up
-
-const userCollection = database.db(mongodb_database).collection('users');
-const locationCollection = database.db(mongodb_database).collection('locations');
+// database related variables and functions on startup
+const userCollection = database.db(mongodb_database).collection('users'); // User collection in MongoDB
+const locationCollection = database.db(mongodb_database).collection('locations'); // Location collection in MongoDB
 
 var mongoStore = MongoStore.create({
-	mongoUrl: `mongodb+srv://${mongodb_user}:${mongodb_password}@${mongodb_host}/sessions`,
-	crypto: {
-		secret: mongodb_session_secret
-	}
+    mongoUrl: `mongodb+srv://${mongodb_user}:${mongodb_password}@${mongodb_host}/sessions`,
+    crypto: {
+        secret: mongodb_session_secret
+    }
 })
 
 //forgot password
@@ -81,10 +80,9 @@ let transporter = nodemailer.createTransport({
 	}
 });
 
-//all the app.use
+
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(__dirname + "/public"));
-
 app.use(session({
 	secret: node_session_secret,
 	store: mongoStore, //default is memory store 
@@ -138,6 +136,7 @@ const locationSchema = new mongoose.Schema({
 const User = mongoose.model('User', userSchema);
 const Location = mongoose.model('Location', locationSchema);
 
+// check if the session is valid
 function sessionValidation(req, res, next) {
 	if (req.session.authenticated) {
 		next();
@@ -173,6 +172,7 @@ app.get('/login', (req, res) => {
 	res.render("login");
 });
 
+//save the new user to database
 app.post('/createUser', async (req, res) => {
 	var username = req.body.username;
 	var email = req.body.email;
@@ -208,8 +208,7 @@ app.post('/createUser', async (req, res) => {
 	res.redirect('/');
 });
 
-
-
+//save the review to database
 app.post('/post_review', async (req, res) => {
 	try {
 		let name = req.query.location;
@@ -219,7 +218,6 @@ app.post('/post_review', async (req, res) => {
 		const { starRating } = req.body;
 		// Find the user by email or create a new one
 		let l = await Location.findOne({ "name": name });
-		// console.log(name);
 		// Ensure the reviews array is initialized 
 		if (!l) {
 			l = new Location({ name, description, reviews: [{ text: "" }] });
@@ -252,6 +250,7 @@ app.get('/incorrectInput', (req, res) => {
 	res.render("submitUser", { msg: msg, previousPage: req.query.previousPage });
 });
 
+//This block of code is to login the user by checking the email and password
 app.post('/login', async (req, res) => {
 	var email = req.body.email;
 	var password = req.body.password;
@@ -284,6 +283,7 @@ app.post('/login', async (req, res) => {
 	}
 });
 
+//This code is to log out the user
 app.get('/logout', sessionValidation, (req, res) => {
 	req.session.destroy();
 	res.redirect("/");
@@ -293,13 +293,7 @@ app.get('/about_us', (req, res) => {
 	res.render("about_us");
 });
 
-
-
-
-// Similar updates should be made to other routes that need `email`
-
-
-
+//This block of code is to display the home page
 app.get('/home', sessionValidation, async (req, res) => {
 	// find the locations that have rating greater than 4
 	const locations = await locationCollection.find().project({ _id: 0 }).toArray();
@@ -320,8 +314,6 @@ app.get('/post_review', sessionValidation, async (req, res) => {
 		const username = req.session.username;
 		const email = req.session.email;
 		const user = await User.findOne({ email });
-
-		// console.log(req.session);
 		res.render('post_review', {
 			user: user,
 			username: username,
@@ -397,7 +389,6 @@ app.get('/review', sessionValidation, async (req, res) => {
 	reviews = location[0].reviews;
 	var avg = 0;
 	var a = 0, b = 0, c = 0, d = 0, e = 0;
-	// console.log(req.session);
 	if (reviews.length != 0) {
 		for (var i = 0; i < reviews.length; i++) {
 			switch (reviews[i].starRating) {
@@ -425,6 +416,7 @@ app.get('/review', sessionValidation, async (req, res) => {
 	res.render("review", { location: location[0], avgRating: avg,email:req.session.email,userName:req.session.username });
 });
 
+//this code is for the user to edit their review
 app.get('/edit_review', sessionValidation, async (req, res) => {
 	var locationName = req.query.location;
 	var location = await locationCollection.find({ name: locationName }).project({ _id: 0 }).toArray();
@@ -436,6 +428,7 @@ app.get('/edit_review', sessionValidation, async (req, res) => {
 	});
 });
 
+//this code is to save the edited review to the database
 app.post('/edit_review', sessionValidation, async (req, res) => {
     let locationName = req.query.location;
     var description = "blah blah blah";
@@ -465,6 +458,7 @@ app.post('/edit_review', sessionValidation, async (req, res) => {
     res.redirect('/review?location=' + locationName);
 });
 
+//this code is to delete the review from the database
 app.get('/delete_review', sessionValidation, async (req, res) => {
 	var locationName = req.query.location;
 	var location = await locationCollection.find({ name: locationName }).project({ _id: 0 }).toArray();
@@ -478,6 +472,7 @@ app.get('/delete_review', sessionValidation, async (req, res) => {
 	res.redirect('/review?location=' + locationName);
 });
 
+//this code is to sort the locations by rating
 app.get('/sort', sessionValidation, async (req, res) => {
 	var value = req.query.value;
 	savedLocationsArr = await userCollection.find({ email: req.session.email }).project({ savedLocations: 1, _id: 0 }).toArray();
@@ -493,6 +488,7 @@ app.get('/sort', sessionValidation, async (req, res) => {
 });
 	
 
+// this section is to save the location to the user's profile
 app.get('/saveLocation', sessionValidation, async (req, res) => {
 	var bookmark;
 	var locationName = req.query.location;
@@ -507,7 +503,6 @@ app.get('/saveLocation', sessionValidation, async (req, res) => {
 			if (savedLocations[i].name == locationName) {
 				await userCollection.updateOne({ email: req.session.email }, { $pull: { savedLocations: location[0] } });
 				bookmark = false;
-				console.log("removed");
 				break;
 			} else if(location[0]!==null){
 				await userCollection.updateOne({ email: req.session.email }, { $push: { savedLocations: location[0] } });
@@ -525,12 +520,12 @@ app.get('/saveLocation', sessionValidation, async (req, res) => {
 	}
 });
 
+//this code is to unsave the location from the user's profile
 app.get('/unsaveLocation', sessionValidation, async (req, res) => {
 	var locationName = req.query.location;
 	var location = await locationCollection.find({ name: locationName }).project({ _id: 0 }).toArray();
 	result = await userCollection.find({ email: req.session.email }).project({ savedLocations: 1, _id: 0 }).toArray();
 	var savedLocations = result[0].savedLocations;
-	
 		for (var i = 0; i < savedLocations.length; i++) {
 			if (savedLocations[i].name == locationName) {
 				await userCollection.updateOne({ email: req.session.email }, { $pull: { savedLocations: location[0] } });
@@ -540,10 +535,10 @@ app.get('/unsaveLocation', sessionValidation, async (req, res) => {
 	res.redirect('/profile');
 }); 
 
-app.get('/signOut', (req,res) => { 
+app.get('/signOut', sessionValidation, (req,res) => { 
     res.render('signOut');
 });
-app.post('/signOut', async (req,res) => { //destroys session and account
+app.post('/signOut', sessionValidation, async (req,res) => { //destroys session and account
     
     const email = req.session.email; 
     console.log(email);
@@ -568,7 +563,7 @@ app.post('/signOut', async (req,res) => { //destroys session and account
             return;
         }
         if (!isMatch) {
-            res.status(401).send("Incorrect password");
+            res.status(401).render("userDeletionFail");
             return;
         }
         userCollection.deleteOne({email: email }, (err, result) => {
@@ -583,8 +578,6 @@ app.post('/signOut', async (req,res) => { //destroys session and account
     });  
     
 });
-
-	
 
 // Route to display the reset password request form
 app.get('/resetPassword', (req, res) => {
@@ -632,14 +625,31 @@ app.post('/sendResetLink', async (req, res) => {
 
 	const resetLink = `http://${req.headers.host}/reset-password/${resetToken}`;
 
-	// setup email data with unicode symbols
+	// The reset password email
 	let mailOptions = {
 		from: `"sunspot" <${process.env.EMAIL}>`, // sender address
 		to: email, // list of receivers
 		subject: 'Password Reset', // Subject line
 		text: 'You requested a password reset. Please use the following link to reset your password: ' + resetLink, // plain text body
-		html: `<b>Click on the link to reset your password:</b> <a href="${resetLink}">Reset Password</a>` // html body
+		html: `
+        <div style="text-align: center;">
+            <h1>SunSpot</h1>
+			<br>
+			<p><b>SunSpot for when you want rain or shine</b></p>
+            <p>You requested a password reset. Please use the following link to reset your password:</p>
+            <a href="${resetLink}" style="display: inline-block; margin-top: 10px; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px;">Reset Password</a>
+            <br>
+			<img src="cid:logo" alt="logo" style="max-width: 300px; height: auto;" />
+			</div>`,
+		attachments: [
+			{
+				filename: 'logo.png',
+				path: 'public/imgs/logo.png',
+				cid: 'logo'
+			}
+		]
 	};
+
 
 	// send mail with defined transport object
 	try {
