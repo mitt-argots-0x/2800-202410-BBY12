@@ -1,30 +1,111 @@
 <%- include("templates/header") %>
+
     <div class="grid w-5/6 h-full mx-auto mt-4">
-        <img src="<%= location.imageUrl %>" alt="location image" class="max-h-72 w-full max border-2 border-orange-400 rounded-3xl">
-            <p id="name_goes_here" class="text-center h1">
-                <span class="border-b-4 border-purple-600"><%= location.name %></span>
-            </p>
-            <p id="description_goes_here" class="mt-2">
-                <%= location.description %>
-            </p>
-            <div class="mx-auto flex justify-center w-4/5 mt-2">
-                <span>Rating:<%= location.rating %></span>
-                <button class="ml-auto text-2xl pb-1 text-white border-2 border-teal-400 bg-teal-300 rounded-lg px-10 hover:border-cyan-300 hover:bg-cyan-200" id="reviewBtn" onclick='window.location.href="/review?location=<%= location.name %>"'>
-                    Reviews
-                </button>
+        <img src="<%= location.imageUrl %>" alt="location image"
+            class="max-h-72 w-full max border-2 border-orange-400 rounded-3xl">
+        <p id="name_goes_here" class="text-center h1">
+            <span class="border-b-4 border-purple-600">
+                <%= location.city %>
+            </span>
+        </p>
+        <% if (location && location.data && location.data.length> 0) { %>
+            <% } else { %>
+                <p class="text-center">No weather data found for the selected city and date range.</p>
+                <% } %>
+                    <div class="mx-auto flex justify-center w-4/5 mt-2">
+                        <span style="margin-right: 16px;"><b>Rating:</b>
+                                <% var fullStars=Math.floor(location.rating); var halfStars=location.rating % 1>= 0.5 ?
+                                    1 : 0;
+                                    var emptyStars = 5 - fullStars - halfStars;
+                                    %>
+                                    <% for (var i=0; i < fullStars; i++) { %>
+                                        <i style="margin-right: -6px;" class="fa-solid fa-star"></i>
+                                        <% } %>
+                                            <% if (halfStars) { %>
+                                                <i style="margin-right: -6px;" class="fa-solid fa-star-half-stroke"></i>
+                                                <% } %>
+                                                    <% for (var i=0; i < emptyStars; i++) { %>
+                                                        <i style="margin-right: -6px;" class="fa-regular fa-star"></i>
+                                                        <% } %>
+                        </span>
+                        <button
+                            class="ml-auto text-2xl pb-1 text-white border-2 border-teal-400 bg-teal-300 rounded-lg px-10 hover:border-cyan-300 hover:bg-cyan-200"
+                            id="reviewBtn" onclick='window.location.href="/review?location=<%= location.city %>"'>
+                            Reviews
+                        </button>
 
-                <button class="ml-auto text-2xl pb-1 text-white border-2 border-teal-400 bg-teal-300 rounded-lg px-10 hover:border-cyan-300 hover:bg-cyan-200" id="reviewBtn" onclick='window.location.href="/weather?email=<%= email %>"'>
-                    Back
-                </button>
+                    </div>
+                    <label for="date-range" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"></label>
+                    <div class="flex items-center justify-between">
+                        <span id="start-date" class="text-sm text-gray-900 dark:text-white"><b>Start Date</b></span>
+                        <input id="date-range" type="range" value="0" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 mx-2">
+                        <span id="end-date" class="text-sm text-gray-900 dark:text-white"><b>End Date</b></span>
+                    </div>
+                    <br>
+                    <div id="map" style="height: 400px; width: 100%;">
+                        Map
+                    </div>
+        
+                    <script>
+                        const weatherArr = <%- JSON.stringify(location.data) %>;
+                        console.log(weatherArr);
+                        let map;
                 
-                <button class="ml-4 mr-auto" onclick="saveLocationl('<%= location.name %>')"><% if (bookmark) { %><i class="fa-solid fa-bookmark"></i><% }else { %><i class="fa-regular fa-bookmark"></i><% } %></button>
-            </div>
+                        async function initMap() {
+                            const { Map } = await google.maps.importLibrary("maps");
+                            const { AdvancedMarkerElement, PinElement } = await google.maps.importLibrary("marker");
+                            const position = { lat: <%= location.latitude %>, lng: <%= location.longitude %> };
+                            
+                            map = new Map(document.getElementById("map"), {
+                                center: position,
+                                zoom: 14,
+                                mapId: "23eb0e7a56e2992b"
+                            });
+        
+                            const weatherTag = document.createElement("div");
+                            weatherTag.className = "weather-tag";
+                            // class="fas fa-cloud-showers-heavy fa-3x"
+                            weatherTag.innerHTML = `
+                                <i id="thisWeather" class="  fa-2x">
+                                    ${weatherInfoText(weatherArr[0])}
+                                </i>`;
+                            const marker = new AdvancedMarkerElement({
+                                map: map,
+                                position: position,
+                                title: "",
+                                content: weatherTag
+                            });
+                        }
+                        // initMap();
 
-            <script>
-                function saveLocationl(location) {
-                    window.location.href = '/saveLocation?location=' + location;
-                }
-            </script>
-    </div>
-<%- include("templates/homenav") %>
-<%- include("templates/footer") %>
+                        function saveLocationl(location) {
+                            window.location.href = '/saveLocation?location=' + location;
+                        }
+        
+                        function changeWeatherInfoText(weather) {
+                            document.getElementById("thisWeather").innerHTML = weatherInfoText(weather);
+                        }
+
+                        function weatherInfoText(weather) {
+                            return `<div><b>date: ${weather.datetime}</b></div>
+                            <br>
+                            <div><b>condition: ${weather.conditions}</b></div>
+                            <br>
+                            <div>max: ${weather.tempmax}°C</div>
+                            <br>
+                            <div>min: ${weather.tempmin}°C</div>
+                            <br>
+                            <div>humidity: ${weather.humidity}%</div>`;
+                        }
+
+                        document.getElementById('date-range').addEventListener('input', function() {
+                            let weather = weatherArr[Math.floor(this.value / 101 * weatherArr.length)];
+                            changeWeatherInfoText(weather);
+                        });
+                    </script>
+                    <script async
+                        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBsDIZVQ-hAu_88uBuHfMWIC-rHooYIlZU&loading=async&callback=initMap">
+                    </script>
+            </div>
+        <%- include("templates/homenav") %>
+        <%- include("templates/footer") %>

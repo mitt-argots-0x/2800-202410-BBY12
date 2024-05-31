@@ -1,29 +1,36 @@
-<%- include("templates/header") %> 
-    <nav id="nav-hamburger">
-        <button id="hamburgerBtn" onclick="toggleMenu()">
-            <i id="hamburgerMenu" class="fa-solid fa-xl fa-bars"></i>
-            <a link href="/setting" class="menuItems">setting</a>
-            <a link href="/logout" class="menuItems">Log out</a>
-            <a link href="/about_us" class="menuItems">Contact us</a>
-        </button>
-    </nav>
-<form action='/changePersonalinfo' method='post' class="bg-teal-200 grid grid-row-2 mx-auto mt-4 w-3/5 pb-2 rounded-2xl">
-    <div class="mx-auto w-full grid justify-center">
-        <div class="rounded-2xl my-2">
-            <input class="w-full mx-auto px-2 border-2 border-orange-300 rounded-2xl focus:outline-none" name='username' type='text' placeholder='Name'><br>
+<%- include("templates/header") %>
+<div class="w-full h-1/3 align-center grid my-auto">
+    <form action='/changePersonalinfo' method='post'
+        class="bg-teal-200 grid grid-row-2 mx-auto mt-4 w-3/5 pb-2 rounded-2xl">
+        <div class="mx-auto w-full grid justify-center">
+            <div class="rounded-2xl my-2">
+                <input class="w-full mx-auto px-2 border-2 border-orange-300 rounded-2xl focus:outline-none"
+                    name='username' type='text' placeholder='New username'><br>
+            </div>
+            <div class="rounded-2xl my-2">
+                <input class="w-full mx-auto px-2 border-2 border-orange-300 rounded-2xl focus:outline-none"
+                    name='curpassword' type='password' placeholder='Current Password'><br>
+            </div>
+            <div class="rounded-2xl my-2">
+                <input class="w-full mx-auto px-2 border-2 border-orange-300 rounded-2xl focus:outline-none"
+                    name='newpassword' type='password' placeholder='New Password'><br>
+            </div>
         </div>
-        <div class="rounded-2xl my-2">
-            <input class="w-full mx-auto px-2 border-2 border-orange-300 rounded-2xl focus:outline-none" name='curpassword' type='password' placeholder='Current Password'><br>
+        <div class="flex justify-center">
+            <button
+                class="border-2 border-purple-500 bg-purple-400 rounded-3xl px-2 hover:border-purple-400 hover:bg-purple-300">Submit</button>
         </div>
-        <div class="rounded-2xl my-2">
-            <input class="w-full mx-auto px-2 border-2 border-orange-300 rounded-2xl focus:outline-none" name='newpassword' type='password' placeholder='New Password'><br>
-        </div>
-    </div>
-    <div class="flex justify-center">
-        <button class="border-2 border-purple-500 bg-purple-400 rounded-3xl px-2 hover:border-purple-400 hover:bg-purple-300">Submit</button>
-    </div>
+    </form>
 
-</form>
+    <div class="grid justify-center w-full mt-4 h-5/6">
+            <button
+            class="h-3/4 ml-2 my-2 border-2 border-teal-300 bg-teal-200 rounded-3xl px-2 hover:border-cyan-300 hover:bg-cyan-200"
+            id="setting" onclick='window.location.href="/signOut"'><i class="fa-solid fa-trash"></i> Delete Account</button>
 
+            <button
+                class="h-3/4 ml-2 my-2 border-2 border-teal-300 bg-teal-200 rounded-3xl px-2 hover:border-cyan-300 hover:bg-cyan-200"
+                id="" onclick='window.location.href="/logout"'><i class="fa-solid fa-sign-out"></i> Logout</button>
+    </div>
+</div>
 <%- include("templates/homenav") %>
 <%- include("templates/footer") %>
