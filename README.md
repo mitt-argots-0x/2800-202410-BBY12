@@ -39,7 +39,6 @@ Content of the project folder
 ├───public
 │   ├───css
 │   │       styles.css
-│   │
 │   ├───imgs
 │   │       bookmark.png
 │   │       Community.png
@@ -55,15 +54,11 @@ Content of the project folder
 │   │       Sun.gif
 │   │       Waves.gif
 │   │       Weather.png
-│   │
 │   └───js
 │           home.js
 │           profile.js
-│
 ├───routes
 │       router.js
-│
-│
 └───views
     │   404.ejs
     │   about_us.ejs
@@ -87,7 +82,6 @@ Content of the project folder
     │   submitUser.ejs
     │   weather.ejs
     │   weatherResults.ejs
-    │
     └───templates
             footer.ejs
             header.ejs
