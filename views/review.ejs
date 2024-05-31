@@ -27,7 +27,7 @@
             <% for (var i=0; i < reviews.length; i++) { %>
                 <div class="bg-orange-300 w-full p-2 rounded-2xl" style="position: relative;">
                     <p class="font-bold pl-1 pb-1">
-                        <img src="<%= reviews[i].profileUrl %>" alt="profile image" class="rounded-full border-2 border-teal-300" style="width:50px;height: 50px;object-fit: cover; display: inline;">
+                        <img src="imgs/placeholderUser.png" alt="profile image" class="rounded-full border-2 border-teal-300" style="width:50px;height: 50px;object-fit: cover; display: inline;">
                         <span><%= reviews[i].user %></span>
                         <% if (reviews[i].email === email) { %>
                             <div style="position: absolute; top: 0.5rem; right: 0.5rem; display: flex; gap: 0.5rem;">
