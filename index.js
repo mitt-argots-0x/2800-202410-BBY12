@@ -638,8 +638,26 @@ app.post('/sendResetLink', async (req, res) => {
 		to: email, // list of receivers
 		subject: 'Password Reset', // Subject line
 		text: 'You requested a password reset. Please use the following link to reset your password: ' + resetLink, // plain text body
-		html: `<b>Click on the link to reset your password:</b> <a href="${resetLink}">Reset Password</a>` // html body
+		html: `
+        <div style="text-align: center;">
+            <h1>SunSpot</h1>
+			<br>
+			<p><b>SunSpot for when you want rain or shine</b></p>
+            <p>You requested a password reset. Please use the following link to reset your password:</p>
+            <a href="${resetLink}" style="display: inline-block; margin-top: 10px; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px;">Reset Password</a>
+            <br>
+			<img src="cid:logo" alt="logo" style="max-width: 100%; height: auto;" />
+			</div>
+    `,
+		attachments: [
+			{
+				filename: 'logo.png',
+				path: 'public/imgs/logo.png', // replace with the correct path to your image
+				cid: 'logo' // same cid value as in the html img src
+			}
+		]
 	};
+
 
 	// send mail with defined transport object
 	try {
